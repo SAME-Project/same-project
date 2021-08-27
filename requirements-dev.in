@@ -1,0 +1,5 @@
+# used to generate /requirements-dev.txt - add dev-time dependencies here
+-r requirements.in
+pip-tools
+pylint
+pytest

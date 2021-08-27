@@ -1,0 +1,4 @@
+[MESSAGES CONTROL]
+
+# Disable module docstring check. This is super noisy for tests.
+disable=C0111
