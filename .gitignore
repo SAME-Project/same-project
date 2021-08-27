@@ -1,5 +1,7 @@
 # Original From: https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
