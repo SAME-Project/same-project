@@ -1,2 +1,8 @@
-def test_placeholder():
-    assert (2+2) == 4
+from click.testing import CliRunner
+from cli.main import program_compile
+
+def test_compile():
+    # just testing that we can test.
+    runner = CliRunner()
+    result = runner.invoke(program_compile)
+    assert result.exit_code == 0
