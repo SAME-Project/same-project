@@ -3,3 +3,4 @@
 pip-tools
 pylint
 pytest
+pytest-cov
