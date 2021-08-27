@@ -10,6 +10,8 @@ attrs==21.2.0
     # via pytest
 click==8.0.1
     # via pip-tools
+coverage==5.5
+    # via pytest-cov
 iniconfig==1.1.1
     # via pytest
 isort==5.9.3
@@ -35,11 +37,16 @@ pylint==2.10.2
 pyparsing==2.4.7
     # via packaging
 pytest==6.2.4
+    # via
+    #   -r requirements-dev.in
+    #   pytest-cov
+pytest-cov==2.12.1
     # via -r requirements-dev.in
 toml==0.10.2
     # via
     #   pylint
     #   pytest
+    #   pytest-cov
 tomli==1.2.1
     # via pep517
 wheel==0.37.0
