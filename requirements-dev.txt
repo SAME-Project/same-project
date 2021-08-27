@@ -9,7 +9,9 @@ astroid==2.7.2
 attrs==21.2.0
     # via pytest
 click==8.0.1
-    # via pip-tools
+    # via
+    #   -r requirements.in
+    #   pip-tools
 coverage==5.5
     # via pytest-cov
 iniconfig==1.1.1

@@ -45,6 +45,7 @@ jobs:
             --junitxml=artifacts/tests/results.xml \
             --cov=./cli \
             --cov=./sdk \
+            --cov-report=term \
             --cov-report=xml:artifacts/tests/coverage.xml \
             --cov-report=html:artifacts/tests/coverage.html \
             | tee artifacts/tests/output.txt
