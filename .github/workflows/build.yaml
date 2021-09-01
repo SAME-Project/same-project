@@ -37,7 +37,7 @@ jobs:
           exit 1
       - name: Lint
         run: |
-          pylint cli sdk test
+          flake8 cli sdk test
       - name: Test
         run: |
           mkdir -p artifacts/tests 
