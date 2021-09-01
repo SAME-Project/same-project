@@ -7,6 +7,7 @@ authors = ["David Aronchick <aronchick@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 click = "^8.0.1"
+flake8 = "^3.9.2"
 
 [tool.poetry.dev-dependencies]
 pip-tools = "^6.2.0"
