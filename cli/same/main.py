@@ -1,4 +1,5 @@
 import click
+from .program import commands as program_group
 
 
 @click.group()
@@ -9,11 +10,6 @@ def main():
 @main.group()
 def program():
     """Work with a SAME program"""
-
-
-@program.command("compile")
-def program_compile():
-    """Compile a SAME program without running"""
 
 
 @program.command("run")

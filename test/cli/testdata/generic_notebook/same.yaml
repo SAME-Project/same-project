@@ -1,0 +1,21 @@
+apiVersion: projectsame.io/v1alpha1
+metadata:
+  name: SampleComplicatedNotebook
+  version: 0.0.53
+pipeline:
+  name: "Sample Complicated Notebook"
+  package: sample_notebook.ipynb
+run:
+  name: "Sample Complicated Notebook - Run"
+  parameters:
+    sample_parameter: 0.841
+    sample_complicated_parameter:
+      field_int: 44
+      field_string: "Various Values"
+      field_dict:
+        sub_field_1: 1
+        sub_field_2: 2
+      field_list:
+        - "first"
+        - "second"
+        - "third"

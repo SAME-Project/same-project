@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from cli.same.main import program_compile
+from cli.same.program.commands import program_compile
 
 
 def test_compile():
