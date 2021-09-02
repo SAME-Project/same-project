@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from johnnydep.lib import JohnnyDist
+import importlib
 
 
 def import_packages(packages_to_import, python_executable=None):
@@ -59,7 +60,6 @@ def import_packages(packages_to_import, python_executable=None):
             else:
                 new_packages[package_name] = installed_package_dist.version_latest
 
-    already_installed_string = ""
     already_installed_list = []
 
     for package_name, package_version in already_installed_packages.items():
@@ -68,25 +68,32 @@ def import_packages(packages_to_import, python_executable=None):
         else:
             already_installed_list.append(f"{package_name}")
 
-    already_installed_string = ", ".join(already_installed_list)
+    print(
+        "Packages skipped because they are already installed: %v"
+        , ", ".join(already_installed_list)
+    )
 
-    if already_installed_string != "":
-        print(
-            f"Packages skipped because they are already installed: {already_installed_string}"
-        )
-
-    new_packages_string = ""
+    new_packages_list = []
     for package_name, package_version in new_packages.items():
-        new_packages_list = []
+        new_package_string = ""
         if package_version != "":
-            new_packages_list.append(f"{package_name}=={package_version}")
+            new_package_string = f"{package_name}=={package_version}"
         else:
-            new_packages_list.append(f"{package_name}")
+            new_package_string = f"{package_name}"
+        _install_package(python_executable, new_package_string)
+        new_packages_list.append(new_package_string)
 
-    new_packages_string = ", ".join(new_packages_list)
+    if len(new_packages_list) > 0:
+        print("Packages installed: %v", ", ".join(new_packages_list))
 
-    if new_packages_string != "":
-        print(f"Packages installed: {new_packages_string}")
+    for package in already_installed_list + new_packages_list:
+        package_name = ""
+        try:
+            package_name, package_version = package.split("==")
+        except ValueError:
+            # not enough values
+            package_name, package_version = package, ""
+        importlib.import_module(package_name)
 
 
 def _install_package(python_executable, package):

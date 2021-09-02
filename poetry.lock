@@ -2,7 +2,7 @@
 name = "anytree"
 version = "2.8.0"
 description = "Powerful and Lightweight Python Tree Data Structure.."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -25,7 +25,7 @@ python-versions = "*"
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -33,7 +33,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "attrs"
 version = "21.2.0"
 description = "Classes Without Boilerplate"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -55,7 +55,7 @@ python-versions = "*"
 name = "backports.entry-points-selectable"
 version = "1.1.0"
 description = "Compatibility shim providing selectable entry points for older implementations"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7"
 
@@ -94,7 +94,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 name = "cachetools"
 version = "4.2.2"
 description = "Extensible memoizing collections and decorators"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "~=3.5"
 
@@ -121,7 +121,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "contextlib2"
 version = "21.6.0"
 description = "Backports and enhancements for the contextlib module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -156,7 +156,7 @@ python-versions = "*"
 name = "execnet"
 version = "1.9.0"
 description = "execnet: rapid multi-Python deployment"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -167,7 +167,7 @@ testing = ["pre-commit"]
 name = "filelock"
 version = "3.0.12"
 description = "A platform independent file lock."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -188,7 +188,7 @@ pyflakes = ">=2.3.0,<2.4.0"
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -243,7 +243,7 @@ testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
 name = "johnnydep"
 version = "1.8"
 description = "Display dependency tree of Python distribution"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -283,7 +283,7 @@ python-versions = "*"
 name = "mock"
 version = "4.0.3"
 description = "Rolling backport of unittest.mock for all Pythons"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -304,7 +304,7 @@ python-versions = "*"
 name = "oyaml"
 version = "1.0"
 description = "Ordered YAML: drop-in replacement for PyYAML which preserves dict ordering"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -338,7 +338,7 @@ testing = ["docopt", "pytest (<6.0.0)"]
 name = "path"
 version = "16.2.0"
 description = "A module wrapper for os.path"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -350,7 +350,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 name = "path.py"
 version = "12.5.0"
 description = "A module wrapper for os.path"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -419,7 +419,7 @@ testing = ["pytest", "pytest-rerunfailures", "pytest-xdist"]
 name = "pkginfo"
 version = "1.7.1"
 description = "Query metadatdata from sdists / bdists / installed packages."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -430,7 +430,7 @@ testing = ["nose", "coverage"]
 name = "platformdirs"
 version = "2.3.0"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -442,7 +442,7 @@ test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock 
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -473,7 +473,7 @@ python-versions = "*"
 name = "py"
 version = "1.10.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -513,7 +513,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "pytest"
 version = "6.2.5"
 description = "pytest: simple powerful testing with Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -550,7 +550,7 @@ testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtuale
 name = "pytest-fixture-config"
 version = "1.7.0"
 description = "Fixture configuration utils for py.test"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -564,7 +564,7 @@ tests = ["six"]
 name = "pytest-shutil"
 version = "1.7.0"
 description = "A goodie-bag of unix shell and environment tools for py.test"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -584,7 +584,7 @@ tests = ["pytest"]
 name = "pytest-virtualenv"
 version = "1.7.0"
 description = "Virtualenv fixture for py.test"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -601,7 +601,7 @@ tests = ["mock"]
 name = "pyyaml"
 version = "5.4.1"
 description = "YAML parser and emitter for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
@@ -625,7 +625,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "structlog"
 version = "21.1.0"
 description = "Structured Logging for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -638,7 +638,7 @@ tests = ["coverage", "freezegun (>=0.2.8)", "pretend", "pytest-asyncio", "pytest
 name = "tabulate"
 version = "0.8.9"
 description = "Pretty-print tabular data"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -649,7 +649,7 @@ widechars = ["wcwidth"]
 name = "termcolor"
 version = "1.1.0"
 description = "ANSII Color formatting for output in terminal."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -692,7 +692,7 @@ python-versions = "*"
 name = "virtualenv"
 version = "20.7.2"
 description = "Virtual Python Environment builder"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
@@ -719,14 +719,14 @@ python-versions = "*"
 name = "wimpy"
 version = "0.6"
 description = "Anti-copy-pasta"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "724fe99a7911e93e9dde2b81152e657f13d61617506c698355f321bcd61cd7e8"
+content-hash = "3fe9589f470bfa58b75723127aec79c8545d54e12545152c2b4fbd7faf736f49"
 
 [metadata.files]
 anytree = [
