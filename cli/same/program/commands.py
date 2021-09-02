@@ -1,7 +1,9 @@
 from email.policy import default
 from pydoc import describe
+from unicodedata import name
 import click
-from ruamel.yaml import YAML  # Chose ruamel over pyyaml due to default yaml 1.2 support
+from .compile import notebook_processing as nbproc
+from .. import helpers
 
 
 @click.group()
@@ -37,8 +39,9 @@ def compile(same_file, persist_temp_files, target):
     """Compile a SAME program without running"""
     click.echo(f"File is: {same_file}")
 
-    yaml = YAML(typ="safe")
-    same_config = yaml.load(same_file)  # noqa: F841
+    same_config = helpers.load_same_config_file(same_file)
+
+    notebook_path = nbproc.get_pipeline_path(same_config)  # noqa: F841
 
     # compileProgramCmd.Flags().String("image-pull-secret-server", "", "Image pull server for any private repos (only one server currently supported for all private repos)")
     # compileProgramCmd.Flags().String("image-pull-secret-username", "", "Image pull username for any private repos (only one username currently supported for all private repos)")
