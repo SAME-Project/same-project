@@ -8,6 +8,7 @@ authors = ["David Aronchick <aronchick@gmail.com>"]
 python = "^3.9"
 click = "^8.0.1"
 pytest-virtualenv = "^1.7.0"
+"ruamel.yaml" = "^0.17.16"
 
 [tool.poetry.dev-dependencies]
 pip-tools = "^6.2.0"
@@ -19,6 +20,9 @@ ipython = "^7.27.0"
 mock = "^4.0.3"
 pytest-virtualenv = "^1.7.0"
 johnnydep = "^1.8"
+
+[tool.black]
+line-length = 119
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
