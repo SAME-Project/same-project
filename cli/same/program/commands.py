@@ -1,9 +1,10 @@
 from email.policy import default
+from io import BufferedReader
 from pydoc import describe
 from unicodedata import name
 import click
-from .compile import notebook_processing as nbproc
-from .. import helpers
+from cli.same.program.compile import notebook_processing as nbproc
+from cli.same.helpers import load_same_config_file
 
 
 @click.group()
@@ -35,13 +36,13 @@ def program():
     "--target",
     type=click.Choice(["kubeflow", "aml"]),
 )
-def compile(same_file, persist_temp_files, target):
+def compile(same_file: BufferedReader, persist_temp_files, target):
     """Compile a SAME program without running"""
-    click.echo(f"File is: {same_file}")
+    click.echo(f"File is: {same_file.name}")
 
-    same_config = helpers.load_same_config_file(same_file)
+    same_config = load_same_config_file(same_file)
 
-    notebook_path = nbproc.get_pipeline_path(same_config)  # noqa: F841
+    notebook_path = nbproc.get_pipeline_path(same_file.name, same_config)  # noqa: F841
 
     # compileProgramCmd.Flags().String("image-pull-secret-server", "", "Image pull server for any private repos (only one server currently supported for all private repos)")
     # compileProgramCmd.Flags().String("image-pull-secret-username", "", "Image pull username for any private repos (only one username currently supported for all private repos)")
