@@ -13,11 +13,6 @@ def program():
     """Work with a SAME program"""
 
 
-@program.command("run")
-def program_run():
-    """Run a SAME program"""
-
-
 main.add_command(program_group.program)
 main.add_command(version.version)
 
