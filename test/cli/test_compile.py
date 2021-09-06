@@ -5,9 +5,16 @@ import cli.same.helpers as helpers
 from cli.same.program.commands import compile
 from cli.same.program.compile import notebook_processing
 import logging
-from io import BufferedReader
+from test.cli.testdata.fake_notebooks_in_python import py_zero_steps, py_zero_steps_with_params, py_one_step, py_one_step_with_cache
+from contextlib import nullcontext as does_not_raise
 
 same_config_file_path = "test/cli/testdata/generic_notebook/same.yaml"
+test_converted_notebooks = [
+    ("Zero Step Notebook", py_zero_steps, 1),
+    ("Zero Step Notebook With Params", py_zero_steps_with_params, 1),
+    ("One Step Notebook", py_one_step, 3),
+    ("One Step Notebook With Params", py_one_step_with_cache, 4),
+]
 
 
 @pytest.fixture
@@ -53,3 +60,98 @@ def test_read_notebook_as_string(caplog, same_config):
         assert caplog.text == ""
 
     assert "jupytext:\n#     text_representation:\n#       extension: .py\n#       format_name: percent" in notebook_as_py
+
+
+@pytest.mark.parametrize("test_name, notebook_text, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
+def test_parse_notebooks(test_name, notebook_text, expected_steps):
+    foundSteps = []
+    with does_not_raise() as e:
+        foundSteps = notebook_processing.find_all_steps(notebook_text)
+
+    assert len(foundSteps) == expected_steps, f"Expected: {expected_steps} steps. Actual steps: {len(foundSteps)}"
+    assert str(e) is None, f"Unexpected error: {str(e)}"
+
+    # codeBlocks, err := c.CombineCodeSlicesToSteps(foundSteps)
+    # assert.Equal(T, len(codeBlocks), expectedNumberCombined, "%v did not result in %v code slices. Actual code slices: %v", testStringName, expectedNumberCombined, len(codeBlocks))
+    # assert.NoError(T, err, "%v resulted in an error building code blocks: %v", testStringName, err)
+    # assert False
+
+
+# func (suite *ProgramCompileSuite) Test_ParseOneStep() {
+# 	testStep(suite.T(), 4, 2, ONE_STEP, "ONE_STEP")
+# }
+
+# func (suite *ProgramCompileSuite) Test_ParseOneStepWithCache() {
+# 	testStep(suite.T(), 4, 2, ONE_STEP_WITH_CACHE, "ONE_STEP_WITH_CACHE")
+# }
+
+# func (suite *ProgramCompileSuite) Test_ParseTwoSteps() {
+# 	testStep(suite.T(), 6, 3, TWO_STEPS, "TWO_STEPS")
+# }
+
+# func (suite *ProgramCompileSuite) Test_ParseTwoStepsCombine() {
+# 	testStep(suite.T(), 8, 3, TWO_STEPS_COMBINE, "TWO_STEPS_COMBINE")
+# }
+
+# func (suite *ProgramCompileSuite) Test_ParseTwoStepsCombineNoParams() {
+# 	testStep(suite.T(), 6, 3, TWO_STEPS_COMBINE_NO_PARAMS, "TWO_STEPS_COMBINE_NO_PARAMS")
+# }
+
+# func (suite *ProgramCompileSuite) Test_SettingCacheValue_NoCache() {
+# 	os.Setenv("TEST_PASS", "1")
+# 	c := utils.GetCompileFunctions()
+
+# 	foundSteps, _ := c.FindAllSteps(ONE_STEP)
+# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
+# 	cb := codeBlocks["same_step_1"]
+# 	assert.Equal(suite.T(), cb.CacheValue, "P0D", "Expected to set a missing cache value to P0D. Actual: %v", cb.CacheValue)
+
+# }
+
+# func (suite *ProgramCompileSuite) Test_SettingCacheValue_WithCache() {
+# 	os.Setenv("TEST_PASS", "1")
+# 	c := utils.GetCompileFunctions()
+
+# 	foundSteps, _ := c.FindAllSteps(ONE_STEP_WITH_CACHE)
+# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
+# 	cb := codeBlocks["same_step_1"]
+# 	assert.Equal(suite.T(), cb.CacheValue, "P20D", "Expected to set a missing cache value to P20D. Actual: %v", cb.CacheValue)
+
+# }
+
+# func (suite *ProgramCompileSuite) Test_ImportsWorkingProperly() {
+# 	os.Setenv("TEST_PASS", "1")
+# 	c := utils.GetCompileFunctions()
+
+# 	foundSteps, _ := c.FindAllSteps(NOTEBOOKS_WITH_IMPORT)
+# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
+# 	packagesToMerge, _ := c.WriteStepFiles("kubeflow", suite.tmpDirectory, codeBlocks)
+# 	containsKey := ""
+# 	for key := range packagesToMerge["same_step_0"] {
+# 		containsKey += key
+# 	}
+# 	assert.Contains(suite.T(), containsKey, "tensorflow", "Expected to contain 'tensorflow'. Actual: %v", packagesToMerge["same_step_0"])
+# }
+
+# func (suite *ProgramCompileSuite) Test_FullNotebookExperience() {
+# 	os.Setenv("TEST_PASS", "1")
+# 	c := utils.GetCompileFunctions()
+# 	jupytextExecutable, err := exec.LookPath("jupytext")
+# 	if err != nil {
+# 		assert.Fail(suite.T(), "Jupytext not installed")
+# 	}
+
+# 	notebookPath := "../testdata/notebook/sample_notebook.ipynb"
+# 	if _, exists := os.Stat(notebookPath); exists != nil {
+# 		assert.Fail(suite.T(), "Notebook not found at: %v", notebookPath)
+# 	}
+# 	convertedText, _ := c.ConvertNotebook(jupytextExecutable, notebookPath)
+# 	foundSteps, _ := c.FindAllSteps(convertedText)
+# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
+# 	packagesToMerge, _ := c.WriteStepFiles("kubeflow", suite.tmpDirectory, codeBlocks)
+# 	containsKey := ""
+# 	for key := range packagesToMerge["same_step_0"] {
+# 		containsKey += key
+# 	}
+# 	assert.Contains(suite.T(), containsKey, "tensorflow", "Expected to contain 'tensorflow'. Actual: %v", packagesToMerge["same_step_0"])
+# }
