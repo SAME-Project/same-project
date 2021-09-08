@@ -6,7 +6,6 @@ from cli.same.program.commands import compile
 from cli.same.program.compile import notebook_processing
 import logging
 from test.cli.testdata.fake_notebooks_in_python import py_zero_steps, py_zero_steps_with_params, py_one_step, py_one_step_with_cache
-from contextlib import nullcontext as does_not_raise
 
 same_config_file_path = "test/cli/testdata/generic_notebook/same.yaml"
 # Notebook Name, Notebook Text, Found Slices, Resulting Steps
@@ -15,6 +14,34 @@ test_converted_notebooks = [
     ("Zero Step Notebook With Params", py_zero_steps_with_params, 0, 1),
     ("One Step Notebook", py_one_step, 2, 2),
     ("One Step Notebook With Params", py_one_step_with_cache, 3, 4),
+]
+
+# Permutations of notebooks
+# | Code | Tag | Code | Tag | Code |
+# |------|-----|------|-----|------|
+# | X    | 0   | 0    | 0   | 0    |
+# | X    | X   | 0    | 0   | 0    |
+# | X    | X   | X    | 0   | 0    |
+# | 0    | X   | 0    | 0   | 0    |
+# | 0    | X   | X    | 0   | 0    |
+# | 0    | X   | X    | X   | 0    |
+# | 0    | X   | X    | X   | X    |
+# | 0    | X   | 0    | X   | 0    |
+# | 0    | X   | 0    | X   | X    |
+# | X    | X   | X    | X   | X    |
+# Test Name, Notebook Path, number of steps, number of total cells
+test_notebooks = [
+    ("Code", "test/cli/testdata/sample_notebooks/code.ipynb", 1, 3),
+    ("Code Tag", "test/cli/testdata/sample_notebooks/code_tag.ipynb", 2, 2),
+    ("Code Tag Code", "test/cli/testdata/sample_notebooks/code_tag_code.ipynb", 2, 2),
+    ("Tag", "test/cli/testdata/sample_notebooks/tag.ipynb", 2, 2),
+    ("Tag Code", "test/cli/testdata/sample_notebooks/tag_code.ipynb", 1, 1),
+    ("Tag Code Tag", "test/cli/testdata/sample_notebooks/tag_code_tag.ipynb", 2, 2),
+    ("Tag Code Tag Code", "test/cli/testdata/sample_notebooks/tag_code_tag_code.ipynb", 2, 2),
+    ("Tag Tag", "test/cli/testdata/sample_notebooks/tag_tag.ipynb", 2, 2),
+    ("Tag Tag Code", "test/cli/testdata/sample_notebooks/tag_tag_code.ipynb", 2, 2),
+    ("Code Tag Code Tag Code", "test/cli/testdata/sample_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
+    ("Code Code Tag Code Code Tag Code Code", "test/cli/testdata/sample_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
 ]
 
 
@@ -63,25 +90,37 @@ def test_read_notebook_as_string(caplog, same_config):
     assert "jupytext:\n#     text_representation:\n#       extension: .py\n#       format_name: percent" in notebook_as_py
 
 
-@pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
-def test_find_steps_in_notebook(test_name, notebook_text, expected_slices, expected_steps):
-    found_steps = notebook_processing.find_all_steps(notebook_text)
-    assert len(found_steps) == expected_steps, f"{test_name} did not match - expected: {expected_steps}, actual: {len(found_steps)}"
+@pytest.mark.parametrize("test_name, notebook_path, number_of_steps, number_of_total_cells", test_notebooks, ids=[p[0] for p in test_notebooks])
+def test_parse_notebook(test_name, notebook_path, number_of_steps, number_of_total_cells):
+    notebook_dict = notebook_processing.read_notebook(notebook_path)
+    assert notebook_dict.get("cells", None) is not None
+    assert (
+        len(notebook_dict["cells"]) == number_of_total_cells
+    ), f"{test_name} did not get number of expected cells - expected: {number_of_total_cells}, actual: {len(notebook_dict['cells'])}"
+
+    steps = notebook_processing.get_steps(notebook_dict)
+    assert len(steps) == number_of_steps, f"{test_name} did not get number of expected steps - expected: {number_of_steps}, actual: {len(steps)}"
 
 
-@pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
-def test_parse_notebooks(test_name, notebook_text, expected_slices, expected_steps):
-    foundSteps = []
-    with does_not_raise() as e:
-        foundSteps = notebook_processing.find_all_steps(notebook_text)
+# @pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
+# def test_find_steps_in_notebook(test_name, notebook_text, expected_slices, expected_steps):
+#     found_steps = notebook_processing.find_all_steps(notebook_text)
+#     assert len(found_steps) == expected_steps, f"{test_name} did not match - expected: {expected_steps}, actual: {len(found_steps)}"
 
-    assert len(foundSteps) == expected_steps, f"Expected: {expected_steps} steps. Actual steps: {len(foundSteps)}"
-    assert e is None, f"Unexpected error: {str(e)}"
 
-    # codeBlocks, err := c.CombineCodeSlicesToSteps(foundSteps)
-    # assert.Equal(T, len(codeBlocks), expectedNumberCombined, "%v did not result in %v code slices. Actual code slices: %v", testStringName, expectedNumberCombined, len(codeBlocks))
-    # assert.NoError(T, err, "%v resulted in an error building code blocks: %v", testStringName, err)
-    # assert False
+# @pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
+# def test_parse_notebooks(test_name, notebook_text, expected_slices, expected_steps):
+#     foundSteps = []
+#     with does_not_raise() as e:
+#         foundSteps = notebook_processing.find_all_steps(notebook_text)
+
+#     assert len(foundSteps) == expected_steps, f"Expected: {expected_steps} steps. Actual steps: {len(foundSteps)}"
+#     assert e is None, f"Unexpected error: {str(e)}"
+
+#     # codeBlocks, err := c.CombineCodeSlicesToSteps(foundSteps)
+#     # assert.Equal(T, len(codeBlocks), expectedNumberCombined, "%v did not result in %v code slices. Actual code slices: %v", testStringName, expectedNumberCombined, len(codeBlocks))
+#     # assert.NoError(T, err, "%v resulted in an error building code blocks: %v", testStringName, err)
+#     # assert False
 
 
 # func (suite *ProgramCompileSuite) Test_ParseOneStep() {

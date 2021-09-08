@@ -11,35 +11,69 @@ def get_pipeline_path(same_config_path, same_config_file_contents) -> str:
     return str(Path.joinpath(Path(same_config_path), same_config_file_contents["pipeline"]["package"]))
 
 
-def convert_notebook_to_text(notebook_path) -> str:
+def read_notebook(notebook_path) -> dict:
     logging.info(f"Using notebook from here: {notebook_path}")
-    notebook_raw_text = ""
     try:
         notebook_file_handle = Path(notebook_path)
-        notebook_raw_text = notebook_file_handle.read_text(encoding="ascii")
+        ntbk_dict = jupytext.read(str(notebook_file_handle))
     except FileNotFoundError:
         logging.fatal(f"No notebook found at {notebook_path}")
         exit(1)
 
-    ntbk_object = jupytext.reads(notebook_raw_text)
-    return jupytext.writes(ntbk_object, fmt="py:percent")
+    return ntbk_dict
 
 
-def get_tags_from_tag_line(tag_line: str) -> str:
-    """Parse each tag line to see if there is a step identifier in it"""
+def get_steps(notebook_dict: dict) -> dict:
 
-    found_tags = re.findall(r"tags=\[([^\]]*)\]", tag_line)
-    logging.debug(" - Tags found: %v\n", len(found_tags))
+    i = 0
+    return_steps = {}
 
-    returned_tags = []
-    for tag_line in found_tags:
-        all_tags_in_line = str.split(tag_line, ",")
-        for tag in all_tags_in_line:
-            # Clean space and quote from front and back
-            tag = tag.strip('" ')
-            returned_tags.append(tag)
+    # Start with a default step (if no step tags detected, everything will be added here)
+    this_step = Step()
+    this_step.index = 0
+    this_step.name = "same_step_000"
+    code_buffer = []
 
-    return returned_tags
+    for num, cell in enumerate(notebook_dict["cells"]):
+        if len(cell["metadata"]) > 0 and len(cell["metadata"]["tags"]) > 0:
+            for tag in cell["metadata"]["tags"]:
+                if tag.startswith("same_step_"):
+                    # Skip over this logic if it's the zeroth cell (cleaner way to do this? probably)
+                    if num > 0:
+                        # New step detected. First, we'll add the existing step to the return steps
+                        this_step.code = "\n".join(code_buffer)
+                        return_steps[this_step.name] = this_step
+
+                        # This will cause a bug later - we basically ignore whatever
+                        # people have set as the step number and just increment it. Further, we
+                        # also only support linear DAGs.
+                        # TODO: When we actually build a DAG parser, we should change
+                        # index to something more DAG meaningful.
+                        i += 1
+
+                        code_buffer = []
+                        this_step = Step()
+                        this_step.index = i
+
+                        # left padding numbering because it's prettier
+                        this_step.name = f"same_step_{i:03}"
+                elif str.startswith(tag, "cache="):
+                    this_step.cache_value = str.split(tag, "=")[1]
+                elif str.startswith(tag, "environment="):
+                    this_step.environment_name = str.split(tag, "=")[1]
+                else:
+                    this_step.tags.append(tag)
+
+        code_buffer.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
+
+    this_step.code = "\n".join(code_buffer)
+    return_steps[this_step.name] = this_step
+
+    return return_steps
+
+
+def get_tags_from_tag_line(all_tag_lines):
+    pass
 
 
 def parse_raw_slices_into_list(raw_slice: Slice, all_tags: list, code: str) -> Slice:
