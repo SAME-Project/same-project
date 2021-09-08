@@ -5,7 +5,6 @@ import cli.same.helpers as helpers
 from cli.same.program.commands import compile
 from cli.same.program.compile import notebook_processing
 import logging
-from test.cli.testdata.fake_notebooks_in_python import py_zero_steps, py_zero_steps_with_params, py_one_step, py_one_step_with_cache
 
 same_config_file_path = "test/cli/testdata/generic_notebook/same.yaml"
 
@@ -94,26 +93,6 @@ def test_parse_notebook(test_name, notebook_path, number_of_steps, number_of_tot
     steps = notebook_processing.get_steps(notebook_dict)
     assert len(steps) == number_of_steps, f"{test_name} did not get number of expected steps - expected: {number_of_steps}, actual: {len(steps)}"
 
-
-# func (suite *ProgramCompileSuite) Test_ParseOneStep() {
-# 	testStep(suite.T(), 4, 2, ONE_STEP, "ONE_STEP")
-# }
-
-# func (suite *ProgramCompileSuite) Test_ParseOneStepWithCache() {
-# 	testStep(suite.T(), 4, 2, ONE_STEP_WITH_CACHE, "ONE_STEP_WITH_CACHE")
-# }
-
-# func (suite *ProgramCompileSuite) Test_ParseTwoSteps() {
-# 	testStep(suite.T(), 6, 3, TWO_STEPS, "TWO_STEPS")
-# }
-
-# func (suite *ProgramCompileSuite) Test_ParseTwoStepsCombine() {
-# 	testStep(suite.T(), 8, 3, TWO_STEPS_COMBINE, "TWO_STEPS_COMBINE")
-# }
-
-# func (suite *ProgramCompileSuite) Test_ParseTwoStepsCombineNoParams() {
-# 	testStep(suite.T(), 6, 3, TWO_STEPS_COMBINE_NO_PARAMS, "TWO_STEPS_COMBINE_NO_PARAMS")
-# }
 
 # func (suite *ProgramCompileSuite) Test_SettingCacheValue_NoCache() {
 # 	os.Setenv("TEST_PASS", "1")
