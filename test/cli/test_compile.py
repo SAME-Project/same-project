@@ -8,13 +8,6 @@ import logging
 from test.cli.testdata.fake_notebooks_in_python import py_zero_steps, py_zero_steps_with_params, py_one_step, py_one_step_with_cache
 
 same_config_file_path = "test/cli/testdata/generic_notebook/same.yaml"
-# Notebook Name, Notebook Text, Found Slices, Resulting Steps
-test_converted_notebooks = [
-    ("Zero Step Notebook", py_zero_steps, 0, 1),
-    ("Zero Step Notebook With Params", py_zero_steps_with_params, 0, 1),
-    ("One Step Notebook", py_one_step, 2, 2),
-    ("One Step Notebook With Params", py_one_step_with_cache, 3, 4),
-]
 
 # Permutations of notebooks
 # | Code | Tag | Code | Tag | Code |
@@ -100,27 +93,6 @@ def test_parse_notebook(test_name, notebook_path, number_of_steps, number_of_tot
 
     steps = notebook_processing.get_steps(notebook_dict)
     assert len(steps) == number_of_steps, f"{test_name} did not get number of expected steps - expected: {number_of_steps}, actual: {len(steps)}"
-
-
-# @pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
-# def test_find_steps_in_notebook(test_name, notebook_text, expected_slices, expected_steps):
-#     found_steps = notebook_processing.find_all_steps(notebook_text)
-#     assert len(found_steps) == expected_steps, f"{test_name} did not match - expected: {expected_steps}, actual: {len(found_steps)}"
-
-
-# @pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
-# def test_parse_notebooks(test_name, notebook_text, expected_slices, expected_steps):
-#     foundSteps = []
-#     with does_not_raise() as e:
-#         foundSteps = notebook_processing.find_all_steps(notebook_text)
-
-#     assert len(foundSteps) == expected_steps, f"Expected: {expected_steps} steps. Actual steps: {len(foundSteps)}"
-#     assert e is None, f"Unexpected error: {str(e)}"
-
-#     # codeBlocks, err := c.CombineCodeSlicesToSteps(foundSteps)
-#     # assert.Equal(T, len(codeBlocks), expectedNumberCombined, "%v did not result in %v code slices. Actual code slices: %v", testStringName, expectedNumberCombined, len(codeBlocks))
-#     # assert.NoError(T, err, "%v resulted in an error building code blocks: %v", testStringName, err)
-#     # assert False
 
 
 # func (suite *ProgramCompileSuite) Test_ParseOneStep() {
