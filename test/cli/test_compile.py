@@ -9,11 +9,12 @@ from test.cli.testdata.fake_notebooks_in_python import py_zero_steps, py_zero_st
 from contextlib import nullcontext as does_not_raise
 
 same_config_file_path = "test/cli/testdata/generic_notebook/same.yaml"
+# Notebook Name, Notebook Text, Found Slices, Resulting Steps
 test_converted_notebooks = [
-    ("Zero Step Notebook", py_zero_steps, 1),
-    ("Zero Step Notebook With Params", py_zero_steps_with_params, 1),
-    ("One Step Notebook", py_one_step, 3),
-    ("One Step Notebook With Params", py_one_step_with_cache, 4),
+    ("Zero Step Notebook", py_zero_steps, 0, 1),
+    ("Zero Step Notebook With Params", py_zero_steps_with_params, 0, 1),
+    ("One Step Notebook", py_one_step, 2, 2),
+    ("One Step Notebook With Params", py_one_step_with_cache, 3, 4),
 ]
 
 
@@ -62,14 +63,20 @@ def test_read_notebook_as_string(caplog, same_config):
     assert "jupytext:\n#     text_representation:\n#       extension: .py\n#       format_name: percent" in notebook_as_py
 
 
-@pytest.mark.parametrize("test_name, notebook_text, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
-def test_parse_notebooks(test_name, notebook_text, expected_steps):
+@pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
+def test_find_steps_in_notebook(test_name, notebook_text, expected_slices, expected_steps):
+    found_steps = notebook_processing.find_all_steps(notebook_text)
+    assert len(found_steps) == expected_steps, f"{test_name} did not match - expected: {expected_steps}, actual: {len(found_steps)}"
+
+
+@pytest.mark.parametrize("test_name, notebook_text, expected_slices, expected_steps", test_converted_notebooks, ids=[p[0] for p in test_converted_notebooks])
+def test_parse_notebooks(test_name, notebook_text, expected_slices, expected_steps):
     foundSteps = []
     with does_not_raise() as e:
         foundSteps = notebook_processing.find_all_steps(notebook_text)
 
     assert len(foundSteps) == expected_steps, f"Expected: {expected_steps} steps. Actual steps: {len(foundSteps)}"
-    assert str(e) is None, f"Unexpected error: {str(e)}"
+    assert e is None, f"Unexpected error: {str(e)}"
 
     # codeBlocks, err := c.CombineCodeSlicesToSteps(foundSteps)
     # assert.Equal(T, len(codeBlocks), expectedNumberCombined, "%v did not result in %v code slices. Actual code slices: %v", testStringName, expectedNumberCombined, len(codeBlocks))

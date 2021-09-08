@@ -10,6 +10,7 @@ click = "^8.0.1"
 pytest-virtualenv = "^1.7.0"
 "ruamel.yaml" = "^0.17.16"
 jupytext = "^1.11.5"
+jupyter = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 pip-tools = "^6.2.0"

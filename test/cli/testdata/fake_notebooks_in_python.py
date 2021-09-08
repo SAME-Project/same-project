@@ -1,3 +1,17 @@
+# | Code | Tag | Code | Tag |
+# |------|-----|------|-----|
+# | X    | 0   | 0    | 0   |
+# | X    | X   | 0    | 0   |
+# | X    | X   | X    | 0   |
+# | 0    | X   | 0    | 0   |
+# | 0    | X   | X    | 0   |
+# | 0    | X   | X    | X   |
+# | 0    | X   | 0    | X   |
+
+# TODO: Investigate Python parser for looking for trivia
+# TODO: Investigate Jupytext intermediate functions
+
+
 py_zero_steps = """
 # ---
 

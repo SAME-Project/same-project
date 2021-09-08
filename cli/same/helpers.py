@@ -1,6 +1,5 @@
 from io import BufferedReader
 from ruamel.yaml import YAML  # Chose ruamel over pyyaml due to default yaml 1.2 support
-from pathlib import Path
 
 
 def load_same_config_file(file_reader: BufferedReader):
