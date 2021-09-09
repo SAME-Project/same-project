@@ -1,7 +1,4 @@
-from email.policy import default
 from io import BufferedReader
-from pydoc import describe
-from unicodedata import name
 import click
 from cli.same.program.compile import notebook_processing as nbproc
 from cli.same.helpers import load_same_config_file
