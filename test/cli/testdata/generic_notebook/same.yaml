@@ -1,7 +1,20 @@
-apiVersion: projectsame.io/v1alpha1
+apiVersion: sameproject.io/v1alpha1
 metadata:
   name: SampleComplicatedNotebook
   version: 0.0.53
+environments:
+  default:
+    image_tag: library/python:3.9-slim-buster
+    append_current_environment: true
+    packages:
+      - requests
+      - delorean==1.0.0
+  python37:
+    image_tag: library/python:3.7-slim-buster
+    private_registry: false
+  private_environment:
+    image_tag: sameprivateregistry.azurecr.io/sample-private-org/sample-private-image:latest
+    private_registry: true
 pipeline:
   name: "Sample Complicated Notebook"
   package: sample_notebook.ipynb
