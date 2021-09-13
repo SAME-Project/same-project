@@ -7,7 +7,6 @@ authors = ["David Aronchick <aronchick@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 click = "^8.0.1"
-pytest-virtualenv = "^1.7.0"
 "ruamel.yaml" = "^0.17.16"
 jupytext = "^1.11.5"
 jupyter = "^1.0.0"

@@ -1,18 +1,14 @@
 # pylint: disable=protected-access,missing-function-docstring, missing-class-docstring
 # pylint: disable=missing-module-docstring, missing-class-docstring
 # -*- coding: utf-8 -*-
-import unittest
-from pathlib import Path
-import mock
 import sdk.same as same
 import subprocess
 import sys
 
 import pytest
 import pytest_virtualenv as venv
-import shutil
 
-from distutils.dir_util import copy_tree
+import importlib
 
 
 @pytest.fixture
@@ -28,31 +24,31 @@ def test_install_package(init_env):
     assert reqs.get(six_package_name) is None, "Package 'six' is already installed."
     same.import_packages([six_package_name], str(init_env.python))
     reqs = init_env.installed_packages()
-    assert (reqs.get(six_package_name) is not None) or (
-        six_package_name in sys.modules
-    ), "Package 'six' was not installed."
+    assert (reqs.get(six_package_name) is not None) or (six_package_name in sys.modules), "Package 'six' was not installed."
 
 
 def test_install_two_packages_output(init_env):
     reqs = init_env.installed_packages()
 
+    # Need to capture site packages (_should_ be for testing only)
+    venv_site_packages = eval(
+        subprocess.check_output(
+            [str(init_env.python), "-c", "import site; print(site.getsitepackages());"],
+        )
+    )
+
+    sys.path.append(venv_site_packages[0])
+    importlib.invalidate_caches()
+
     # Testing two different types of modules - one that's a system module (regex) and one that needs installing from pypi (minimal)
     urllib3_package_name = "urllib3"
     regex_package_name = "regex"
-    assert (reqs.get(urllib3_package_name) is None) and (
-        urllib3_package_name not in sys.modules
-    ), "Package 'urllib3' is already installed."
+    assert (reqs.get(urllib3_package_name) is None) and (urllib3_package_name not in sys.modules), "Package 'urllib3' is already installed."
 
     assert reqs.get(regex_package_name) is None, "Package 'regex' is already installed."
 
-    same.import_packages(
-        [urllib3_package_name, regex_package_name], str(init_env.python)
-    )
+    same.import_packages([urllib3_package_name, regex_package_name], str(init_env.python))
 
     reqs = init_env.installed_packages()
-    assert (reqs.get(urllib3_package_name) is not None) or (
-        urllib3_package_name in sys.modules
-    ), "Package 'urllib3' not installed"
-    assert (reqs.get(regex_package_name) is not None) or (
-        regex_package_name in sys.modules
-    ), "Package 'regex' not installed"
+    assert (reqs.get(urllib3_package_name) is not None) or (urllib3_package_name in sys.modules), "Package 'urllib3' not installed"
+    assert (reqs.get(regex_package_name) is not None) or (regex_package_name in sys.modules), "Package 'regex' not installed"

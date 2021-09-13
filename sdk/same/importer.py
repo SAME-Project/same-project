@@ -19,12 +19,11 @@ def import_packages(packages_to_import, python_executable=None):
         capture_output=True,
     )
     installed_packages_blob = pip_list_proc.stdout
+
     all_installed_packages = {}
     for installed_package in installed_packages_blob.split():
         try:
-            package_name, package_version = installed_package.decode("ascii").split(
-                "=="
-            )
+            package_name, package_version = installed_package.decode("ascii").split("==")
         except ValueError:
             # not enough values
             package_name, package_version = installed_package.decode("ascii"), None
@@ -50,13 +49,8 @@ def import_packages(packages_to_import, python_executable=None):
 
         installed_package_dist = JohnnyDist(package_name)
         if package_version == "":
-            if (
-                installed_package_dist.version_latest
-                == installed_package_dist.version_installed
-            ):
-                already_installed_packages[
-                    package_name
-                ] = installed_package_dist.version_latest
+            if installed_package_dist.version_latest == installed_package_dist.version_installed:
+                already_installed_packages[package_name] = installed_package_dist.version_latest
             else:
                 new_packages[package_name] = installed_package_dist.version_latest
 
@@ -68,10 +62,7 @@ def import_packages(packages_to_import, python_executable=None):
         else:
             already_installed_list.append(f"{package_name}")
 
-    print(
-        "Packages skipped because they are already installed: %v"
-        , ", ".join(already_installed_list)
-    )
+    print("Packages skipped because they are already installed: %v", ", ".join(already_installed_list))
 
     new_packages_list = []
     for package_name, package_version in new_packages.items():
@@ -85,6 +76,8 @@ def import_packages(packages_to_import, python_executable=None):
 
     if len(new_packages_list) > 0:
         print("Packages installed: %v", ", ".join(new_packages_list))
+
+    # Need to add virtual env manually because it doesn't play well with importlib - https://stackoverflow.com/questions/36103169/how-to-import-packages-in-virtualenv-in-python-shell
 
     for package in already_installed_list + new_packages_list:
         package_name = ""
