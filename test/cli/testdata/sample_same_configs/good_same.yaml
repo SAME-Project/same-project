@@ -5,7 +5,6 @@ metadata:
 base_images:
   default:
     image_tag: library/python:3.9-slim-buster
-    append_current_environment: true
     packages:
       - requests
       - delorean==1.0.0

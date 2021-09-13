@@ -1,4 +1,4 @@
-from cerberus import Validator, DocumentError
+from cerberus import Validator
 
 
 class Metadata:
@@ -16,13 +16,13 @@ class Metadata:
 
 
 class SAMEValidator(Validator):
-    def _check_with_must_have_default(self, environments_field_name, all_environments, error):
-        if all_environments.get(environments_field_name).get("default", None) is None:
-            return DocumentError(environments_field_name, "Environments does not contain a 'default' entry.")
+    def _validate_must_have_default(self, constraint, base_images_field_name, all_base_images):
+        if constraint and (all_base_images is None or all_base_images.get("default", None) is None):
+            self._error(base_images_field_name, "Base images does not contain a 'default' entry.")
 
 
 schema = {
-    "apiVersion": {"type": "string"},
+    "apiVersion": {"type": "string", "required": True},
     "metadata": {
         "type": "dict",
         "schema": {
@@ -31,6 +31,7 @@ schema = {
             "labels": {"type": "list"},
             "sha": {"type": "string"},
         },
+        "required": True,
     },
     "datasets": {
         "type": "dict",
@@ -56,9 +57,19 @@ schema = {
             },
         },
         "allow_unknown": True,
-        "check_with": "must_have_default",
+        "must have default": True,
     },
     "pipeline": {"type": "dict", "schema": {"name": {"type": "string", "required": True}, "package": {"type": "string", "required": True}}},
+    "run": {
+        "type": "dict",
+        "schema": {
+            "name": {"type": "string", "required": True},
+            "sha": {"type": "string", "required": True},
+            "parameters": {
+                "type": "dict",
+            },
+        },
+    },
 }
 
 
