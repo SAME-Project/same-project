@@ -89,9 +89,7 @@ def test_load_sample_same_configs(caplog, test_name, same_config_file_path, vali
 
 def test_e2e_load_same_object(caplog):
     with open(same_config_file_path, "rb") as f:
-        good_same_config_file_contents = helpers.load_same_config_file(f)
-
-    same_config_object = SAME_config(good_same_config_file_contents)
+        same_config_object = helpers.load_same_config_file(f)
 
     assert same_config_object.notebook.path == "sample_notebook.ipynb"
     assert same_config_object.metadata.name == "SampleComplicatedNotebook"
