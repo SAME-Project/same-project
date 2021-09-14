@@ -3,13 +3,13 @@ from box import Box
 
 
 class SAMEValidator(Validator):
-    def _validate_must_have_default(self, constraint, base_images_field_name, all_base_images):
+    def _validate_must_have_default(self, constraint, field_name, values_needing_default):
         """Test to ensure that a list of keys has at least one entry that matches 'default'
         The rule's arguments are validated against this schema:
         {'type': 'boolean'}
         """
-        if constraint and (all_base_images is None or all_base_images.get("default", None) is None):
-            self._error(base_images_field_name, "Base images does not contain a 'default' entry.")
+        if constraint and (values_needing_default is None or values_needing_default.get("default", None) is None):
+            self._error(field_name, f"{field_name} does not contain a 'default' entry.")
 
 
 schema = {

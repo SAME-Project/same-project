@@ -1,17 +1,17 @@
-from cli.same.same_config import schema, SAMEValidator, SAME_config
+from cli.same.same_config import schema, SAMEValidator
 from cerberus import SchemaError
 from cli.same import helpers
 import pytest
 from pathlib import Path
 from ruamel.yaml import YAML
 
-same_config_file_path = "test/cli/testdata/sample_same_configs/good_same.yaml"
+same_config_file_path = "test/testdata/sample_same_configs/good_same.yaml"
 
 # Test name, Same File Path, Valid, Num of Errors, Field, Error Type or Error Phrase
 sample_same_file_paths = [
-    ("Good SAME Config", "test/cli/testdata/sample_same_configs/good_same.yaml", True, 0, "", ""),
-    ("No API Version", "test/cli/testdata/sample_same_configs/no_apiVersion.yaml", False, 1, "apiVersion", "required"),
-    ("No Default Base Image", "test/cli/testdata/sample_same_configs/no_default_for_base_images.yaml", False, 1, "base_images", "'default' entry"),
+    ("Good SAME Config", "test/testdata/sample_same_configs/good_same.yaml", True, 0, "", ""),
+    ("No API Version", "test/testdata/sample_same_configs/no_apiVersion.yaml", False, 1, "apiVersion", "required"),
+    ("No Default Base Image", "test/testdata/sample_same_configs/no_default_for_base_images.yaml", False, 1, "base_images", "'default' entry"),
 ]
 
 
