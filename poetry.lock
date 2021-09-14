@@ -1045,6 +1045,22 @@ virtualenv = "*"
 tests = ["mock"]
 
 [[package]]
+name = "python-box"
+version = "5.4.1"
+description = "Advanced Python dictionaries with dot notation access"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+pyyaml = ["pyyaml"]
+all = ["ruamel.yaml", "toml", "msgpack"]
+msgpack = ["msgpack"]
+"ruamel.yaml" = ["ruamel.yaml"]
+toml = ["toml"]
+yaml = ["ruamel.yaml"]
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -1332,7 +1348,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7a0cd95181cb399a5f61ffd506296c1f0910a5538993ccc667b47855ecf8f224"
+content-hash = "3390cf91e7ff9994a2b54b475be083540013b87da57cc56ecea88cc652cc146f"
 
 [metadata.files]
 anytree = [
@@ -1835,6 +1851,10 @@ pytest-virtualenv = [
     {file = "pytest_virtualenv-1.7.0-py2.7.egg", hash = "sha256:d350c739956df963914729d14790bde1c6ba4fa9fcf2b78eb77151925f68c7a9"},
     {file = "pytest_virtualenv-1.7.0-py2.py3-none-any.whl", hash = "sha256:fee44d423701d6ab550b202aa8e45ccda77bfe8e72c4318a8f43e6af553ad502"},
     {file = "pytest_virtualenv-1.7.0-py3.6.egg", hash = "sha256:8113bc38845754849fc2411bf6ca9eb91d98685246b0c71c2fbd17e747ec0055"},
+]
+python-box = [
+    {file = "python-box-5.4.1.tar.gz", hash = "sha256:b68e0f8abc86f3deda751b3390f64df64a0989459de51ba4db949662a7b4d8ac"},
+    {file = "python_box-5.4.1-py3-none-any.whl", hash = "sha256:60ae9156de34cf92b899bd099580950df70a5b0813e67a3310a1cdd1976457fa"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},

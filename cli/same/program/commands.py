@@ -39,7 +39,7 @@ def compile(same_file: BufferedReader, persist_temp_files, target):
 
     same_config = load_same_config_file(same_file)
 
-    notebook_path = nbproc.get_pipeline_path(same_file.name, same_config)  # noqa: F841
+    notebook_path = nbproc.get_notebook_path(same_file.name, same_config)  # noqa: F841
 
     # compileProgramCmd.Flags().String("image-pull-secret-server", "", "Image pull server for any private repos (only one server currently supported for all private repos)")
     # compileProgramCmd.Flags().String("image-pull-secret-username", "", "Image pull username for any private repos (only one username currently supported for all private repos)")

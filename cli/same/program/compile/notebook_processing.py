@@ -11,9 +11,9 @@ import traceback
 REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (?:.*)$")]
 
 
-def get_pipeline_path(same_config_path, same_config_file_contents) -> str:
+def get_notebook_path(same_config_path, same_config_file_contents) -> str:
     """Returns absolute value of the pipeline path relative to current file execution"""
-    return str(Path.joinpath(Path(same_config_path), same_config_file_contents["pipeline"]["package"]))
+    return str(Path.joinpath(Path(same_config_path), same_config_file_contents["notebook"]["path"]))
 
 
 def read_notebook(notebook_path) -> dict:

@@ -65,8 +65,8 @@ def test_compile_verb():
     assert result.exit_code == 0
 
 
-def test_get_pipeline_path(same_config):
-    assert "sample_notebook.ipynb" in notebook_processing.get_pipeline_path(Path(same_config_file_path).parent, same_config)
+def test_get_notebook_path(same_config):
+    assert "sample_notebook.ipynb" in notebook_processing.get_notebook_path(Path(same_config_file_path).parent, same_config)
 
 
 def test_bad_notebook_path(caplog):

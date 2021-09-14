@@ -1,4 +1,4 @@
-from cli.same.same_config import schema, SAMEValidator
+from cli.same.same_config import schema, SAMEValidator, SAME_config
 from cerberus import SchemaError
 from cli.same import helpers
 import pytest
@@ -77,7 +77,7 @@ def test_load_sample_same_configs(caplog, test_name, same_config_file_path, vali
         same_config_file_contents = helpers.load_same_config_file(f)
     validated = v.validate(same_config_file_contents)
 
-    assert validated is valid, "Unable to validate same config"
+    assert validated is valid, print(f"Unable to validate same config: {v.errors}")
     assert num_errors == len(v._errors)
     if num_errors > 0:
         error = v.document_error_tree[error_field].errors[0]
@@ -85,3 +85,16 @@ def test_load_sample_same_configs(caplog, test_name, same_config_file_path, vali
             assert error.rule == error_type
         else:
             assert error_type in error.info[0]
+
+
+def test_e2e_load_same_object(caplog):
+    with open(same_config_file_path, "rb") as f:
+        good_same_config_file_contents = helpers.load_same_config_file(f)
+
+    same_config_object = SAME_config(good_same_config_file_contents)
+
+    assert same_config_object.notebook.path == "sample_notebook.ipynb"
+    assert same_config_object.metadata.name == "SampleComplicatedNotebook"
+    assert len(same_config_object.base_images.default.packages) == 2
+    assert len(same_config_object.datasets.USER_HISTORY.environments) == 3
+    assert isinstance(same_config_object.run.parameters, dict)
