@@ -120,6 +120,26 @@ six = ">=1.9.0"
 webencodings = "*"
 
 [[package]]
+name = "build"
+version = "0.6.1"
+description = "A simple, correct PEP517 package builder"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+colorama = {version = "*", markers = "os_name == \"nt\""}
+packaging = ">=19.0"
+pep517 = ">=0.9.1"
+tomli = ">=1.0.0"
+
+[package.extras]
+docs = ["furo (>=2020.11.19b18)", "sphinx (>=3.0,<4.0)", "sphinx-argparse-cli (>=1.5)", "sphinx-autodoc-typehints (>=1.10)"]
+test = ["filelock (>=3)", "pytest (>=4)", "pytest-cov (>=2)", "pytest-mock (>=2)", "pytest-rerunfailures (>=9.1)", "pytest-xdist (>=1.34)", "setuptools (>=42.0.0)", "toml (>=0.10.0)", "wheel (>=0.36.0)"]
+typing = ["mypy (==0.910)", "typing-extensions (>=3.7.4.3)"]
+virtualenv = ["virtualenv (>=20.0.35)"]
+
+[[package]]
 name = "cachetools"
 version = "4.2.2"
 description = "Extensible memoizing collections and decorators"
@@ -1348,7 +1368,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "3390cf91e7ff9994a2b54b475be083540013b87da57cc56ecea88cc652cc146f"
+content-hash = "af14c962aee5396ea41cf410f9722be25f1c5266fa24fb2dcc486b259c7e396d"
 
 [metadata.files]
 anytree = [
@@ -1395,6 +1415,10 @@ black = [
 bleach = [
     {file = "bleach-4.1.0-py2.py3-none-any.whl", hash = "sha256:4d2651ab93271d1129ac9cbc679f524565cc8a1b791909c4a51eac4446a15994"},
     {file = "bleach-4.1.0.tar.gz", hash = "sha256:0900d8b37eba61a802ee40ac0061f8c2b5dee29c1927dd1d233e075ebf5a71da"},
+]
+build = [
+    {file = "build-0.6.1-py3-none-any.whl", hash = "sha256:59669d59404cd9ef3f6f425030f4a423743703d653960c536c79c032886dc125"},
+    {file = "build-0.6.1.tar.gz", hash = "sha256:cebb047236cb7da777ac3335a8b16bfc585db374fedf0f647f6ea0efd953f54d"},
 ]
 cachetools = [
     {file = "cachetools-4.2.2-py3-none-any.whl", hash = "sha256:2cc0b89715337ab6dbba85b5b50effe2b0c74e035d83ee8ed637cf52f12ae001"},

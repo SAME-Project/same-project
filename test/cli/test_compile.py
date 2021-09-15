@@ -1,7 +1,7 @@
 from click.testing import CliRunner
 import pytest
 from pathlib import Path
-import cli.same.helpers as helpers
+from cli.same.same_config import SameConfig
 from cli.same.program.commands import compile
 from cli.same.program.compile import notebook_processing
 import logging
@@ -47,7 +47,7 @@ magic_strings_to_detect = [
 @pytest.fixture
 def same_config():
     with open(same_config_file_path, "rb") as f:
-        return helpers.load_same_config_file(f)
+        return SameConfig(buffered_reader=f)
 
 
 def test_compile_verb():
@@ -125,63 +125,3 @@ def test_e2e_full_notebook():
     # Check to make sure the 'IPython' package has been correctly mapped to 'ipython' (lower case)
     assert "ipython" in steps["same_step_000"].packages_to_install
     assert "IPython" not in steps["same_step_000"].packages_to_install
-
-
-# func (suite *ProgramCompileSuite) Test_SettingCacheValue_NoCache() {
-# 	os.Setenv("TEST_PASS", "1")
-# 	c := utils.GetCompileFunctions()
-
-# 	foundSteps, _ := c.FindAllSteps(ONE_STEP)
-# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
-# 	cb := codeBlocks["same_step_1"]
-# 	assert.Equal(suite.T(), cb.CacheValue, "P0D", "Expected to set a missing cache value to P0D. Actual: %v", cb.CacheValue)
-
-# }
-
-# func (suite *ProgramCompileSuite) Test_SettingCacheValue_WithCache() {
-# 	os.Setenv("TEST_PASS", "1")
-# 	c := utils.GetCompileFunctions()
-
-# 	foundSteps, _ := c.FindAllSteps(ONE_STEP_WITH_CACHE)
-# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
-# 	cb := codeBlocks["same_step_1"]
-# 	assert.Equal(suite.T(), cb.CacheValue, "P20D", "Expected to set a missing cache value to P20D. Actual: %v", cb.CacheValue)
-
-# }
-
-# func (suite *ProgramCompileSuite) Test_ImportsWorkingProperly() {
-# 	os.Setenv("TEST_PASS", "1")
-# 	c := utils.GetCompileFunctions()
-
-# 	foundSteps, _ := c.FindAllSteps(NOTEBOOKS_WITH_IMPORT)
-# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
-# 	packagesToMerge, _ := c.WriteStepFiles("kubeflow", suite.tmpDirectory, codeBlocks)
-# 	containsKey := ""
-# 	for key := range packagesToMerge["same_step_0"] {
-# 		containsKey += key
-# 	}
-# 	assert.Contains(suite.T(), containsKey, "tensorflow", "Expected to contain 'tensorflow'. Actual: %v", packagesToMerge["same_step_0"])
-# }
-
-# func (suite *ProgramCompileSuite) Test_FullNotebookExperience() {
-# 	os.Setenv("TEST_PASS", "1")
-# 	c := utils.GetCompileFunctions()
-# 	jupytextExecutable, err := exec.LookPath("jupytext")
-# 	if err != nil {
-# 		assert.Fail(suite.T(), "Jupytext not installed")
-# 	}
-
-# 	notebookPath := "../testdata/notebook/sample_notebook.ipynb"
-# 	if _, exists := os.Stat(notebookPath); exists != nil {
-# 		assert.Fail(suite.T(), "Notebook not found at: %v", notebookPath)
-# 	}
-# 	convertedText, _ := c.ConvertNotebook(jupytextExecutable, notebookPath)
-# 	foundSteps, _ := c.FindAllSteps(convertedText)
-# 	codeBlocks, _ := c.CombineCodeSlicesToSteps(foundSteps)
-# 	packagesToMerge, _ := c.WriteStepFiles("kubeflow", suite.tmpDirectory, codeBlocks)
-# 	containsKey := ""
-# 	for key := range packagesToMerge["same_step_0"] {
-# 		containsKey += key
-# 	}
-# 	assert.Contains(suite.T(), containsKey, "tensorflow", "Expected to contain 'tensorflow'. Actual: %v", packagesToMerge["same_step_0"])
-# }

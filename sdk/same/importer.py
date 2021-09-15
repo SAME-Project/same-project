@@ -1,69 +1,42 @@
 import subprocess
 import sys
+from typing import Tuple
 from johnnydep.lib import JohnnyDist
 import importlib
+from sdk.same.conda_env import CondaEnv
+import logging
+
+# from cli.same.same_config import SameConfig
+# from pathlib import Path
 
 
-def import_packages(packages_to_import, python_executable=None):
+def import_packages(packages_to_import, update_conda_env=False, conda_env_path="environment.yml", python_executable=None):
     if python_executable is None:
         python_executable = sys.executable
-    pip_list_proc = subprocess.run(
-        [
-            python_executable,
-            "-m",
-            "pip",
-            "list",
-            "--format=freeze",
-            "--disable-pip-version-check",
-        ],
-        capture_output=True,
-    )
-    installed_packages_blob = pip_list_proc.stdout
 
-    all_installed_packages = {}
-    for installed_package in installed_packages_blob.split():
-        try:
-            package_name, package_version = installed_package.decode("ascii").split("==")
-        except ValueError:
-            # not enough values
-            package_name, package_version = installed_package.decode("ascii"), None
-        all_installed_packages[package_name] = package_version
+    if isinstance(packages_to_import, str):
+        packages_to_import = [packages_to_import]
 
-    new_packages = {}
-    already_installed_packages = {}
-    for package in packages_to_import:
+    new_packages, already_installed_packages = get_packages_to_install(packages_to_import)
+
+    already_installed_list = build_already_installed_package_notice(already_installed_packages)
+
+    new_packages_list = build_new_packages_notice(python_executable, new_packages)
+
+    for package in already_installed_list + new_packages_list:
+        package_name = ""
         try:
             package_name, package_version = package.split("==")
         except ValueError:
             # not enough values
-            package_name, package_version = package, ""
+            package_name, package_version = package, ""  # noqa F841 - package version unused
+        importlib.import_module(package_name)
 
-        # minimal
-        # - package name, if version is '', then get the latest version and compare what's already installed. Results in:
-        # -- skip installing
-        # -- or install
-        # minimal=='0.1.0'
-        # - package name and version - hand the whole thing to pip to figure out
-        # minimal=='0.1.8'
-        # - package name and version with a package that doesn't exist
+    if update_conda_env:
+        _update_conda_env(conda_env_path)
 
-        installed_package_dist = JohnnyDist(package_name)
-        if package_version == "":
-            if installed_package_dist.version_latest == installed_package_dist.version_installed:
-                already_installed_packages[package_name] = installed_package_dist.version_latest
-            else:
-                new_packages[package_name] = installed_package_dist.version_latest
 
-    already_installed_list = []
-
-    for package_name, package_version in already_installed_packages.items():
-        if package_version != "":
-            already_installed_list.append(f"{package_name}=={package_version}")
-        else:
-            already_installed_list.append(f"{package_name}")
-
-    print("Packages skipped because they are already installed: %v", ", ".join(already_installed_list))
-
+def build_new_packages_notice(python_executable, new_packages) -> list:
     new_packages_list = []
     for package_name, package_version in new_packages.items():
         new_package_string = ""
@@ -77,16 +50,42 @@ def import_packages(packages_to_import, python_executable=None):
     if len(new_packages_list) > 0:
         print("Packages installed: %v", ", ".join(new_packages_list))
 
-    # Need to add virtual env manually because it doesn't play well with importlib - https://stackoverflow.com/questions/36103169/how-to-import-packages-in-virtualenv-in-python-shell
+    return new_packages_list
 
-    for package in already_installed_list + new_packages_list:
-        package_name = ""
+
+def build_already_installed_package_notice(already_installed_packages) -> list:
+    already_installed_list = []
+
+    for package_name, package_version in already_installed_packages.items():
+        if package_version != "":
+            already_installed_list.append(f"{package_name}=={package_version}")
+        else:
+            already_installed_list.append(f"{package_name}")
+
+    print(f'Packages skipped because they are already installed: {", ".join(already_installed_list)}')
+
+    return already_installed_list
+
+
+def get_packages_to_install(packages_to_import) -> Tuple[dict, dict]:
+    new_packages = {}
+    already_installed_packages = {}
+
+    for package in packages_to_import:
         try:
             package_name, package_version = package.split("==")
         except ValueError:
             # not enough values
             package_name, package_version = package, ""
-        importlib.import_module(package_name)
+
+        installed_package_dist = JohnnyDist(package_name)
+        if package_version == "":
+            if installed_package_dist.version_latest == installed_package_dist.version_installed:
+                already_installed_packages[package_name] = installed_package_dist.version_latest
+            else:
+                new_packages[package_name] = installed_package_dist.version_latest
+
+    return (new_packages, already_installed_packages)
 
 
 def _install_package(python_executable, package):
@@ -95,6 +94,35 @@ def _install_package(python_executable, package):
         stdout=subprocess.DEVNULL,
         stderr=subprocess.STDOUT,
     )
+
+
+def _update_conda_env(conda_env_path):
+    pass
+    # import pkg_resources
+
+    # installed_packages = pkg_resources.working_set
+
+    # installed_packages_list = sorted(["%s==%s" % (i.key, i.version) for i in installed_packages])
+
+    # # This is pretty hacky, but not sure what to do in the alternative.
+    # # The problem is that I want there to be a same.yaml file if we write a conda file
+    # # But since this is the SDK, it shouldn't (?) be necessary to have one (yet).
+    # # So commenting out... for now.
+    # # try:
+    # #     same_config_file_path = Path("same.yaml")
+    # #     if not same_config_file_path.exists():
+    # #         raise FileNotFoundError()
+
+    # #     with open(same_config_file_path.absolute, "rb") as f:
+    # #         same_config = SameConfig(buffered_reader=f)
+    # # except FileNotFoundError:
+    # #     logging.fatal("No SAME file found at 'same.yaml', please create one.")
+
+    # try:
+    #     conda_file = CondaEnvFile(conda_env_path)
+    #     conda_dict = conda_file.get_conda_environment()
+    # except FileNotFoundError:
+    #     logging.info(f"No file found at '{conda_env_path}', creating one.")
 
 
 class Importer:

@@ -30,6 +30,7 @@ def test_install_package(init_env):
 def test_install_two_packages_output(init_env):
     reqs = init_env.installed_packages()
 
+    # Need to add virtual env manually because it doesn't play well with importlib - https://stackoverflow.com/questions/36103169/how-to-import-packages-in-virtualenv-in-python-shell
     # Need to capture site packages (_should_ be for testing only)
     venv_site_packages = eval(
         subprocess.check_output(
@@ -40,7 +41,7 @@ def test_install_two_packages_output(init_env):
     sys.path.append(venv_site_packages[0])
     importlib.invalidate_caches()
 
-    # Testing two different types of modules - one that's a system module (regex) and one that needs installing from pypi (minimal)
+    # Testing two different types of modules - one that's a system module (regex) and one that needs installing from pypi (urllib3)
     urllib3_package_name = "urllib3"
     regex_package_name = "regex"
     assert (reqs.get(urllib3_package_name) is None) and (urllib3_package_name not in sys.modules), "Package 'urllib3' is already installed."

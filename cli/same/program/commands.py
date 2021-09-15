@@ -1,7 +1,7 @@
 from io import BufferedReader
 import click
 from cli.same.program.compile import notebook_processing as nbproc
-from cli.same.helpers import load_same_config_file
+from cli.same.same_config import SameConfig
 
 
 @click.group()
@@ -37,7 +37,7 @@ def compile(same_file: BufferedReader, persist_temp_files, target):
     """Compile a SAME program without running"""
     click.echo(f"File is: {same_file.name}")
 
-    same_config = load_same_config_file(same_file)
+    same_config = SameConfig(same_file)
 
     notebook_path = nbproc.get_notebook_path(same_file.name, same_config)  # noqa: F841
 
