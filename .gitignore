@@ -1,5 +1,6 @@
 # Original From: https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 artifacts/
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -142,3 +143,6 @@ cython_debug/
 
 # Python developer requirements
 requirements-dev.txt
+
+# Azure Functions
+**/local.settings.json
