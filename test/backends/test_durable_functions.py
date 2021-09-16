@@ -57,7 +57,8 @@ def test_single_step_execution_with_output():
 
     # Query for the progress, keep trying until we timeout or get the completion status
     is_completed = False
-    for _ in range(read_timeout_sec):
+    iterations = read_timeout_sec / retry_interval_sec
+    for _ in range(iterations):
         response = session.get(status_query_url, timeout=(connect_timeout_sec, status_query_timeout_sec))
         response_json = response.json()
         runtime_status = response_json["runtimeStatus"]

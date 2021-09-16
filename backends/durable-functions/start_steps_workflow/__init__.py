@@ -19,7 +19,7 @@ async def main(req: func.HttpRequest, starter: str) -> func.HttpResponse:
     num_steps = len(sorted_steps)
     logging.info(f"Number of steps to orchestrate: {num_steps}")
 
-
+    # Start workflow orchestrator
     instance_id = await client.start_new(req.route_params["functionName"], None, sorted_steps)
     logging.info(f"Started orchestration with ID = '{instance_id}'.")
 
