@@ -1,6 +1,6 @@
 {
-  "scriptFile": "exec_step.py",
-  "entryPoint": "exec_code",
+  "scriptFile": "execute_step.py",
+  "entryPoint": "execute_step",
   "bindings": [
     {
       "authLevel": "anonymous",

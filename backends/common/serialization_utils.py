@@ -1,11 +1,13 @@
 """Utilities for serialization/deserialization of objects.
 """
 
+from typing import Any
 import base64
 import dill
-from typing import Any
 
 
+# TODO: Rename methods to signify this serialization uses dill - to avoid confusing with JSON serialization also
+#       being used elsewhere in the repo.
 def serialize_obj(obj: Any) -> str:
     """Serialize given object with the following steps:
         1. Dump it using dill into a string.

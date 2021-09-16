@@ -104,7 +104,7 @@ We cannot continue because the following lines cannot be converted into standard
 
 # Liberally stolen^W borrowed from here - https://github.com/bndr/pipreqs/blob/master/pipreqs/pipreqs.py
 # Possibly should steal more of these tests? https://github.com/bndr/pipreqs/blob/dea950dd077cd95a8de7aedcd6668b5942e8afc4/tests/test_pipreqs.py
-def parse_code_block_for_imports(code: str) -> list:
+def parse_code_block_for_imports(code: str) -> list[str]:
     imports = set()
     raw_imports = set()
     candidates = []
@@ -150,7 +150,7 @@ def parse_code_block_for_imports(code: str) -> list:
     return mapped_list
 
 
-def get_pkg_names(pkgs):
+def get_pkg_names(pkgs: list[str]) -> list[str]:
     """Get PyPI package names from a list of imports.
     Args:
         pkgs (List[str]): List of import names.

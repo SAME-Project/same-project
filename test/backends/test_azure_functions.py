@@ -1,8 +1,14 @@
-import logging
+from .context import notebook_processing
+from .context import Step
+import json
 import pytest
 import requests
-from .context import notebook_processing
-from .context import serialization_utils
+
+
+# Constants
+AZFUNC_IP = "localhost"
+AZFUNC_PORT = 7071
+EXECUTE_STEP_URL = f"http://{AZFUNC_IP}:{AZFUNC_PORT}/api/execute_step"
 
 
 @pytest.fixture
@@ -11,29 +17,40 @@ def setup():
 
 
 def test_single_step_execution_with_output():
-    notebook_path = "test/backends/testdata/sample_notebooks/code_with_output.ipynb"
-    url = "http://localhost:7071/api/exec_step"
+    # Setup test parameters
+    notebook_path = "test/backends/testdata/sample_notebooks/single_cell_code_with_output.ipynb"
     connect_timeout_sec = 10
     read_timeout_sec = 60
-    session = requests.Session()
 
+    # Read inputs
     notebook_dict = notebook_processing.read_notebook(notebook_path)
     steps = notebook_processing.get_steps(notebook_dict)
-    assert len(steps) == 1
 
-    for name, step in steps.items():
-        code = step.code
+    # Serialize input Steps into JSON to send over HTTP to the Azure Function application instance
+    steps_serialized = []
+    for _, step in steps.items():
+        step_serialized = Step.to_json(step)
+        steps_serialized.append(step_serialized)
 
-        serialized_code = serialization_utils.serialize_obj(code)
-        params = {
-            "code": serialized_code,
-        }
+    # For this test, we expect the input notebook to have a single Step
+    assert len(steps_serialized) == 1
 
-        response = session.get(url, params=params, timeout=(connect_timeout_sec, read_timeout_sec))
-        assert response.status_code == 200
+    # Prepare HTTP request payload
+    params = {
+        "steps": steps_serialized,
+    }
+    params_json = json.dumps(params)
 
-        response_json = response.json()
-        stdout = response_json['stdout']
-        assert stdout == 'SAME OUTPUT\n'
+    # Send the HTTP request
+    session = requests.Session()
+    response = session.post(EXECUTE_STEP_URL, data=params_json, timeout=(connect_timeout_sec, read_timeout_sec))
 
-        logging.info(f"Executed step {name} and got response: {response}")
+    # Verify that the HTTP request succeeded
+    assert response.status_code == 200
+
+    # Verify the response content and execution result
+    response_json = response.json()
+    stdout = response_json["result"]["stdout"]
+    status = response_json["result"]["status"]
+    assert stdout == "SAME OUTPUT\n"
+    assert status == "success"

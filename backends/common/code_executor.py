@@ -31,4 +31,8 @@ def exec_with_output(code: str, user_global_ns: dict, user_ns: dict) -> tuple[An
         exec_result = exec(code, user_global_ns, user_ns)
         out = stdout.getvalue()
         err = stderr.getvalue()
+
+        # We need to merge the user_ns into the user_global_ns for nested functions.
+        # TODO verify if this is needed or not.
+        user_global_ns["__builtins__"].update(user_ns)
         return exec_result, out, err
