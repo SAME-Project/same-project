@@ -47,6 +47,8 @@ jobs:
       DURABLE_FUNCTIONAPP_PACKAGE_PATH: 'durable-functions-app-package'
       DURABLE_FUNCTIONAPP_NAME: 'durable-functions-backend-001'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Setup Python 3.9 Environment
         uses: actions/setup-python@v1
         with:
@@ -81,6 +83,8 @@ jobs:
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'azure-functions-app-package'
       AZURE_FUNCTIONAPP_NAME: 'azure-functions-backend-001'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Package Azure Functions Backend App
         shell: bash
         run: |
