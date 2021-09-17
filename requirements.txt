@@ -1,6 +1,7 @@
 aiohttp==3.7.4.post0; python_version >= "3.6" and python_version < "4"
 appnope==0.1.2; sys_platform == "darwin" and python_version >= "3.7" and platform_system == "Darwin"
 argon2-cffi==21.1.0; python_version >= "3.6"
+async-timeout==3.0.1; python_version >= "3.6" and python_version < "4" and python_full_version >= "3.5.3"
 attrs==21.2.0; python_version >= "3.6" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.6" and python_version < "4.0" and python_full_version >= "3.5.0"
 azure-functions-durable==1.1.1; python_version >= "3.6" and python_version < "4"
 azure-functions==1.7.2
@@ -16,6 +17,7 @@ colorama==0.4.4; python_version >= "3.7" and python_full_version < "3.0.0" and p
 debugpy==1.4.3; python_version >= "3.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version >= "3.7"
 decorator==5.1.0; python_version >= "3.7"
 defusedxml==0.7.1; python_version >= "3.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0" and python_version >= "3.7"
+dill==0.3.4; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.1.0")
 entrypoints==0.3; python_full_version >= "3.6.1" and python_version >= "3.7"
 furl==2.1.2; python_version >= "3.6" and python_version < "4"
 idna==3.2; python_version >= "3.6" and python_full_version < "3.0.0" and python_version < "4" or python_full_version >= "3.6.0" and python_version >= "3.6" and python_version < "4"
