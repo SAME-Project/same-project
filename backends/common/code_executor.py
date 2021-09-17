@@ -1,10 +1,10 @@
 """Code execution utilities.
 """
 
-import contextlib
-import sys
 from io import StringIO
 from typing import Any, Generator
+import contextlib
+import sys
 
 
 @contextlib.contextmanager

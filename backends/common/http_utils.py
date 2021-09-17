@@ -1,9 +1,9 @@
 """Utilities for handling HTTP requests and responses.
 """
 
+from . import serialization_utils
 import json
 import azure.functions as func
-from . import serialization_utils
 
 
 def generate_response(body: dict, status_code: int) -> func.HttpResponse:

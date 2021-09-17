@@ -7,9 +7,10 @@ import requests
 
 
 # Constants
-AZFUNC_IP = "localhost"
-AZFUNC_PORT = 7071
-EXECUTE_WORKFLOW_URL = f"http://{AZFUNC_IP}:{AZFUNC_PORT}/api/orchestrators/execute_steps_workflow"
+DURABLE_FUNCTIONS_APP_NAME = "durable-functions-backend-001"
+DURABLE_FUNCTIONS_BACKEND_URL = f"https://{DURABLE_FUNCTIONS_APP_NAME}.azurewebsites.net"
+EXECUTE_WORKFLOW_ACTIVITY_NAME = "execute_steps_workflow"
+EXECUTE_WORKFLOW_URL = f"{DURABLE_FUNCTIONS_BACKEND_URL}/api/orchestrators/{EXECUTE_WORKFLOW_ACTIVITY_NAME}"
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 """Utilities for capturing information about raised exceptions.
 """
 
-from . import serialization_utils as su
+from . import serialization_utils
 import sys
 
 
@@ -10,7 +10,7 @@ def get_exception_info() -> str:
     """
     exc_info = sys.exc_info()
     exception_msg = str(exc_info[1])
-    exception_serialized = su.serialize_obj(exc_info)
+    exception_serialized = serialization_utils.serialize_obj(exc_info)
 
     info = {
         "exception_msg": exception_msg,

@@ -2,7 +2,7 @@ import ast
 import logging
 from pathlib import Path
 import jupytext
-from cli.same.step import Step
+from .context import Step
 from cli.same.stdlib import stdlibs
 from cli.same.mapping import library_mapping
 import re
