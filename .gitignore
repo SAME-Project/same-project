@@ -1,6 +1,5 @@
 # Original From: https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 artifacts/
-**/.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
