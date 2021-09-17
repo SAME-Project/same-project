@@ -1,8 +1,16 @@
 #!/bin/bash
-# usage: ./deploy-azure-functions-backend.sh <optional: --install-az-cli>
+# usage: ./deploy-azure-functions-backend.sh <app_name>
 
 dir="azure-functions-deployment"
-appname="azure-functions-backend-001"
+
+if [ $# -eq 0 ]
+  then
+    echo "Error: App name not specified."
+    echo "usage: usage: ./deploy-azure-functions-backend.sh <app_name>"
+    exit 1
+fi
+
+appname=$1
 
 echo "Checking if Azure CLI is installed..."
 az_cli_check="$(az help > /dev/null 2>&1)"
