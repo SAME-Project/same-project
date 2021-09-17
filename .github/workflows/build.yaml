@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'azure-functions-app-package'
+      AZURE_FUNCTIONAPP_NAME: 'azure-functions-backend-001'
       DURABLE_FUNCTIONAPP_PACKAGE_PATH: 'durable-functions-app-package'
       DURABLE_FUNCTIONAPP_NAME: 'durable-functions-backend-001'
     steps:
@@ -52,7 +54,7 @@ jobs:
         shell: bash
         run: |
           pushd scripts
-          ./generate_durable_functions_app_package.sh ../${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+          ./generate-durable-functions-app-package.sh ../${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
           popd
       - name: Resolve Durable Functions Backend Dependencies Using Pip
         shell: bash
@@ -72,12 +74,38 @@ jobs:
         shell: bash
         run: |
           rm -rf ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+      - name: Package Azure Functions Backend App
+        shell: bash
+        run: |
+          pushd scripts
+          ./generate-azure-functions-app-package.sh ../${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          popd
+      - name: Resolve Azure Functions Backend Dependencies Using Pip
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+      - name: Deploy Azure Functions Backend to Azure
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: Cleanup Azure Functions App Package
+        shell: bash
+        run: |
+          rm -rf ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
       - name: Test
         run: |
           mkdir -p artifacts/tests 
           pytest \
             --junitxml=artifacts/tests/results.xml \
+            --cov=./backends \
             --cov=./cli \
+            --cov=./objects \
             --cov=./sdk \
             --cov-report=term \
             --cov-report=xml:artifacts/tests/coverage.xml \

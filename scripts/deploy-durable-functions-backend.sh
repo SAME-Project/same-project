@@ -1,7 +1,8 @@
 #!/bin/bash
-# usage: ./deploy_durable_functions_backend.sh <optional: --install-az-cli>
+# usage: ./deploy-durable-functions-backend.sh <optional: --install-az-cli>
 
 dir="durable-functions-deployment"
+appname="durable-functions-backend-001"
 
 echo "Checking if Azure CLI is installed..."
 az_cli_check="$(az help > /dev/null 2>&1)"
@@ -13,11 +14,12 @@ else
     echo "Azure CLI is already installed and set up..."
 fi
 
-bash ./generate_durable_functions_app_package.sh $dir
+bash ./generate-durable-functions-app-package.sh $dir
 
 echo "Publishing to Azure..."
+pushd $dir
 func azure functionapp publish $appname
-cd ..
+popd
 
 echo "Cleaning up..."
 rm -rf $dir
