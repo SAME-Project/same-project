@@ -51,9 +51,7 @@ jobs:
       - name: Package Durable Functions Backend App
         shell: bash
         run: |
-          pushd scripts/
-          ./generate_durable_functions_app_package.sh ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
-          popd
+          scripts/generate_durable_functions_app_package.sh ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
       - name: Resolve Durable Functions Backend Dependencies Using Pip
         shell: bash
         run: |
@@ -71,7 +69,7 @@ jobs:
       - name: Cleanup Durable Functions App Package
         shell: bash
         run: |
-          rm -rf scripts/${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+          rm -rf ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
       - name: Test
         run: |
           mkdir -p artifacts/tests 
