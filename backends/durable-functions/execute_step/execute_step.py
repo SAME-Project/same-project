@@ -3,8 +3,6 @@
 
 import logging
 import time
-import json
-
 from .context import code_executor
 from .context import exception_utils
 from .context import Step

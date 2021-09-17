@@ -1,5 +1,6 @@
 {
-  "scriptFile": "__init__.py",
+  "scriptFile": "execute_steps_workflow",
+  "entryPoint": "execute_steps_workflow",
   "bindings": [
     {
       "name": "context",
