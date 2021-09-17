@@ -41,9 +41,9 @@ jobs:
         run: |
           echo "Generated requirements files are not up to date, see requirements.txt and requirements-dev.text for instructions."
           exit 1
-      - name: Lint
+      - name: Lint Python Files
         run: |
-          flake8 cli sdk test
+          flake8 **/*.py
       - name: Setup Python 3.9 Environment
         uses: actions/setup-python@v1
         with:

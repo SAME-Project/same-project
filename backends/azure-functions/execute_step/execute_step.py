@@ -11,7 +11,6 @@ import logging
 import time
 
 
-# Constants
 HTTP_PARAM_STEP = 'step'
 
 

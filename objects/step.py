@@ -7,14 +7,14 @@ class Step(JSONSerializableObject):
     This is the unit of execution and is dispatched to a code execution backend.
     """
     def __init__(self,
-                 name = "same_step_unset",
-                 cache_value = "P0D",
-                 environment_name = "default",
-                 tags = [],
-                 index = -1,
-                 code = "",
-                 parameters = [],
-                 packages_to_install = {}):
+                 name="same_step_unset",
+                 cache_value="P0D",
+                 environment_name="default",
+                 tags=[],
+                 index=-1,
+                 code="",
+                 parameters=[],
+                 packages_to_install={}):
         self.name = name
         self.cache_value = cache_value
         self.environment_name = environment_name
@@ -23,7 +23,6 @@ class Step(JSONSerializableObject):
         self.code = code
         self.parameters = parameters
         self.packages_to_install = packages_to_install
-
 
     @staticmethod
     def from_json_list(json_serialized_steps: str) -> list[Step]:

@@ -5,7 +5,6 @@ import pytest
 import requests
 
 
-# Constants
 AZFUNC_IP = "localhost"
 AZFUNC_PORT = 7071
 EXECUTE_STEP_URL = f"http://{AZFUNC_IP}:{AZFUNC_PORT}/api/execute_step"

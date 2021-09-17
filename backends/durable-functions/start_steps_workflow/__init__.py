@@ -5,7 +5,6 @@ import azure.durable_functions as df
 import logging
 
 
-# Constants
 HTTP_PARAM_CODE_STEPS = "steps"
 
 

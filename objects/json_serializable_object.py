@@ -9,8 +9,8 @@ class JSONSerializableObject(ABC):
     This must only be used for classes where all the fields are JSON serializable.
     Ref: https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
     """
-    @staticmethod
-    def to_dict(obj: Any) -> dict:
+    @classmethod
+    def to_dict(cls, obj: Any) -> dict:
         """Takes in a custom object and returns a dictionary representation of the object.
         This dict representation includes metadata such as the object's module and class names.
         """
@@ -23,9 +23,8 @@ class JSONSerializableObject(ABC):
         obj_dict.update(obj.__dict__)
         return obj_dict
 
-
-    @staticmethod
-    def from_dict(obj_dict: dict) -> Any:
+    @classmethod
+    def from_dict(cls, obj_dict: dict) -> Any:
         """Takes in a dict and returns a custom object associated with the dict.
         This function makes use of the "__module__" and "__class__" metadata in the dictionary to verify if the correct
         dictionary is being provided.
@@ -44,14 +43,12 @@ class JSONSerializableObject(ABC):
             return obj
         else:
             # Input is not of the appropriate type to be converted into a Step object
-            raise TypeError(f"Object cannot be converted to an object of type: {Step.__name__}")
-
+            raise TypeError(f"Object cannot be converted to an object of type: {cls.__name__}")
 
     @staticmethod
     def to_json(obj):
         json_obj = json.dumps(obj, default=JSONSerializableObject.to_dict)
         return json_obj
-
 
     @staticmethod
     def from_json(json_obj):
