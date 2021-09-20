@@ -29,7 +29,9 @@ def read_notebook(notebook_path) -> dict:
 
 
 def get_steps(notebook_dict: dict) -> dict[Step]:
-
+    """Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
+    and the value is the Step object.
+    """
     i = 0
     return_steps = {}
 
@@ -96,10 +98,18 @@ We cannot continue because the following lines cannot be converted into standard
     for k in return_steps:
         # If we want to do it just by code block, uncomment the below
         # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
-
         return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
 
     return return_steps
+
+
+def get_sorted_list_of_steps(notebook_dict: dict) -> list[Step]:
+    """Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook.
+    """
+    steps_dict = get_steps(notebook_dict)
+    steps = list(steps_dict.values())
+    steps_sorted_by_index = sorted(steps, key=lambda x: x.index, reverse=True)
+    return steps_sorted_by_index
 
 
 # Liberally stolen^W borrowed from here - https://github.com/bndr/pipreqs/blob/master/pipreqs/pipreqs.py

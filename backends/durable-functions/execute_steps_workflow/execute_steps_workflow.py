@@ -5,7 +5,9 @@ import azure.durable_functions as df
 EXECUTE_STEP_ACTIVITY_NAME = "execute_step"
 
 
-def execute_steps_workflow(context: df.DurableOrchestrationContext):
+def _execute_steps_workflow(context: df.DurableOrchestrationContext):
+    """Orchestrates the execution of a given list of Steps.
+    """
     # Get all steps to execute
     steps = context.get_input()
     num_steps = len(steps)
@@ -28,4 +30,4 @@ def execute_steps_workflow(context: df.DurableOrchestrationContext):
     return results
 
 
-main = df.Orchestrator.create(execute_steps_workflow)
+execute_steps_workflow = df.Orchestrator.create(_execute_steps_workflow)

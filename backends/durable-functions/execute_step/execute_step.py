@@ -1,15 +1,12 @@
-"""
-"""
-
-import logging
-import time
 from .context import code_executor
 from .context import exception_utils
 from .context import Step
+import logging
+import time
 
 
 def execute_step(step: Step) -> str:
-    """
+    """Executes a given Step and returns the produced result and output in stderr, stdout.
     """
     start_time = time.time()
     logging.info(f"Executing Step: {step.name}")

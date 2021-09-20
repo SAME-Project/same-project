@@ -35,13 +35,10 @@ class TestAzureFunctions():
 
         # Read inputs
         notebook_dict = notebook_processing.read_notebook(notebook_path)
-        steps = notebook_processing.get_steps(notebook_dict)
+        steps = notebook_processing.get_sorted_list_of_steps(notebook_dict)
 
         # Serialize input Steps into JSON to send over HTTP to the Azure Function application instance
-        steps_serialized = []
-        for _, step in steps.items():
-            step_serialized = Step.to_json(step)
-            steps_serialized.append(step_serialized)
+        steps_serialized = Step.to_json_array(steps)
 
         # For this test, we expect the input notebook to have a single Step
         assert len(steps_serialized) == 1

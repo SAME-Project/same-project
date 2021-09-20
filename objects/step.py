@@ -30,12 +30,18 @@ class Step(JSONSerializableObject):
         Each of them is deserialized into a Python Step object and a list of them is returned, sorted by the Step index.
         Note: If any of the deserialization operations fails, an exception will be thrown.
         """
-        # List of Step objects to return
         steps = []
-        # For each JSON serialized Step object, deserialize it into a Python Step object
         for json_step in json_serialized_steps:
             step = Step.from_json(json_step)
             steps.append(step)
-        # Sort the steps in ascending order of their index
-        steps_sorted_by_index = sorted(steps, key=lambda x: x.index, reverse=True)
-        return steps_sorted_by_index
+        return steps
+
+    @staticmethod
+    def to_json_array(steps_list: list[Step]):
+        """Takes as input a list of Step objects and produces an array of JSON serialized Steps in the same order.
+        """
+        steps_serialized = []
+        for step in steps_list:
+            step_serialized = Step.to_json(step)
+            steps_serialized.append(step_serialized)
+        return steps_serialized

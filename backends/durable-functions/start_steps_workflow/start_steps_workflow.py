@@ -8,7 +8,9 @@ import logging
 HTTP_PARAM_CODE_STEPS = "steps"
 
 
-async def main(req: func.HttpRequest, starter: str) -> func.HttpResponse:
+async def start_steps_workflow(req: func.HttpRequest, starter: str) -> func.HttpResponse:
+    """Starts the orchestration that will execute a given list of Steps.
+    """
     client = df.DurableOrchestrationClient(starter)
 
     try:
