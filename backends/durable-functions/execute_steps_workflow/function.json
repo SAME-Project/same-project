@@ -1,0 +1,11 @@
+{
+  "scriptFile": "execute_steps_workflow.py",
+  "entryPoint": "execute_steps_workflow",
+  "bindings": [
+    {
+      "name": "context",
+      "type": "orchestrationTrigger",
+      "direction": "in"
+    }
+  ]
+}

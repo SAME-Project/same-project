@@ -1,0 +1,11 @@
+{
+  "scriptFile": "execute_step.py",
+  "entryPoint": "execute_step",
+  "bindings": [
+    {
+      "name": "step",
+      "type": "activityTrigger",
+      "direction": "in"
+    }
+  ]
+}

@@ -41,15 +41,15 @@ def test_install_two_packages_output(init_env):
     sys.path.append(venv_site_packages[0])
     importlib.invalidate_caches()
 
-    # Testing two different types of modules - one that's a system module (regex) and one that needs installing from pypi (urllib3)
-    urllib3_package_name = "urllib3"
+    # Testing two different types of modules - one that's a system module (regex) and one that needs installing from pypi (nose)
+    nose_package_name = "nose"
     regex_package_name = "regex"
-    assert (reqs.get(urllib3_package_name) is None) and (urllib3_package_name not in sys.modules), "Package 'urllib3' is already installed."
+    assert (reqs.get(nose_package_name) is None) and (nose_package_name not in sys.modules), "Package 'nose' is already installed."
 
     assert reqs.get(regex_package_name) is None, "Package 'regex' is already installed."
 
-    same.import_packages([urllib3_package_name, regex_package_name], str(init_env.python))
+    same.import_packages([nose_package_name, regex_package_name], str(init_env.python))
 
     reqs = init_env.installed_packages()
-    assert (reqs.get(urllib3_package_name) is not None) or (urllib3_package_name in sys.modules), "Package 'urllib3' not installed"
+    assert (reqs.get(nose_package_name) is not None) or (nose_package_name in sys.modules), "Package 'nose' not installed"
     assert (reqs.get(regex_package_name) is not None) or (regex_package_name in sys.modules), "Package 'regex' not installed"

@@ -2,7 +2,7 @@ import ast
 import logging
 from pathlib import Path
 import jupytext
-from cli.same.objects import Step
+from .context import Step
 from cli.same.stdlib import stdlibs
 from cli.same.mapping import library_mapping
 import re
@@ -29,7 +29,9 @@ def read_notebook(notebook_path) -> dict:
 
 
 def get_steps(notebook_dict: dict) -> dict[Step]:
-
+    """Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
+    and the value is the Step object.
+    """
     i = 0
     return_steps = {}
 
@@ -96,15 +98,23 @@ We cannot continue because the following lines cannot be converted into standard
     for k in return_steps:
         # If we want to do it just by code block, uncomment the below
         # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
-
         return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
 
     return return_steps
 
 
+def get_sorted_list_of_steps(notebook_dict: dict) -> list[Step]:
+    """Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook.
+    """
+    steps_dict = get_steps(notebook_dict)
+    steps = list(steps_dict.values())
+    steps_sorted_by_index = sorted(steps, key=lambda x: x.index, reverse=True)
+    return steps_sorted_by_index
+
+
 # Liberally stolen^W borrowed from here - https://github.com/bndr/pipreqs/blob/master/pipreqs/pipreqs.py
 # Possibly should steal more of these tests? https://github.com/bndr/pipreqs/blob/dea950dd077cd95a8de7aedcd6668b5942e8afc4/tests/test_pipreqs.py
-def parse_code_block_for_imports(code: str) -> list:
+def parse_code_block_for_imports(code: str) -> list[str]:
     imports = set()
     raw_imports = set()
     candidates = []
@@ -150,7 +160,7 @@ def parse_code_block_for_imports(code: str) -> list:
     return mapped_list
 
 
-def get_pkg_names(pkgs):
+def get_pkg_names(pkgs: list[str]) -> list[str]:
     """Get PyPI package names from a list of imports.
     Args:
         pkgs (List[str]): List of import names.

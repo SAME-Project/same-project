@@ -25,7 +25,7 @@ jobs:
         run: |
           poetry export -f requirements.txt --output requirements.txt --without-hashes
           poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --dev
-      - name: Install packages
+      - name: Install Packages
         run: |
           python -m pip install -r requirements-dev.txt
       - name: Validate Generated Files
@@ -38,15 +38,105 @@ jobs:
         run: |
           echo "Generated requirements files are not up to date, see requirements.txt and requirements-dev.text for instructions."
           exit 1
-      - name: Lint
+      - name: Lint Python Files
         run: |
-          flake8 cli sdk test
+          flake8 **/*.py
+  deploy-durable-functions-backend:
+    runs-on: ubuntu-latest
+    env:
+      DURABLE_FUNCTIONAPP_PACKAGE_PATH: 'durable-functions-app-package'
+      DURABLE_FUNCTIONAPP_NAME: 'durable-functions-backend-001'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python 3.9 Environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Package Durable Functions Backend App
+        shell: bash
+        run: |
+          pushd scripts
+          ./generate-durable-functions-app-package.sh ../${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+          popd
+      - name: Resolve Durable Functions Backend Dependencies Using Pip
+        shell: bash
+        run: |
+          pushd './${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+      - name: Deploy Durable Functions Backend to Azure
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ env.DURABLE_FUNCTIONAPP_NAME }}
+          package: ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.DURABLE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: Cleanup Durable Functions App Package
+        shell: bash
+        run: |
+          rm -rf ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+  deploy-azure-functions-backend:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'azure-functions-app-package'
+      AZURE_FUNCTIONAPP_NAME: 'azure-functions-backend-001'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Package Azure Functions Backend App
+        shell: bash
+        run: |
+          pushd scripts
+          ./generate-azure-functions-app-package.sh ../${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          popd
+      - name: Resolve Azure Functions Backend Dependencies Using Pip
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+      - name: Deploy Azure Functions Backend to Azure
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: Cleanup Azure Functions App Package
+        shell: bash
+        run: |
+          rm -rf ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+      - name: Update Generated Files
+        run: |
+          poetry export -f requirements.txt --output requirements.txt --without-hashes
+          poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --dev
+      - name: Install Packages
+        run: |
+          python -m pip install -r requirements-dev.txt
       - name: Test
         run: |
           mkdir -p artifacts/tests 
           pytest \
             --junitxml=artifacts/tests/results.xml \
+            --cov=./backends \
             --cov=./cli \
+            --cov=./objects \
             --cov=./sdk \
             --cov-report=term \
             --cov-report=xml:artifacts/tests/coverage.xml \
