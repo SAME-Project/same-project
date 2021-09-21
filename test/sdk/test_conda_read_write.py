@@ -4,6 +4,10 @@ import pytest
 from ruamel.yaml.compat import StringIO
 from pathlib import Path
 from ruamel.yaml import YAML
+from mock import MagicMock
+
+import os
+import builtins
 
 conda_env_file_path = "test/testdata/sample_conda_files/complicated_conda.yaml"
 
@@ -143,3 +147,18 @@ def test_e2e_load_conda_env_object(caplog):
     assert len(conda_env_object.dependencies) == 6
     assert "python=3.6" in conda_env_object.dependencies[0]
     assert conda_env_object.extras.GPU == "A100"
+
+
+def test_full_conda_write(caplog, mocker, tmp_path):
+    mocker.patch.object(Path, "write_text")
+
+    with open(conda_env_file_path, "rb") as f:
+        conda_env_object = CondaEnv(buffered_reader=f)  # noqa
+
+    conda_env_object.write(tmp_path / "conda.yaml")  # path value is unused because it is mocked
+
+    written_text = Path.write_text.call_args[0][0]
+    assert isinstance(written_text, str)
+
+    written_conda_env = CondaEnv(content=written_text)
+    assert written_conda_env is not None

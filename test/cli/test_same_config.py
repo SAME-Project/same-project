@@ -3,7 +3,9 @@ from cerberus import SchemaError
 import pytest
 from pathlib import Path
 from ruamel.yaml import YAML
-from ruamel.yaml.compat import StringIO
+from io import StringIO
+
+from cli.same import helpers
 
 same_config_file_path = "test/testdata/sample_same_configs/good_same.yaml"
 
@@ -111,16 +113,12 @@ base_images:
     no_default_full = good_same_config_file_contents.to_dict() | no_default
 
     try:
-        s = StringIO()
-        yaml.dump(has_default_full, stream=s)
-        SameConfig(content=s.getvalue())
+        SameConfig(content=helpers.dict_to_yaml(has_default_full))
     except SyntaxError as e:
         assert False, e
 
     with pytest.raises(SyntaxError) as e:
-        s = StringIO()
-        yaml.dump(no_default_full, stream=s)
-        SameConfig(content=s.getvalue())
+        SameConfig(content=helpers.dict_to_yaml(no_default_full))
 
     assert "base_images does not contain a" in str(e.value)
 

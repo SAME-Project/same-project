@@ -3,11 +3,17 @@ import sys
 from typing import Tuple
 from johnnydep.lib import JohnnyDist
 import importlib
+import pkg_resources
 from sdk.same.conda_env import CondaEnv
 import logging
+from sdk.same.helpers import ipy_nb_name
+from pathlib import Path
 
-# from cli.same.same_config import SameConfig
-# from pathlib import Path
+default_conda = """
+name: NULL_NAME
+dependencies:
+  - NULL_PACKAGE
+"""
 
 
 def import_packages(packages_to_import, update_conda_env=False, conda_env_path="environment.yml", python_executable=None):
@@ -96,13 +102,28 @@ def _install_package(python_executable, package):
     )
 
 
-def _update_conda_env(conda_env_path):
-    pass
-    # import pkg_resources
+def _update_conda_env():
+    try:
+        with open("environment.yaml", "rb") as f:
+            conda_env = CondaEnv(buffered_reader=f)
+    except FileNotFoundError:
+        conda_env_path = "environment.yaml"
+        conda_env_path_object = Path(conda_env_path).absolute
+        logging.info(f"No file found at '{conda_env_path_object}', creating one.")
+        conda_env = CondaEnv(content=default_conda)
+        conda_env.name = ipy_nb_name()
+        conda_env.dependencies = []
 
-    # installed_packages = pkg_resources.working_set
+    conda_dependencies = {}
+    for dependency_line in conda_env.dependencies:
+        package_name = dependency_line.split(r"=+")
+        conda_dependencies[package_name] = dependency_line
 
-    # installed_packages_list = sorted(["%s==%s" % (i.key, i.version) for i in installed_packages])
+    installed_packages = pkg_resources.working_set
+    installed_packages_list = ["%s=%s" % (i.key, i.version) for i in installed_packages]
+
+    for package in installed_packages_list:
+        print(package)
 
     # # This is pretty hacky, but not sure what to do in the alternative.
     # # The problem is that I want there to be a same.yaml file if we write a conda file
@@ -117,14 +138,3 @@ def _update_conda_env(conda_env_path):
     # #         same_config = SameConfig(buffered_reader=f)
     # # except FileNotFoundError:
     # #     logging.fatal("No SAME file found at 'same.yaml', please create one.")
-
-    # try:
-    #     conda_file = CondaEnvFile(conda_env_path)
-    #     conda_dict = conda_file.get_conda_environment()
-    # except FileNotFoundError:
-    #     logging.info(f"No file found at '{conda_env_path}', creating one.")
-
-
-class Importer:
-    def __init__(self):
-        pass
