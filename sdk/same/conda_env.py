@@ -58,19 +58,14 @@ class CondaEnv(Box):
             raise SyntaxError(f"Conda Env is invalid. \n {v.errors}")
 
         # Final check - verify the Dependencies are compatible with Conda - if not, will fail with TypeError
+        #
+        # I had originally tried to do something fancy around using Conda's dependencies, breaking lines down into objects. However,
+        # I'm just giving update and allowing each line to be a single line of text, allowing pip to do resolving (instead of breaking it down
+        # down into fully formed python objects - that's premature optimization because I don't really know what I would
+        # do with fully formed objects).
         try:
             # Instantiate the CondaDependency object to reuse their error checking and parsing
             conda_dependencies = CondaDependencies(conda_env_dict["dependencies"])
-
-            # Reformat the dependencies into objects before creating the final object
-            conda_env_dict.pop("dependencies")
-            conda_env_dict["dependencies"] = {}
-            for dependency in conda_dependencies.raw:
-                # Conda also supports detailing pip versions - we're just going to punt on this for now (and continue)
-                if isinstance(dependency, dict):
-                    continue
-                spec = MatchSpec(arg2spec(dependency))
-                conda_env_dict["dependencies"][spec.name] = getattr(spec, "version", None)
         except TypeError as e:
             raise ValueError(f"File did not match Conda base environment requirements: {str(e)}")
 
@@ -95,27 +90,7 @@ class CondaEnv(Box):
     #    why they chose a pip incompatible format (single equal instead of two), but this is going to be something
     #    that will annoy us for a long time, I know it.
     def write(self, path):
-
-        # First, I make a copy of the object. This is because the ACTUAL export object differs from
-        # the one we maintain in memory (using a list for packages, instead of a dict)
         export_object = self.to_dict()
-
-        # Next we pop off the dependencies object (which is a standard dict) and turn it into a list
-        # according to conda naming style
-        # https://github.com/conda/conda/blob/ed96a06244eb820781dc872eb381f51b95ee48ae/conda_env/env.py#L125
-        dependencies_dict = export_object.pop("dependencies")
-
-        # Now build a list in the form of conda
-        dependencies_list = []
-
-        for package_name in dependencies_dict:
-            version_spec = dependencies_dict[package_name]
-            if version_spec is not None:
-                dependencies_list.append("=".join((package_name, version_spec.cmp.norm_version)))
-            else:
-                dependencies_list.append(package_name)
-
-        export_object["dependencies"] = dependencies_list
 
         v = CondaEnvValidator.get_validator()
         if not v.validate(export_object):

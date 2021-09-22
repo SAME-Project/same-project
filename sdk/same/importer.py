@@ -6,7 +6,7 @@ import importlib
 import pkg_resources
 from sdk.same.conda_env import CondaEnv
 import logging
-from sdk.same.helpers import ipy_nb_name
+import sdk.same.helpers
 from pathlib import Path
 
 default_conda = """
@@ -102,16 +102,16 @@ def _install_package(python_executable, package):
     )
 
 
-def _update_conda_env():
+def _update_conda_env(file_path):
     try:
-        with open("environment.yaml", "rb") as f:
+        with open(file_path, "rb") as f:
             conda_env = CondaEnv(buffered_reader=f)
     except FileNotFoundError:
         conda_env_path = "environment.yaml"
         conda_env_path_object = Path(conda_env_path).absolute
         logging.info(f"No file found at '{conda_env_path_object}', creating one.")
         conda_env = CondaEnv(content=default_conda)
-        conda_env.name = ipy_nb_name()
+        conda_env.name = sdk.same.helpers.ipy_nb_name()
         conda_env.dependencies = []
 
     conda_dependencies = {}

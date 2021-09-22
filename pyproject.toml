@@ -15,6 +15,7 @@ dill = "^0.3.4"
 requests = "^2.26.0"
 azure-functions = "^1.7.2"
 azure-functions-durable = "^1.1.1"
+"ruamel.yaml" = "^0.17.16"
 
 [tool.poetry.dev-dependencies]
 pip-tools = "^6.2.0"
