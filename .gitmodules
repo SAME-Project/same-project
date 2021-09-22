@@ -1,0 +1,3 @@
+[submodule "vendor/conda"]
+	path = vendor/conda
+	url = git@github.com:conda/conda
