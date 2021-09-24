@@ -45,6 +45,6 @@ build-backend = "poetry.core.masonry.api"
 minversion = "6.0"
 addopts = "-ra -q"
 testpaths = [
-    "tests",
+    "test",
 ]
 norecursedirs = ["vendor"]
