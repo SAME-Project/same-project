@@ -2,7 +2,7 @@ apiVersion: sameproject.io/v1alpha1
 metadata:
   name: Needs Conda
   version: 0.0.53
-base_images:
+environments:
   default:
     image_tag: library/python:3.9-slim-buster
 notebook:

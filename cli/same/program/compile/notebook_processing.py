@@ -13,7 +13,7 @@ REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (
 
 def get_notebook_path(same_config_path, same_config_file_contents) -> str:
     """Returns absolute value of the pipeline path relative to current file execution"""
-    return str(Path.joinpath(Path(same_config_path), same_config_file_contents["notebook"]["path"]))
+    return str(Path.joinpath(Path(same_config_path).parent, same_config_file_contents["notebook"]["path"]))
 
 
 def read_notebook(notebook_path) -> dict:
@@ -104,8 +104,7 @@ We cannot continue because the following lines cannot be converted into standard
 
 
 def get_sorted_list_of_steps(notebook_dict: dict) -> list[Step]:
-    """Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook.
-    """
+    """Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook."""
     steps_dict = get_steps(notebook_dict)
     steps = list(steps_dict.values())
     steps_sorted_by_index = sorted(steps, key=lambda x: x.index, reverse=True)

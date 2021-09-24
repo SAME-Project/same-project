@@ -49,15 +49,24 @@ class SameValidator(Validator):
             },
             "allow_unknown": True,
         },
-        "base_images": {
+        "environments": {
             "type": "dict",
             "keysrules": {"type": "string", "regex": r"^[\d\w]+"},
             "valuesrules": {
                 "type": "dict",
                 "schema": {
                     "image_tag": {"type": "string", "required": True, "regex": ".*/.*"},
-                    "packages": {"type": "list"},
                     "private_registry": {"type": "boolean"},
+                    "credentials": {
+                        "type": "dict",
+                        "schema": {
+                            "secret_name": {"type": "string"},
+                            "server": {"type": "string"},
+                            "username": {"type": "string"},
+                            "password": {"type": "string"},
+                            "email": {"type": "string"},
+                        },
+                    },
                 },
             },
             "allow_unknown": True,

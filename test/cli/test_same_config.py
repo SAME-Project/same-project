@@ -13,7 +13,7 @@ same_config_file_path = "test/testdata/sample_same_configs/good_same.yaml"
 sample_same_file_paths = [
     ("Good SAME Config", "test/testdata/sample_same_configs/good_same.yaml", True, ""),
     ("No API Version", "test/testdata/sample_same_configs/no_apiVersion.yaml", False, "'apiVersion': ['required field']"),
-    ("No Default Base Image", "test/testdata/sample_same_configs/no_default_for_base_images.yaml", False, "base_images does not contain"),
+    ("No Default Environment", "test/testdata/sample_same_configs/no_default_for_environments.yaml", False, "environments does not contain"),
 ]
 
 
@@ -48,7 +48,7 @@ def test_bad_config_from_file_buffer(caplog):
         with open(bad_config_file, "rb") as f:
             SameConfig(buffered_reader=f)
 
-    assert "base_images does not contain a" in str(e.value)
+    assert "environments does not contain a" in str(e.value)
 
 
 def test_load_same_from_string():
@@ -65,7 +65,7 @@ def test_load_same_from_string():
 
         SameConfig(content=bad_file_content)
 
-    assert "base_images does not contain a" in str(e.value)
+    assert "environments does not contain a" in str(e.value)
 
 
 @pytest.mark.skip("Writing tests not implemented")
@@ -91,7 +91,7 @@ def test_must_have_default():
         good_same_config_file_contents = SameConfig(buffered_reader=f)
 
     has_default_yaml = """
-base_images:
+environments:
     default:
         image_tag: library/python:3.9-slim-buster
     private_environment:
@@ -100,7 +100,7 @@ base_images:
 """
 
     no_default_yaml = """
-base_images:
+environments:
     private_environment:
         image_tag: sameprivateregistry.azurecr.io/sample-private-org/sample-private-image:latest
         private_registry: true
@@ -120,7 +120,7 @@ base_images:
     with pytest.raises(SyntaxError) as e:
         SameConfig(content=helpers.dict_to_yaml(no_default_full))
 
-    assert "base_images does not contain a" in str(e.value)
+    assert "environments does not contain a" in str(e.value)
 
 
 def test_same_config_schema_compiles():
@@ -150,6 +150,5 @@ def test_e2e_load_same_object(caplog):
 
     assert same_config_object.notebook.path == "sample_notebook.ipynb"
     assert same_config_object.metadata.name == "SampleComplicatedNotebook"
-    assert len(same_config_object.base_images.default.packages) == 2
     assert len(same_config_object.datasets.USER_HISTORY.environments) == 3
     assert isinstance(same_config_object.run.parameters, dict)

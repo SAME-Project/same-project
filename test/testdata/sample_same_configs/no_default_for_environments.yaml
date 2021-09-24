@@ -2,7 +2,7 @@ apiVersion: sameproject.io/v1alpha1
 metadata:
   name: SampleComplicatedNotebook
   version: 0.0.53
-base_images:
+environments:
   python37:
     image_tag: library/python:3.7-slim-buster
     private_registry: false

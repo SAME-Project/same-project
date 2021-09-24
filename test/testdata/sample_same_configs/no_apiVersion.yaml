@@ -1,12 +1,9 @@
 metadata:
   name: SampleComplicatedNotebook
   version: 0.0.53
-base_images:
+environments:
   default:
     image_tag: library/python:3.9-slim-buster
-    packages:
-      - requests
-      - delorean==1.0.0
   python37:
     image_tag: library/python:3.7-slim-buster
     private_registry: false

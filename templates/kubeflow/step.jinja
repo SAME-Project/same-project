@@ -1,0 +1,129 @@
+{% autoescape off %}
+
+import argparse as __argparse
+from multiprocessing import context
+import pathlib
+from typing import NamedTuple
+from pprint import pprint as __pp
+import os
+from pathlib import Path as __Path
+import dill
+from base64 import (
+	urlsafe_b64encode as __urlsafe_b64encode,
+	urlsafe_b64decode as __urlsafe_b64decode,
+)
+from kfp.components import InputPath, OutputPath
+
+def generated_main(
+	input_context_path: InputPath(str),
+	output_context_path: OutputPath(str),
+	run_info="gAR9lC4=",
+	metadata_url="",
+):
+	from pathlib import Path as __Path
+
+	def __inner_main(
+		__context, __run_info, __metadata_url
+	) -> NamedTuple("FuncOutput", [("context", str),]):
+		import dill
+		import base64
+		from base64 import urlsafe_b64encode, urlsafe_b64decode
+		from copy import copy as __copy
+		from types import ModuleType as __ModuleType
+		from pprint import pprint as __pp
+		import datetime as __datetime
+		import requests
+		import mlflow
+		mlflow.autolog()
+
+		__run_info_dict = dill.loads(urlsafe_b64decode(__run_info))
+		__base64_decode = urlsafe_b64decode(__context)
+		__context_import_dict = dill.loads(__base64_decode)
+
+		__variables_to_mount = {}
+		__loc = {}
+
+		for __k in __context_import_dict:
+			__variables_to_mount[__k] = dill.loads(__context_import_dict[__k])
+
+		__json_data = {
+			"experiment_id": __run_info_dict["experiment_id"],
+			"run_id": __run_info_dict["run_id"],
+			"step_id": "{{ name }}",
+			"metadata_type": "input",
+			"metadata_value": __context,
+			"metadata_time": __datetime.datetime.now().isoformat(),
+		}
+
+		print(f"Metadata url: {__metadata_url}")
+		if __metadata_url != '':
+			print("Found metadata URL - executing.")
+			__pp(__json_data)
+			try:
+				__r = requests.post(__metadata_url, json=__json_data,)	
+				__r.raise_for_status()
+			except requests.exceptions.HTTPError as __err:
+				print(f"Error: {__err}")
+
+		__inner_code_to_execute = """
+import dill
+import base64
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+from types import ModuleType as __ModuleType
+
+{{ inner_code }}
+
+__locals_keys = frozenset(locals().keys())
+__globals_keys = frozenset(globals().keys())
+__context_export = {}
+
+for val in __globals_keys:
+	if not val.startswith("_") and not isinstance(val, __ModuleType):
+		__context_export[val] = dill.dumps(globals()[val])
+
+# Locals needs to come after globals in case we made changes
+for val in __locals_keys:
+	if not val.startswith("_") and not isinstance(val, __ModuleType):
+		__context_export[val] = dill.dumps(locals()[val])
+
+__b64_string = str(urlsafe_b64encode(dill.dumps(__context_export)), encoding="ascii")
+	"""
+		exec(__inner_code_to_execute, __variables_to_mount, __loc)
+
+		__json_output_data = {
+			"experiment_id": __run_info_dict["experiment_id"],
+			"run_id": __run_info_dict["run_id"],
+			"step_id": "{{ name }}",
+			"metadata_type": "output",
+			"metadata_value": __loc["__b64_string"],
+			"metadata_time": __datetime.datetime.now().isoformat(),
+		}
+
+		print(f"Metadata url: {__metadata_url}")
+		if __metadata_url != '':
+			print("Found metadata URL - executing.")
+			__pp(__json_data)
+			try:
+				__r = requests.post(__metadata_url, json=__json_output_data,)	
+				__r.raise_for_status()
+			except requests.exceptions.HTTPError as err:
+				print(f"Error: {err}")
+
+		return __loc["__b64_string"]
+
+	__input_context_string = "gAR9lC4="
+	if input_context_path != None:
+		with open(input_context_path, 'r') as reader:
+			print(f"reading file: {input_context_path}")
+			__input_context_string = reader.read()
+
+	__output_context_string = __inner_main(__input_context_string,
+		__run_info=run_info,
+		__metadata_url=metadata_url,
+	)
+
+	__p = __Path(output_context_path)
+	with __p.open("w+") as __file_handle:
+		__file_handle.write(__output_context_string)
+
+{% endautoescape %}

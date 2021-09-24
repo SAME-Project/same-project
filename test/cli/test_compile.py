@@ -5,6 +5,8 @@ from cli.same.same_config import SameConfig
 from cli.same.program.commands import compile
 from cli.same.program.compile import notebook_processing
 import logging
+from backends.executor import render as template_render
+from backends.executor import deploy
 
 same_config_file_path = "test/testdata/generic_notebook/same.yaml"
 
@@ -51,17 +53,20 @@ def same_config():
 
 
 def test_compile_verb():
-    # just testing that we can test the compile verb
+    runner = CliRunner()
+    result = runner.invoke(compile)
 
+    assert result.exit_code == 2  # From missing file flag
+    assert "Invalid value for" in result.output  # Missing file flag error string
+
+
+def test_same_program_compile_e2e():
     same_file_path = Path(same_config_file_path)
     assert same_file_path.exists()
 
     same_file_path_as_string = str(same_file_path.absolute())
     runner = CliRunner()
-    result = runner.invoke(
-        compile,
-        ["-f", same_file_path_as_string],
-    )
+    result = runner.invoke(compile, ["-f", same_file_path_as_string, "-t", "kubeflow"])
     assert result.exit_code == 0
 
 
@@ -125,3 +130,52 @@ def test_e2e_full_notebook():
     # Check to make sure the 'IPython' package has been correctly mapped to 'ipython' (lower case)
     assert "ipython" in steps["same_step_000"].packages_to_install
     assert "IPython" not in steps["same_step_000"].packages_to_install
+
+
+def test_kubeflow_template(mocker, tmpdir, same_config):
+    mocker.patch.object(Path, "write_text")
+
+    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
+    notebook_dict = notebook_processing.read_notebook(notebook_path)
+    steps = notebook_processing.get_steps(notebook_dict)
+    template_render("kubeflow", steps, same_config, compile_path=tmpdir)
+
+    root_file_content = Path.write_text.call_args_list[0][0][0]
+
+    # Checking that initial imports are there
+    assert "import kfp" in root_file_content
+
+    # Checking that root parameters were filled in correctly
+    assert "def root(sample_parameter='0.841'" in root_file_content
+
+    # Confirm that dict is ignored
+    assert "sample_complicated_parameter" not in root_file_content
+
+    # Confirm that packages have been attached
+    assert "'Requests', 'scipy', 'tensorflow'" in root_file_content
+
+    # Confirm that three steps are written (only way we could get this line is if the two previous steps were also written)
+    assert "same_step_002_task.after(same_step_001_task)" in root_file_content
+
+    # Confirm that four files were written (root and three steps)
+    assert len(Path.write_text.call_args_list) == 4
+
+
+def test_live_test_kubeflow(mocker, tmpdir, same_config):
+    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
+    notebook_dict = notebook_processing.read_notebook(notebook_path)
+    steps = notebook_processing.get_steps(notebook_dict)
+    complied_path = template_render("kubeflow", steps, same_config, compile_path=tmpdir.dirname)
+    deploy("kubeflow", complied_path)
+
+    assert True  # Deployed to Kubeflow without raising an error
+
+
+@pytest.mark.skip
+def test_kubeflow_secrets():
+    assert False
+    # TODO: Unit test for secrets being created
+    # No secrets
+    # One secret
+    # Two+ secrets
+    # Partially complete secrets

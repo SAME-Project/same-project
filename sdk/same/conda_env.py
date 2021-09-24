@@ -65,7 +65,7 @@ class CondaEnv(Box):
         # do with fully formed objects).
         try:
             # Instantiate the CondaDependency object to reuse their error checking and parsing
-            conda_dependencies = CondaDependencies(conda_env_dict["dependencies"])
+            CondaDependencies(conda_env_dict["dependencies"])
         except TypeError as e:
             raise ValueError(f"File did not match Conda base environment requirements: {str(e)}")
 
