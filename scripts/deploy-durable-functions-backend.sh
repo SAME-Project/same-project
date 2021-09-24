@@ -6,7 +6,7 @@ dir="durable-functions-deployment"
 if [ $# -eq 0 ]
   then
     echo "Error: App name not specified."
-    echo "usage: usage: ./deploy-durable-functions-backend.sh <app_name>"
+    echo "usage: ./deploy-durable-functions-backend.sh <app_name>"
     exit 1
 fi
 

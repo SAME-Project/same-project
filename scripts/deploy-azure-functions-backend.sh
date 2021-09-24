@@ -6,7 +6,7 @@ dir="azure-functions-deployment"
 if [ $# -eq 0 ]
   then
     echo "Error: App name not specified."
-    echo "usage: usage: ./deploy-azure-functions-backend.sh <app_name>"
+    echo "usage: ./deploy-azure-functions-backend.sh <app_name>"
     exit 1
 fi
 

@@ -53,8 +53,11 @@ class TestDurableFunctions():
         params_json = json.dumps(params)
 
         # Send the HTTP request
-        session = requests.Session()
-        response = session.post(self.workflow_url, data=params_json, timeout=(connect_timeout_sec, read_timeout_sec))
+        with requests.Session() as session:
+            response = session.post(
+                self.workflow_url,
+                data=params_json,
+                timeout=(connect_timeout_sec, read_timeout_sec))
 
         # Verify that the HTTP request has been accepted
         assert response.status_code == 202
