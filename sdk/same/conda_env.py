@@ -4,13 +4,17 @@ from pathlib import Path
 from ruamel.yaml import YAML
 from ruamel.yaml.parser import ParserError
 import logging
+import sys
 
+sys.path.append("vendor/conda")
 from vendor.conda.conda_env.env import Dependencies as CondaDependencies
-from conda.cli.common import spec_from_line, MatchSpec, arg2spec
+from vendor.conda.conda.cli.common import spec_from_line, MatchSpec, arg2spec
 
 from io import BufferedReader
 
 import cli.same.helpers as helpers
+
+import pprint
 
 
 VALID_KEYS = ("name", "dependencies", "prefix", "channels", "variables", "extras")
