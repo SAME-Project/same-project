@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.parser import ParserError
 import logging
 
-from conda_env.env import Dependencies as CondaDependencies
+from vendor.conda.conda_env.env import Dependencies as CondaDependencies
 from conda.cli.common import spec_from_line, MatchSpec, arg2spec
 
 from io import BufferedReader

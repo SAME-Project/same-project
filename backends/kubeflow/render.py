@@ -46,7 +46,7 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
     # Do i need to check if run and run.parameters are required fields?
     try:
         run_parameters = same_config.run.parameters
-    except:
+    except Exception:
         run_parameters = {}
 
     for k in run_parameters:
