@@ -129,6 +129,10 @@ jobs:
       - name: Install Packages
         run: |
           python -m pip install -r requirements-dev.txt
+      - name: Set up Kubeconfig from Github Secret  
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.CORE_TEAM_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
       - name: Test
         run: |
           mkdir -p artifacts/tests 
