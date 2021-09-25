@@ -1,22 +1,24 @@
 # yaml-language-server: $schema=https://json-schema.org/draft-07/schema#
 name: Build
-on: 
+on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Checkout submodules
+        uses: textbook/git-checkout-submodule-action@master
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: "3.x"
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
@@ -44,8 +46,8 @@ jobs:
   deploy-durable-functions-backend:
     runs-on: ubuntu-latest
     env:
-      DURABLE_FUNCTIONAPP_PACKAGE_PATH: 'durable-functions-app-package'
-      DURABLE_FUNCTIONAPP_NAME: 'durable-functions-backend-001'
+      DURABLE_FUNCTIONAPP_PACKAGE_PATH: "durable-functions-app-package"
+      DURABLE_FUNCTIONAPP_NAME: "durable-functions-backend-001"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -80,8 +82,8 @@ jobs:
   deploy-azure-functions-backend:
     runs-on: ubuntu-latest
     env:
-      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'azure-functions-app-package'
-      AZURE_FUNCTIONAPP_NAME: 'azure-functions-backend-001'
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: "azure-functions-app-package"
+      AZURE_FUNCTIONAPP_NAME: "azure-functions-backend-001"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -117,7 +119,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: "3.x"
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
@@ -129,7 +131,7 @@ jobs:
       - name: Install Packages
         run: |
           python -m pip install -r requirements-dev.txt
-      - name: Set up Kubeconfig from Github Secret  
+      - name: Set up Kubeconfig from Github Secret
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.CORE_TEAM_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
