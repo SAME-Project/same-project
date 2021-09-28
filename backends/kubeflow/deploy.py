@@ -10,12 +10,13 @@ from pprint import pprint
 import logging
 
 
-def deploy_function(compiled_path: str):
+def deploy_function(compiled_path: Path):
     import sys
 
-    sys.path.append(compiled_path)
+    sys.path.append(str(compiled_path))
 
     from root_pipeline import root
 
+    # Only works with the 'kubeflow' namespace for now
     kfp_client = kfp.Client()
     kfp_client.create_run_from_pipeline_func(root, arguments={})

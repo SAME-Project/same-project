@@ -159,23 +159,3 @@ def test_kubeflow_template(mocker, tmpdir, same_config):
 
     # Confirm that four files were written (root and three steps)
     assert len(Path.write_text.call_args_list) == 4
-
-
-def test_live_test_kubeflow(mocker, tmpdir, same_config):
-    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
-    notebook_dict = notebook_processing.read_notebook(notebook_path)
-    steps = notebook_processing.get_steps(notebook_dict)
-    complied_path = template_render("kubeflow", steps, same_config, compile_path=tmpdir.dirname)
-    deploy("kubeflow", complied_path)
-
-    assert True  # Deployed to Kubeflow without raising an error
-
-
-@pytest.mark.skip
-def test_kubeflow_secrets():
-    assert False
-    # TODO: Unit test for secrets being created
-    # No secrets
-    # One secret
-    # Two+ secrets
-    # Partially complete secrets

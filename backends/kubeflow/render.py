@@ -13,17 +13,19 @@ kubeflow_step_template = "kubeflow/step.jinja"
 
 
 def render_function(compile_path: str, steps: list[Step], same_config: dict):
+    """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
     root_file_string = _build_root_file(env, steps, same_config)
 
-    helpers.write_file(Path(compile_path) / "root_pipeline.py", root_file_string)
+    root_path = Path(compile_path) / "root_pipeline.py"
+    helpers.write_file(root_path, root_file_string)
 
     for step_name in steps:
         step_file_string = _build_step_file(env, steps[step_name])
         helpers.write_file(Path(compile_path) / f"{step_name}.py", step_file_string)
 
-    return
+    return compile_path
 
 
 def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict) -> str:
@@ -123,6 +125,12 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
+
+        if root_contract["list_of_environments"].get(env_name, None) is None:
+            error_message = f"'{env_name}'' was listed as an environment in the notebook, but no such environment is listed in your SAME configuration file."
+            logging.fatal(error_message)
+            raise ValueError(error_message)
+
         step_to_append["environment_name"] = env_name
         step_to_append["image_tag"] = root_contract["list_of_environments"][env_name]["image_tag"]
         step_to_append["private_registry"] = root_contract["list_of_environments"][env_name]["private_registry"]

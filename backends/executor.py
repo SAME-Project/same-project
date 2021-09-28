@@ -22,7 +22,7 @@ def render(target: str, steps: list[Step], same_config: dict, compile_path: str 
     return compile_path
 
 
-def deploy(target: str, root_file_absolute_path: str):
+def deploy(target: str, root_file_absolute_path: str, persist_temp_files: bool = False):
     target_deployers = {"kubeflow": backends.kubeflow.deploy.deploy_function, "aml": backends.aml.deploy.deploy_function}
     deploy_function = target_deployers.get(target, None)
     if deploy_function is None:
