@@ -68,7 +68,8 @@ exclude =
     # python cache
     __pycache__,
     experiment/*,
-    .venv
+    .venv,
+    vendor
 # Provide a comma-separate list of glob patterns to include for checks.
 filename =
     *.py
