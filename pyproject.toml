@@ -35,6 +35,7 @@ ipykernel = "^6.4.1"
 pytest-mock = "^3.6.1"
 setuptools = "^58.0.4"
 wheel = "^0.37.0"
+pyoxidizer = "^0.17.0"
 
 [tool.black]
 line-length = 119

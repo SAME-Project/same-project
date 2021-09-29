@@ -1,9 +1,8 @@
 from io import BufferedReader
 import click
-from cli.same.program.compile import notebook_processing as nbproc
-from cli.same.same_config import SameConfig
+from program.compile import notebook_processing as nbproc
 
-import backends
+import backends.executor
 
 
 @click.group()
@@ -11,13 +10,17 @@ def program():
     pass
 
 
-@program.command()
+@program.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+        allow_extra_args=True,
+    )
+)
 @click.option(
     "-f",
     "--same-file",
     "same_file",
     type=click.File("rb"),
-    default="same.yaml",
     help="Configuration file (same.yaml) for this project. We currently only support notebooks/python files describing pipelines in the same directory as the same configuration file.",
     show_default=True,
 )
@@ -29,24 +32,15 @@ def program():
 def compile(same_file: BufferedReader, target: str):
     """Compile a SAME program without running - this is an internal function only."""
     click.echo(f"File is: {same_file.name}")
-
-    same_config = SameConfig(same_file)
-
-    notebook_path = nbproc.get_notebook_path(same_file.name, same_config)  # noqa: F841
-
-    notebook_dict = nbproc.read_notebook(notebook_path)
-
-    all_steps = nbproc.get_steps(notebook_dict)
-
-    backends.executor.render(target=target, steps=all_steps, same_config=same_config)
-
-    # compileProgramCmd.Flags().String("image-pull-secret-server", "", "Image pull server for any private repos (only one server currently supported for all private repos)")
-    # compileProgramCmd.Flags().String("image-pull-secret-username", "", "Image pull username for any private repos (only one username currently supported for all private repos)")
-    # compileProgramCmd.Flags().String("image-pull-secret-password", "", "Image pull password for any private repos (only one password currently supported for all private repos)")
-    # compileProgramCmd.Flags().String("image-pull-secret-email", "", "Image pull email for any private repos (only one email currently supported for all private repos)")
+    nbproc.compile(same_file, target)
 
 
-@program.command()
+@program.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+        allow_extra_args=True,
+    )
+)
 @click.option(
     "-p",
     "--persist-temp-files",
@@ -61,7 +55,6 @@ def compile(same_file: BufferedReader, target: str):
     "--same-file",
     "same_file",
     type=click.File("rb"),
-    default="same.yaml",
     help="Configuration file (same.yaml) for this project. We currently only support notebooks/python files describing pipelines in the same directory as the same configuration file.",
     show_default=True,
 )
@@ -71,5 +64,6 @@ def compile(same_file: BufferedReader, target: str):
     type=click.Choice(["kubeflow", "aml"]),
 )
 def run(same_file: BufferedReader, target: str, persist_temp_files: bool = False):
-    compiled_same_file = compile(same_file, target)
-    backends.executor.deploy(compiled_same_file, persist_temp_files)
+    click.echo(f"File is: {same_file.name}")
+    compiled_same_file = nbproc.compile(same_file, target)
+    backends.executor.deploy(target, compiled_same_file, persist_temp_files)

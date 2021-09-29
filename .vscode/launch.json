@@ -37,6 +37,27 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
-        }
+        },
+        {
+            "name": "CLI execute",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/cli/same/main.py",
+            "console": "integratedTerminal",
+            "pythonArgs": [
+                "${workspaceFolder}/cli/same/main.py",
+                "program",
+                "run",
+                "-f",
+                "${workspaceFolder}/test/testdata/generic_notebook/same.yaml",
+                "-t",
+                "kubeflow",
+            ],
+            "subProcess": true,
+            "jinja": true,
+            "showReturnValue": true,
+            "logToFile": true,
+            "justMyCode": true
+        },
     ]
 }

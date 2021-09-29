@@ -1425,6 +1425,14 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "pyoxidizer"
+version = "0.17.0"
+description = "Package self-contained Python applications"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
@@ -1970,7 +1978,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "967e91083643e6507ce616c8904530bf6ae751e7bda345d35ca1a3ceb8102207"
+content-hash = "341744f1f49b6708380ce861d1d986c300aef27f4840c67d89ea85fffe3545d5"
 
 [metadata.files]
 absl-py = [
@@ -2736,6 +2744,16 @@ pyflakes = [
 pygments = [
     {file = "Pygments-2.10.0-py3-none-any.whl", hash = "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380"},
     {file = "Pygments-2.10.0.tar.gz", hash = "sha256:f398865f7eb6874156579fdf36bc840a03cab64d1cde9e93d68f46a425ec52c6"},
+]
+pyoxidizer = [
+    {file = "pyoxidizer-0.17.0-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:8d61f423586972f1862fd07805bea4305d92b9197bf25279cd41ce89aa6d400e"},
+    {file = "pyoxidizer-0.17.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:e30f9e1baa839a8374a0237c3863e906f32617e5e43dc1f65a56b773ee6b7985"},
+    {file = "pyoxidizer-0.17.0-py3-none-manylinux2010_i686.whl", hash = "sha256:9fa3a07375925685a92c2bce16376a169100c234260a12942117f2f091469854"},
+    {file = "pyoxidizer-0.17.0-py3-none-manylinux2010_x86_64.whl", hash = "sha256:255f26374b3f4bf5c4b193248817934f64a34a9efab25131e48af90789901c18"},
+    {file = "pyoxidizer-0.17.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:f098903a76ee23fb5d653896ea5c4ca39a5b934f9de75757188353cf8cf0b5fb"},
+    {file = "pyoxidizer-0.17.0-py3-none-manylinux2014_armv7l.whl", hash = "sha256:8d4b4afdbbe147322db54fd1219f450dd8ab29fb7485a563fbab952d9cf3ba51"},
+    {file = "pyoxidizer-0.17.0-py3-none-win32.whl", hash = "sha256:8884e7aebc3c490122efab43b0196fc7e34edd350c9e3601620786393d7acf9c"},
+    {file = "pyoxidizer-0.17.0-py3-none-win_amd64.whl", hash = "sha256:4e24e40ba57723e43b8a9942d5e9a13c624a722bc3d9a14991985453fe05bb59"},
 ]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},

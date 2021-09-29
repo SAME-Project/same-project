@@ -15,7 +15,7 @@ def deploy_function(compiled_path: Path):
 
     sys.path.append(str(compiled_path))
 
-    from root_pipeline import root
+    from root_pipeline import root  # type: ignore noqa
 
     # Only works with the 'kubeflow' namespace for now
     kfp_client = kfp.Client()

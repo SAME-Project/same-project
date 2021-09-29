@@ -8,6 +8,10 @@ from cli.same.mapping import library_mapping
 import re
 import traceback
 
+import backends.executor
+from io import BufferedReader
+from same_config import SameConfig
+
 REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (?:.*)$")]
 
 
@@ -178,3 +182,20 @@ def get_pkg_names(pkgs: list[str]) -> list[str]:
         result.add(data.get(pkg, pkg))
     # Return a sorted list for backward compatibility.
     return sorted(result, key=lambda s: s.lower())
+
+
+def compile(same_file: BufferedReader, target: str) -> str:
+    same_config = SameConfig(same_file)
+
+    notebook_path = get_notebook_path(same_file.name, same_config)  # noqa: F841
+
+    notebook_dict = read_notebook(notebook_path)
+
+    all_steps = get_steps(notebook_dict)
+
+    return backends.executor.render(target=target, steps=all_steps, same_config=same_config)
+
+    # compileProgramCmd.Flags().String("image-pull-secret-server", "", "Image pull server for any private repos (only one server currently supported for all private repos)")
+    # compileProgramCmd.Flags().String("image-pull-secret-username", "", "Image pull username for any private repos (only one username currently supported for all private repos)")
+    # compileProgramCmd.Flags().String("image-pull-secret-password", "", "Image pull password for any private repos (only one password currently supported for all private repos)")
+    # compileProgramCmd.Flags().String("image-pull-secret-email", "", "Image pull email for any private repos (only one email currently supported for all private repos)")
