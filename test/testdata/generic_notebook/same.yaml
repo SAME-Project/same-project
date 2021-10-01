@@ -8,9 +8,6 @@ environments:
   python37:
     image_tag: library/python:3.7-slim-buster
     private_registry: false
-  private_environment:
-    image_tag: sameprivateregistry.azurecr.io/sample-private-org/sample-private-image:latest
-    private_registry: true
 notebook:
   name: "Sample Complicated Notebook"
   path: sample_notebook.ipynb

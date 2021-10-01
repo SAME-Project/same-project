@@ -162,7 +162,7 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
 
     # However, often there's a backup, internal only name that needs much stricter character restrictions
     # We'll create that here.
-    root_contract["safe_experiment_name"] = helpers.alphaNumericOnly(same_config.metadata.name)
+    root_contract["experiment_name_safe"] = helpers.lowerAlphaNumericOnly(same_config.metadata.name)
 
     # List manipulation is also pretty weak in jinja (plus I like views being very non-functional). We'll
     # create the comma delim list of steps (which we need for DAG description) in python as well.

@@ -102,7 +102,8 @@ def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% e
 	secrets_by_env = {}
 
 # Generate secrets (if not already created)
-{% for secret in secrets_to_create_as_dict %}
+{% for env_name in secrets_to_create_as_dict %}
+	{% set secret = secrets_to_create_as_dict[env_name] %}
 	config.load_kube_config()
 	v1 = client.CoreV1Api()
 	namespace = "kubeflow"
@@ -114,12 +115,12 @@ def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% e
 
 	cred_payload = {
 		"auths": {
-			"{{secret.server}}": {
-				"username": "{{secret.username}}",
-				"password": "{{secret.password}}",
-				"email": "{{secret.email}}",
+			"{{secret.image_pull_secret_registry_uri}}": {
+				"username": "{{secret.image_pull_secret_username}}",
+				"password": "{{secret.image_pull_secret_password}}",
+				"email": "{{secret.image_pull_secret_email}}",
 				"auth": base64.b64encode(
-					f"{{secret.username}}:{{secret.password}}".encode()
+					f"{{secret.image_pull_secret_username}}:{{secret.image_pull_secret_password}}".encode()
 				).decode(),
 			}
 		}
@@ -129,15 +130,12 @@ def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% e
 		".dockerconfigjson": base64.b64encode(json.dumps(cred_payload).encode()).decode()
 	}
 
-	secret = client.V1Secret(
+	body = client.V1Secret(
 		api_version="v1",
 		data=data,
 		kind="Secret",
 		metadata=metadata,
 		type=type,
-	)
-	body = kubernetes.client.V1Secret(
-		api_version, data, kind, metadata, type=type
 	)
 	api_response = None
 	try:
@@ -146,10 +144,10 @@ def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% e
 		if e.status == 409:
 			if (
 				cred_payload["auths"]
-				and cred_payload["auths"]["{{secret.server}}"]
-				and cred_payload["auths"]["{{secret.server}}"]["username"]
-				and cred_payload["auths"]["{{secret.server}}"]["password"]
-				and cred_payload["auths"]["{{secret.server}}"]["email"]
+				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]
+				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["username"]
+				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["password"]
+				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["email"]
 			):
 				api_response = v1.replace_namespaced_secret(name, namespace, body)
 			else:

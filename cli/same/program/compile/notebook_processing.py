@@ -10,7 +10,11 @@ import traceback
 
 import backends.executor
 from io import BufferedReader
-from same_config import SameConfig
+from cli.same.same_config import SameConfig
+
+import click
+
+from cli.same.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
 
 REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (?:.*)$")]
 
@@ -153,7 +157,7 @@ def parse_code_block_for_imports(code: str) -> list[str]:
     packages = imports - (set(candidates) & imports)
     logging.debug("Found packages: {0}".format(packages))
 
-    data = {x.strip() for x in stdlibs}
+    data = {x.strip() for x in stdlibs.splitlines()}
 
     return_list = list(packages - data)
 
@@ -184,8 +188,56 @@ def get_pkg_names(pkgs: list[str]) -> list[str]:
     return sorted(result, key=lambda s: s.lower())
 
 
-def compile(same_file: BufferedReader, target: str) -> str:
+def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}) -> str:
     same_config = SameConfig(same_file)
+
+    # Start by checking for secrets (if something is hinky, no reason to go forward).
+
+    # Cowardly, we're only supporting one secret_dict right now, meaning all private images need to be pulled
+    # from a single registry. This is probably good enough for a long time.
+
+    # I'm also not error checking - assuming if someone has set five values, then we're good, but who knows where
+    # that could fall down.
+    num_of_secrets = 0
+    for k in secret_dict:
+        if secret_dict[k] != "":
+            num_of_secrets += 1
+
+    missing_secrets_dict = {}
+
+    if secret_dict.get(REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME, None) is None:
+        secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = same_config.metadata.name
+
+    # Make the secret name safe for a Secret (if the rest of the secret name is not set, don't worry about it)
+    secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = lowerAlphaNumericOnly(secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME])
+
+    # Below, we're going to inject these secrets into the in-memory struct of same_config, which will later render it into the compiled template.
+    # This only makes sense if there are environments and one of them is private
+    if same_config.get("environments", None) is not None:
+        for name in same_config.environments:
+            if same_config.environments[name].get("private_registry", False):
+                these_missing_secrets = missing_secrets(secret_dict)
+                if len(these_missing_secrets) > 0:
+                    missing_secrets_dict[name] = these_missing_secrets
+                else:
+                    same_config.environments[name]["credentials"] = {}
+                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME]
+                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI] = secret_dict[
+                        REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI
+                    ]
+                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME]
+                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD]
+                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL]
+
+    if len(missing_secrets_dict):
+        click.echo("You set an environment with as 'private' but did not supply all the necessary secrets. Please correct this:")
+        for k in missing_secrets_dict:
+            these_missing_secrets = missing_secrets_dict[k]
+            if len(these_missing_secrets) > 0:
+                click.echo(f"\t{k}:")
+                for v in these_missing_secrets:
+                    click.echo(f"\t\t{v}:")
+        raise ValueError("Missing secrets for declared private registry.")
 
     notebook_path = get_notebook_path(same_file.name, same_config)  # noqa: F841
 

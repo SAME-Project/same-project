@@ -17,4 +17,4 @@ main.add_command(program_group.program)
 main.add_command(version.version)
 
 if __name__ == "__main__":
-    main()
+    main(auto_envvar_prefix="SAME")

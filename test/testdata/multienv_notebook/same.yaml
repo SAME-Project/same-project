@@ -1,0 +1,24 @@
+---
+apiVersion: projectsame.io/v1alpha1
+metadata:
+  name: MultipleImages
+  version: "0.0.1"
+notebook:
+  name: "Multiple Images"
+  path: multiple_images.ipynb
+environments:
+  default:
+    image_tag: library/python:3.9-slim-buster
+  python37:
+    image_tag: library/python:3.7-slim-buster
+    private_registry: false
+  private_environment:
+    image_tag: sameprivateregistry.azurecr.io/sample-private-org/sample-private-image:latest
+    private_registry: true
+run:
+  name: "Test Notebook - Run"
+  sha: 24a95219b3fce8402561d6b713bb435d6d5d51f2132d3c32703df8562db5b718
+  parameters:
+    sample_parameter_float: 0.2
+    sample_parameter_int: 2
+    sample_parameter_string: "test string"

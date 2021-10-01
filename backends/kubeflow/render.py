@@ -18,6 +18,9 @@ def render_function(compile_path: str, steps: list[Step], same_config: dict):
     env = Environment(loader=templateLoader)
     root_file_string = _build_root_file(env, steps, same_config)
 
+    with open("/Users/daaronch/code/out/root_with_secrets.py", "w+") as f:
+        f.writelines(root_file_string)
+
     root_path = Path(compile_path) / "root_pipeline.py"
     helpers.write_file(root_path, root_file_string)
 
@@ -86,14 +89,13 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
                 # TODO:  # same_config.environments[name].get("credentials", {}) <- would something like this work?
                 # It COULD autopopulate the entire dict, but not sure because if it's empty, then do all the fields
                 # get created?
-                these_credentials = same_config.environments[name].get("credentials", {})
-                these_credentials["secret_name"] = these_credentials.get("secret_name", "")
-                these_credentials["server"] = these_credentials.get("server", "")
-                these_credentials["username"] = these_credentials.get("username", "")
-                these_credentials["password"] = these_credentials.get("password", "")
-                these_credentials["email"] = these_credentials.get("email", "")
-                root_contract["secrets_to_create_as_dict"] = these_credentials
-                root_contract["list_of_environments"][name]["secret_name"] = these_credentials["secret_name"]
+                these_credentials = {}
+                these_credentials["image_pull_secret_name"] = same_config.environments[name].credentials.get("image_pull_secret_name", "")
+                these_credentials["image_pull_secret_registry_uri"] = same_config.environments[name].credentials.get("image_pull_secret_registry_uri", "")
+                these_credentials["image_pull_secret_username"] = same_config.environments[name].credentials.get("image_pull_secret_username", "")
+                these_credentials["image_pull_secret_password"] = same_config.environments[name].credentials.get("image_pull_secret_password", "")
+                these_credentials["image_pull_secret_email"] = same_config.environments[name].credentials.get("image_pull_secret_email", "")
+                root_contract["secrets_to_create_as_dict"][name] = these_credentials
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.
     # This is not IDEAL, but it's not as bad as it sounds because it'll allow systems to cache
@@ -149,7 +151,7 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
 
     # However, often there's a backup, internal only name that needs much stricter character restrictions
     # We'll create that here.
-    root_contract["safe_experiment_name"] = helpers.alphaNumericOnly(same_config.metadata.name)
+    root_contract["experiment_name_safe"] = helpers.lowerAlphaNumericOnly(same_config.metadata.name)
 
     # List manipulation is also pretty weak in jinja (plus I like views being very non-functional). We'll
     # create the comma delim list of steps (which we need for DAG description) in python as well.

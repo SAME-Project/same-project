@@ -13,10 +13,12 @@ import logging
 def deploy_function(compiled_path: Path):
     import sys
 
-    sys.path.append(str(compiled_path))
+    original_sys_modules = sys.modules.copy()
 
-    from root_pipeline import root  # type: ignore noqa
+    # Doing this inside a context manager because we only need to add this path during this execution
+    with helpers.add_path(str(compiled_path)):
+        from root_pipeline import root  # type: ignore noqa
 
-    # Only works with the 'kubeflow' namespace for now
-    kfp_client = kfp.Client()
-    kfp_client.create_run_from_pipeline_func(root, arguments={})
+        # Only works with the 'kubeflow' namespace for now
+        kfp_client = kfp.Client()
+        kfp_client.create_run_from_pipeline_func(root, arguments={})

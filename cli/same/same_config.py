@@ -60,11 +60,11 @@ class SameValidator(Validator):
                     "credentials": {
                         "type": "dict",
                         "schema": {
-                            "secret_name": {"type": "string"},
-                            "server": {"type": "string"},
-                            "username": {"type": "string"},
-                            "password": {"type": "string"},
-                            "email": {"type": "string"},
+                            "image_pull_secret_name": {"type": "string"},
+                            "image_pull_secret_registry_uri": {"type": "string"},
+                            "image_pull_secret_username": {"type": "string"},
+                            "image_pull_secret_password": {"type": "string"},
+                            "image_pull_secret_email": {"type": "string"},
                         },
                     },
                 },

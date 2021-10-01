@@ -145,3 +145,5 @@ requirements-dev.txt
 
 # Azure Functions
 **/local.settings.json
+
+.env.sh

@@ -8,6 +8,10 @@ import backends.kubeflow.deploy
 import backends.aml.render
 import backends.aml.deploy
 
+import cli.same.helpers
+
+import click
+
 
 def render(target: str, steps: list[Step], same_config: dict, compile_path: str = None) -> Path:
     target_renderers = {"kubeflow": backends.kubeflow.render.render_function, "aml": backends.aml.render.render_function}
@@ -28,4 +32,10 @@ def deploy(target: str, root_file_absolute_path: str, persist_temp_files: bool =
     if deploy_function is None:
         raise ValueError(f"Unknown backend: {target}")
 
-    return deploy_function(root_file_absolute_path)
+    deploy_return = deploy_function(root_file_absolute_path)
+    if not persist_temp_files:
+        cli.same.helpers.recursively_remove_dir(Path(root_file_absolute_path))
+    else:
+        click.echo(f"Files persisted in: {Path(root_file_absolute_path).parent}")
+
+    return deploy_return

@@ -2,7 +2,7 @@ from click.testing import CliRunner
 import pytest
 from pathlib import Path
 from cli.same.same_config import SameConfig
-from cli.same.program.commands import compile
+from cli.same.program.commands import run
 from cli.same.program.compile import notebook_processing
 import logging
 from backends.executor import render as template_render
@@ -52,21 +52,13 @@ def same_config():
         return SameConfig(buffered_reader=f)
 
 
-def test_compile_verb():
-    runner = CliRunner()
-    result = runner.invoke(compile)
-
-    assert result.exit_code == 2  # From missing file flag
-    assert "Invalid value for" in result.output  # Missing file flag error string
-
-
 def test_same_program_compile_e2e():
     same_file_path = Path(same_config_file_path)
     assert same_file_path.exists()
 
     same_file_path_as_string = str(same_file_path.absolute())
     runner = CliRunner()
-    result = runner.invoke(compile, ["-f", same_file_path_as_string, "-t", "kubeflow"])
+    result = runner.invoke(run, ["-f", same_file_path_as_string, "-t", "kubeflow", "-t", "kubeflow", "--persist-temp-files", "--no-deploy"])
     assert result.exit_code == 0
 
 
@@ -132,30 +124,38 @@ def test_e2e_full_notebook():
     assert "IPython" not in steps["same_step_000"].packages_to_install
 
 
-def test_kubeflow_template(mocker, tmpdir, same_config):
+# Yeeeesh - this is pretty fragile. But it does work - should probably clean up the string generation & checking better.
+def test_kubeflow_secrets(mocker, tmpdir, same_config):
     mocker.patch.object(Path, "write_text")
 
-    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
-    notebook_dict = notebook_processing.read_notebook(notebook_path)
-    steps = notebook_processing.get_steps(notebook_dict)
-    template_render("kubeflow", steps, same_config, compile_path=tmpdir)
+    # No Secrets
+    with open(same_config_file_path, "rb") as f:
+        notebook_processing.compile(f, "kubeflow")
 
     root_file_content = Path.write_text.call_args_list[0][0][0]
 
-    # Checking that initial imports are there
-    assert "import kfp" in root_file_content
+    # Skips over secret area properly
+    assert "# Generate secrets (if not already created)\n\n\n\t'''kfp.dsl.RUN_ID_PLACEHOOLDER" in root_file_content
 
-    # Checking that root parameters were filled in correctly
-    assert "def root(sample_parameter='0.841'" in root_file_content
+    # One Secret
+    secret_dict = {
+        "image_pull_secret_name": "IMAGE_PULL_SECRET_NAME",
+        "image_pull_secret_registry_uri": "IMAGE_PULL_SECRET_REGISTRY_URI",
+        "image_pull_secret_username": "IMAGE_PULL_SECRET_USERNAME",
+        "image_pull_secret_password": "IMAGE_PULL_SECRET_PASSWORD",
+        "image_pull_secret_email": "IMAGE_PULL_SECRET_EMAIL",
+    }
 
-    # Confirm that dict is ignored
-    assert "sample_complicated_parameter" not in root_file_content
+    multienv_same_file = "test/testdata/multienv_notebook/same.yaml"
+    with open(multienv_same_file, "rb") as f:
+        notebook_processing.compile(f, "kubeflow", secret_dict)
 
-    # Confirm that packages have been attached
-    assert "'Requests', 'scipy', 'tensorflow'" in root_file_content
+    root_file_content = Path.write_text.call_args_list[4][0][0]
 
-    # Confirm that three steps are written (only way we could get this line is if the two previous steps were also written)
-    assert "same_step_002_task.after(same_step_001_task)" in root_file_content
+    assert "IMAGE_PULL_SECRET_PASSWORD" in root_file_content
 
-    # Confirm that four files were written (root and three steps)
-    assert len(Path.write_text.call_args_list) == 4
+    assert 'cred_payload["auths"]["IMAGE_PULL_SECRET_REGISTRY_URI"]' in root_file_content
+
+    # TODO: Unit test for secrets being created
+    # Two+ secrets
+    # Partially complete secrets
