@@ -12,14 +12,11 @@ kubeflow_root_template = "kubeflow/root.jinja"
 kubeflow_step_template = "kubeflow/step.jinja"
 
 
-def render_function(compile_path: str, steps: list[Step], same_config: dict):
+def render_function(compile_path: str, steps: list, same_config: dict):
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
     root_file_string = _build_root_file(env, steps, same_config)
-
-    with open("/Users/daaronch/code/out/root_with_secrets.py", "w+") as f:
-        f.writelines(root_file_string)
 
     root_path = Path(compile_path) / "root_pipeline.py"
     helpers.write_file(root_path, root_file_string)
@@ -31,7 +28,7 @@ def render_function(compile_path: str, steps: list[Step], same_config: dict):
     return compile_path
 
 
-def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict) -> str:
+def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> str:
     template = env.get_template(kubeflow_root_template)
 
     root_contract = {

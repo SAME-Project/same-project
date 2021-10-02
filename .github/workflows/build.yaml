@@ -51,10 +51,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Python 3.9 Environment
+      - name: Setup Python 3.8 Environment
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.8
       - name: Package Durable Functions Backend App
         shell: bash
         run: |

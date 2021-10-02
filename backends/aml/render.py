@@ -6,49 +6,35 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import logging
 
-aml_root_template = "aml/root.jinja"
-aml_step_template = "aml/step.jinja"
+kubeflow_root_template = "aml/root.jinja"
+kubeflow_step_template = "aml/step.jinja"
 
 
-def render_function(compile_path: Path, steps: list[Step], same_config: dict):
+def render_function(compile_path: str, steps: list, same_config: dict):
+    """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
     root_file_string = _build_root_file(env, steps, same_config)
 
-    helpers.write_file(compile_path, root_file_string)
+    with open("/Users/daaronch/code/out/root.py", "w+") as f:
+        f.writelines(root_file_string)
 
-    for step in steps:
-        step_file_string = _build_step_file(env, step, same_config)
-        helpers.write_file(compile_path, step_file_string)
+    root_path = Path(compile_path) / "root_pipeline.py"
+    helpers.write_file(root_path, root_file_string)
 
-    # 		stepToWrite := ""
-    # 		var step_file_bytes []byte
-    # 		switch target {
-    # 		case "aml":
-    # 			stepToWrite = filepath.Join(compiledDir, fmt.Sprintf("%v.py", aggregatedSteps[i].StepIdentifier))
-    # 			step_file_bytes = box.Get("/kfp/step.tmpl")
-    # 		case "aml":
-    # 			// AML requires each step to be in its own directory, with the same name as the python file
-    # 			stepDirectoryName := filepath.Join(compiledDir, aggregatedSteps[i].StepIdentifier)
-    # 			_, err := os.Stat(stepDirectoryName)
-    # 			if os.IsNotExist(err) {
-    # 				errDir := os.MkdirAll(stepDirectoryName, 0700)
-    # 				if errDir != nil {
-    # 					return nil, fmt.Errorf("error creating step directory for %v: %v", stepDirectoryName, err)
-    # 				}
+    for step_name in steps:
+        step_file_string = _build_step_file(env, steps[step_name])
 
-    # 			}
+        with open(f"/Users/daaronch/code/out/{step_name}.py", "w+") as f:
+            f.writelines(step_file_string)
 
-    # 			stepToWrite = filepath.Join(stepDirectoryName, fmt.Sprintf("%v.py", aggregatedSteps[i].StepIdentifier))
-    # 			step_file_bytes = box.Get("/aml/step.tmpl")
-    # 		default:
-    # 			return nil, fmt.Errorf("unknown target: %v", target)
-    # 		}
-    return
+        helpers.write_file(Path(compile_path) / f"{step_name}.py", step_file_string)
+
+    return compile_path
 
 
-def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict) -> str:
-    template = env.get_template(aml_root_template)
+def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> str:
+    template = env.get_template(kubeflow_root_template)
 
     root_contract = {
         "root_parameters_as_string": "",
@@ -96,6 +82,8 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
 
         if root_contract["list_of_environments"][name]["private_registry"]:
 
+            # This is starting to have quite a lot of code smell - root_contract requires a bit of massaging (instead of
+            # just passing through same_config to the jinja template nakedly) but i'm starting to dislike everything here.
             if "credentials" in same_config.environments[name]:
                 # Someone COULD set this to be a 'private_registry' but did not set credentials. This may be ok!
                 # They could have already mounted the secret in the cluster, so we should let it go ahead.
@@ -105,14 +93,14 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
                 # TODO:  # same_config.environments[name].get("credentials", {}) <- would something like this work?
                 # It COULD autopopulate the entire dict, but not sure because if it's empty, then do all the fields
                 # get created?
-                these_credentials = same_config.environments[name].get("credentials", {})
-                these_credentials["secret_name"] = these_credentials.get("secret_name", "")
-                these_credentials["server"] = these_credentials.get("server", "")
-                these_credentials["username"] = these_credentials.get("username", "")
-                these_credentials["password"] = these_credentials.get("password", "")
-                these_credentials["email"] = these_credentials.get("email", "")
-                root_contract["secrets_to_create_as_dict"] = these_credentials
-                root_contract["list_of_environments"][name]["secret_name"] = these_credentials["secret_name"]
+                these_credentials = {}
+                these_credentials["image_pull_secret_name"] = same_config.environments[name].credentials.get("image_pull_secret_name", "")
+                these_credentials["image_pull_secret_registry_uri"] = same_config.environments[name].credentials.get("image_pull_secret_registry_uri", "")
+                these_credentials["image_pull_secret_username"] = same_config.environments[name].credentials.get("image_pull_secret_username", "")
+                these_credentials["image_pull_secret_password"] = same_config.environments[name].credentials.get("image_pull_secret_password", "")
+                these_credentials["image_pull_secret_email"] = same_config.environments[name].credentials.get("image_pull_secret_email", "")
+
+                root_contract["secrets_to_create_as_dict"][name] = these_credentials
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.
     # This is not IDEAL, but it's not as bad as it sounds because it'll allow systems to cache
@@ -144,6 +132,12 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
+
+        if root_contract["list_of_environments"].get(env_name, None) is None:
+            error_message = f"'{env_name}'' was listed as an environment in the notebook, but no such environment is listed in your SAME configuration file."
+            logging.fatal(error_message)
+            raise ValueError(error_message)
+
         step_to_append["environment_name"] = env_name
         step_to_append["image_tag"] = root_contract["list_of_environments"][env_name]["image_tag"]
         step_to_append["private_registry"] = root_contract["list_of_environments"][env_name]["private_registry"]
@@ -172,6 +166,6 @@ def _build_root_file(env: Environment, all_steps: list[Step], same_config: dict)
 
 
 def _build_step_file(env: Environment, step: Step) -> str:
-    template = env.get_template(aml_step_template)
+    template = env.get_template(kubeflow_step_template)
     step_contract = {"name": step.name, "inner_code": step.code}
     return template.render(step_contract)

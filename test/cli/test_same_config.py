@@ -109,8 +109,8 @@ environments:
     has_default = yaml.load(has_default_yaml)
     no_default = yaml.load(no_default_yaml)
 
-    has_default_full = good_same_config_file_contents.to_dict() | has_default
-    no_default_full = good_same_config_file_contents.to_dict() | no_default
+    has_default_full = {**good_same_config_file_contents.to_dict(), **has_default}
+    no_default_full = {**good_same_config_file_contents.to_dict(), **no_default}
 
     try:
         SameConfig(content=helpers.dict_to_yaml(has_default_full))

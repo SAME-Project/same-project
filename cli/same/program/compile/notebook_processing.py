@@ -36,7 +36,7 @@ def read_notebook(notebook_path) -> dict:
     return ntbk_dict
 
 
-def get_steps(notebook_dict: dict) -> dict[Step]:
+def get_steps(notebook_dict: dict) -> dict:
     """Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
     and the value is the Step object.
     """
@@ -111,7 +111,7 @@ We cannot continue because the following lines cannot be converted into standard
     return return_steps
 
 
-def get_sorted_list_of_steps(notebook_dict: dict) -> list[Step]:
+def get_sorted_list_of_steps(notebook_dict: dict) -> list:
     """Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook."""
     steps_dict = get_steps(notebook_dict)
     steps = list(steps_dict.values())
@@ -121,7 +121,7 @@ def get_sorted_list_of_steps(notebook_dict: dict) -> list[Step]:
 
 # Liberally stolen^W borrowed from here - https://github.com/bndr/pipreqs/blob/master/pipreqs/pipreqs.py
 # Possibly should steal more of these tests? https://github.com/bndr/pipreqs/blob/dea950dd077cd95a8de7aedcd6668b5942e8afc4/tests/test_pipreqs.py
-def parse_code_block_for_imports(code: str) -> list[str]:
+def parse_code_block_for_imports(code: str) -> list:
     imports = set()
     raw_imports = set()
     candidates = []
@@ -167,7 +167,7 @@ def parse_code_block_for_imports(code: str) -> list[str]:
     return mapped_list
 
 
-def get_pkg_names(pkgs: list[str]) -> list[str]:
+def get_pkg_names(pkgs: list) -> list:
     """Get PyPI package names from a list of imports.
     Args:
         pkgs (List[str]): List of import names.

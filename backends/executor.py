@@ -13,7 +13,7 @@ import cli.same.helpers
 import click
 
 
-def render(target: str, steps: list[Step], same_config: dict, compile_path: str = None) -> Path:
+def render(target: str, steps: list, same_config: dict, compile_path: str = None) -> Path:
     target_renderers = {"kubeflow": backends.kubeflow.render.render_function, "aml": backends.aml.render.render_function}
     render_function = target_renderers.get(target, None)
     if render_function is None:
