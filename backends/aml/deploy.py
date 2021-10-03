@@ -14,3 +14,5 @@ def deploy_function(compiled_path: str):
     # Doing this inside a context manager because we only need to add this path during this execution
     with helpers.add_path(str(compiled_path)):
         from root_pipeline import root  # type: ignore noqa
+
+        root()

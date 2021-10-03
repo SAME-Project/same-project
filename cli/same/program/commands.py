@@ -6,6 +6,8 @@ from cli.same.program.compile import notebook_processing as nbproc
 import backends.executor
 import cli.same.helpers
 
+import os
+
 
 @click.group()
 def program():
@@ -91,7 +93,31 @@ def run(
     secret_dict = cli.same.helpers.create_secret_dict(
         image_pull_secret_name, image_pull_secret_registry_uri, image_pull_secret_username, image_pull_secret_password, image_pull_secret_email
     )
+
+    aml_required_values = [
+        "AML_SP_PASSWORD_VALUE",
+        "AML_SP_TENANT_ID",
+        "AML_SP_APP_ID",
+        "WORKSPACE_SUBSCRIPTION_ID",
+        "WORKSPACE_RESOURCE_GROUP",
+        "WORKSPACE_NAME",
+        "AML_COMPUTE_NAME",
+    ]
+
+    aml_dict = {}
+    if target == "aml":
+        for aml_var in aml_required_values:
+            missing_values = []
+            val = os.environ.get(aml_var, None)
+            if val is not None:
+                aml_dict[aml_var] = val
+            else:
+                missing_values.append(aml_var)
+        if len(missing_values) > 0:
+            click.echo(f"You selected AML as a target, but are missing the following environment variables: {', '.join(missing_values)}")
+            raise ValueError("Missing values.")
+
     click.echo(f"File is: {same_file.name}")
-    compiled_same_file = nbproc.compile(same_file, target, secret_dict)
+    compiled_same_file = nbproc.compile(same_file, target, secret_dict, aml_dict)
     if not no_deploy:
         backends.executor.deploy(target, compiled_same_file, persist_temp_files)

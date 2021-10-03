@@ -34,7 +34,7 @@ def deploy(target: str, root_file_absolute_path: str, persist_temp_files: bool =
 
     deploy_return = deploy_function(root_file_absolute_path)
     if not persist_temp_files:
-        cli.same.helpers.recursively_remove_dir(Path(root_file_absolute_path))
+         (Path(root_file_absolute_path))
     else:
         click.echo(f"Files persisted in: {Path(root_file_absolute_path).parent}")
 

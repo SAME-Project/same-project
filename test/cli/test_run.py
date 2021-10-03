@@ -4,9 +4,13 @@ from pathlib import Path
 from cli.same.same_config import SameConfig
 from cli.same.program.commands import run
 from cli.same.program.compile import notebook_processing
+import cli.same.helpers
 import logging
 from backends.executor import render as template_render
 from backends.executor import deploy
+
+import tempfile
+import dotenv
 
 same_config_file_path = "test/testdata/generic_notebook/same.yaml"
 
@@ -33,13 +37,53 @@ def run_before_and_after_tests():
 
 
 def test_live_test_kubeflow(mocker, tmpdir, same_config):
-    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
-    notebook_dict = notebook_processing.read_notebook(notebook_path)
-    steps = notebook_processing.get_steps(notebook_dict)
-    complied_path = template_render("kubeflow", steps, same_config, compile_path=tmpdir)
-    deploy("kubeflow", complied_path)
+    temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
+    temp_dir_mock.return_value = tmpdir
 
-    assert True  # Deployed to Kubeflow without raising an error
+    mocker.patch.object(cli.same.helpers, "recursively_remove_dir")
+
+    dotenv.load_dotenv("./.env.sh")
+    same_file_path = Path(same_config_file_path)
+    assert same_file_path.exists()
+
+    same_file_path_as_string = str(same_file_path.absolute())
+    runner = CliRunner()
+
+    result = runner.invoke(
+        run,
+        [
+            "-f",
+            same_file_path_as_string,
+            "-t",
+            "kubeflow",
+        ],
+    )
+    assert result.exit_code == 0
+
+
+def test_live_test_aml(mocker, tmpdir, same_config):
+    temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
+    temp_dir_mock.return_value = tmpdir
+
+    mocker.patch.object(cli.same.helpers, "recursively_remove_dir")
+
+    dotenv.load_dotenv("./.env.sh")
+    same_file_path = Path(same_config_file_path)
+    assert same_file_path.exists()
+
+    same_file_path_as_string = str(same_file_path.absolute())
+    runner = CliRunner()
+
+    result = runner.invoke(
+        run,
+        [
+            "-f",
+            same_file_path_as_string,
+            "-t",
+            "aml",
+        ],
+    )
+    assert result.exit_code == 0
 
 
 def test_kubeflow_same_program_run_with_secrets_e2e():

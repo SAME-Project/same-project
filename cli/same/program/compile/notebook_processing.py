@@ -188,9 +188,23 @@ def get_pkg_names(pkgs: list) -> list:
     return sorted(result, key=lambda s: s.lower())
 
 
-def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}) -> str:
+def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> str:
     same_config = SameConfig(same_file)
 
+    same_config = _add_secrets_to_same_config(secret_dict, same_config)
+
+    same_config = _add_aml_values_to_same_config(aml_dict, same_config)
+
+    notebook_path = get_notebook_path(same_file.name, same_config)  # noqa: F841
+
+    notebook_dict = read_notebook(notebook_path)
+
+    all_steps = get_steps(notebook_dict)
+
+    return backends.executor.render(target=target, steps=all_steps, same_config=same_config)
+
+
+def _add_secrets_to_same_config(secret_dict, same_config) -> dict:
     # Start by checking for secrets (if something is hinky, no reason to go forward).
 
     # Cowardly, we're only supporting one secret_dict right now, meaning all private images need to be pulled
@@ -239,15 +253,12 @@ def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}) -> s
                     click.echo(f"\t\t{v}:")
         raise ValueError("Missing secrets for declared private registry.")
 
-    notebook_path = get_notebook_path(same_file.name, same_config)  # noqa: F841
+    return same_config
 
-    notebook_dict = read_notebook(notebook_path)
 
-    all_steps = get_steps(notebook_dict)
+def _add_aml_values_to_same_config(aml_dict, same_config) -> dict:
+    same_config["aml"] = {}
+    for k in aml_dict.keys():
+        same_config["aml"][k] = aml_dict[k]
 
-    return backends.executor.render(target=target, steps=all_steps, same_config=same_config)
-
-    # compileProgramCmd.Flags().String("image-pull-secret-server", "", "Image pull server for any private repos (only one server currently supported for all private repos)")
-    # compileProgramCmd.Flags().String("image-pull-secret-username", "", "Image pull username for any private repos (only one username currently supported for all private repos)")
-    # compileProgramCmd.Flags().String("image-pull-secret-password", "", "Image pull password for any private repos (only one password currently supported for all private repos)")
-    # compileProgramCmd.Flags().String("image-pull-secret-email", "", "Image pull email for any private repos (only one email currently supported for all private repos)")
+    return same_config

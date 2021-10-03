@@ -1,4 +1,3 @@
-from cli import same
 from objects.step import Step
 from pathlib import Path
 from cli.same import helpers
@@ -14,10 +13,8 @@ def render_function(compile_path: str, steps: list, same_config: dict):
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
+    same_config["compile_path"] = compile_path
     root_file_string = _build_root_file(env, steps, same_config)
-
-    with open("/Users/daaronch/code/out/root.py", "w+") as f:
-        f.writelines(root_file_string)
 
     root_path = Path(compile_path) / "root_pipeline.py"
     helpers.write_file(root_path, root_file_string)
@@ -25,10 +22,11 @@ def render_function(compile_path: str, steps: list, same_config: dict):
     for step_name in steps:
         step_file_string = _build_step_file(env, steps[step_name])
 
-        with open(f"/Users/daaronch/code/out/{step_name}.py", "w+") as f:
-            f.writelines(step_file_string)
+        # with open(f"/Users/daaronch/code/out/{step_name}.py", "w+") as f:
+        #     f.writelines(step_file_string)
 
-        helpers.write_file(Path(compile_path) / f"{step_name}.py", step_file_string)
+        step_path = (Path(compile_path) / step_name).mkdir()
+        helpers.write_file(Path(compile_path) / step_name / f"{step_name}.py", step_file_string)
 
     return compile_path
 
@@ -46,6 +44,8 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
         "experiment_name_safe": "",
         "list_of_environments": {},
         "image_pull_secrets": {},
+        "aml_workspace_credentials": {},
+        "compile_dir": "",
     }
 
     params_to_merge = []
@@ -101,6 +101,17 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
                 these_credentials["image_pull_secret_email"] = same_config.environments[name].credentials.get("image_pull_secret_email", "")
 
                 root_contract["secrets_to_create_as_dict"][name] = these_credentials
+
+    if same_config.get("aml"):
+        root_contract["aml_workspace_credentials"] = {
+            "AML_SP_PASSWORD_VALUE": same_config.aml.AML_SP_PASSWORD_VALUE,
+            "AML_SP_TENANT_ID": same_config.aml.AML_SP_TENANT_ID,
+            "AML_SP_APP_ID": same_config.aml.AML_SP_APP_ID,
+            "WORKSPACE_SUBSCRIPTION_ID": same_config.aml.WORKSPACE_SUBSCRIPTION_ID,
+            "WORKSPACE_RESOURCE_GROUP": same_config.aml.WORKSPACE_RESOURCE_GROUP,
+            "WORKSPACE_NAME": same_config.aml.WORKSPACE_NAME,
+            "AML_COMPUTE_NAME": same_config.aml.AML_COMPUTE_NAME,
+        }
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.
     # This is not IDEAL, but it's not as bad as it sounds because it'll allow systems to cache
@@ -160,12 +171,28 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
     # List manipulation is also pretty weak in jinja (plus I like views being very non-functional). We'll
     # create the comma delim list of steps (which we need for DAG description) in python as well.
-    root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([name for name in all_steps])
+
+    # For AML, each "step" needs to have '_step' attached (this may be historical)
+    # and not necessary - look at it when we combine all these step rendering functions into one
+    step_names_for_aml = []
+
+    for step_name in all_steps:
+        step_names_for_aml.append(f"{step_name}_step")
+
+    root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([name for name in step_names_for_aml])
+
+    root_contract["compile_path"] = same_config["compile_path"]
 
     return template.render(root_contract)
 
 
 def _build_step_file(env: Environment, step: Step) -> str:
     template = env.get_template(kubeflow_step_template)
-    step_contract = {"name": step.name, "inner_code": step.code}
+
+    # Create a parameter_string for putting in each step function
+    # default is to be a serialized empty dict. We should probably
+    # handle this a different way (allowing custom params to be passed in)
+    # but haven't found this requirement from a customer yet.
+    parameter_string = '__context="gAR9lC4=", __run_info="gAR9lC4=", __metadata_url=""'
+    step_contract = {"name": step.name, "inner_code": step.code, "parameter_string": parameter_string}
     return template.render(step_contract)
