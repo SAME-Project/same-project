@@ -25,7 +25,7 @@ def render_function(compile_path: str, steps: list, same_config: dict):
         # with open(f"/Users/daaronch/code/out/{step_name}.py", "w+") as f:
         #     f.writelines(step_file_string)
 
-        step_path = (Path(compile_path) / step_name).mkdir()
+        (Path(compile_path) / step_name).mkdir()
         helpers.write_file(Path(compile_path) / step_name / f"{step_name}.py", step_file_string)
 
     return compile_path
