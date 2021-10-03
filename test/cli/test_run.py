@@ -128,7 +128,7 @@ def test_kubeflow_same_program_run_with_secrets_e2e():
             "-f",
             same_file_path_as_string,
             "-t",
-            "aml",
+            "kubeflow",
             "--image-pull-secret-name",
             "IMAGE_PULL_SECRET_NAME",
             "--image-pull-secret-registry-uri",
