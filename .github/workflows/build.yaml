@@ -87,23 +87,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      # AZURE SECRET BLOB contains variables for connecting to AML. Specifically:
-      # export AML_SP_NAME="xxxx"
-      # export AML_SP_APP_ID="<UID>"
-      # export AML_SP_OBJECT_ID="<UID>"
-      # export AML_SP_TENANT_ID="<UID>"
-      # export AML_SP_PASSWORD_VALUE="**PASSWORD**"
-      # export AML_SP_PASSWORD_ID="<UID>"
-
-      # export WORKSPACE_SUBSCRIPTION_ID="<UID>"
-      # export WORKSPACE_RESOURCE_GROUP="Resource_Group_Name"
-      # export WORKSPACE_NAME="WORKSPACE_NAME"
-      # Read here - https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication - to understand how to populate these values.
-      # On your local machine, put these all in a dotenv compatible file (.env.sh) at the root of your project.
-      - run: 'echo "$AZURE_SECRET_BLOB" > ./env.sh'
-        shell: bash
-        env:
-          AZURE_SECRET_BLOB: ${{secrets.AZURE_SECRET_BLOB}}
       - name: Package Azure Functions Backend App
         shell: bash
         run: |
@@ -133,6 +116,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # AZURE SECRET BLOB contains variables for connecting to AML. Specifically:
+      # export AML_SP_NAME="xxxx"
+      # export AML_SP_APP_ID="<UID>"
+      # export AML_SP_OBJECT_ID="<UID>"
+      # export AML_SP_TENANT_ID="<UID>"
+      # export AML_SP_PASSWORD_VALUE="**PASSWORD**"
+      # export AML_SP_PASSWORD_ID="<UID>"
+
+      # export WORKSPACE_SUBSCRIPTION_ID="<UID>"
+      # export WORKSPACE_RESOURCE_GROUP="Resource_Group_Name"
+      # export WORKSPACE_NAME="WORKSPACE_NAME"
+      # Read here - https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication - to understand how to populate these values.
+      # On your local machine, put these all in a dotenv compatible file (.env.sh) at the root of your project.
+      - run: 'echo "$AZURE_SECRET_BLOB" > ./env.sh'
+        shell: bash
+        env:
+          AZURE_SECRET_BLOB: ${{secrets.AZURE_SECRET_BLOB}}
+
       - name: Checkout submodules
         uses: textbook/git-checkout-submodule-action@master
       - name: Set up Python
