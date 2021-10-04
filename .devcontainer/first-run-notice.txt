@@ -1,0 +1,2 @@
+👋 Welcome to the SAME codespace! It includes everything needed to build,
+run and test the https://github.com/SAME-project/same-mono-private repository.

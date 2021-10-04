@@ -1,8 +1,35 @@
 {
-  "name": "SAME Monorepo Codespace",
-	"dockerFile": "Dockerfile",
+  "name": "SAME Monorepo Dev Container",
+  "dockerFile": "Dockerfile",
+  "containerEnv": {
+    // Uncomment to disable docker-in-docker and automatically proxy default /var/run/docker.sock to
+    // the localhost bind-mount /var/run/docker-host.sock.
+    // "BIND_LOCALHOST_DOCKER": "true"
+  },
   "extensions": [
-    "ms-python.python"
+    "ms-python.python",
+    "ms-azuretools.vscode-docker",
+    "ms-kubernetes-tools.vscode-kubernetes-tools"
+  ],
+  "mounts": [
+    // Mount docker-in-docker library volume
+    "type=volume,source=dind-var-lib-docker,target=/var/lib/docker",
+
+    // Bind mount docker socket under an alias to support docker-from-docker
+    "type=bind,source=/var/run/docker.sock,target=/var/run/docker-host.sock",
+  ],
+  // Always run image-defined default command
+  "overrideCommand": false,
+  "runArgs": [
+    // Uncomment to bind to host network for local devcontainer; this is necessary if using the
+    // bind-mounted /var/run/docker-host.sock directly.
+    // "--net=host",
+
+    // Enable docker-in-docker configuration. Comment out if not using for better security.
+    "--privileged",
+
+    // Run the entrypoint defined in container image.
+    "--init"
   ],
   "remoteUser": "vscode",
   // Set *default* container specific settings.json values on container create.
@@ -19,6 +46,7 @@
     "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
     "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
     "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-    "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
+    "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
+    "terminal.integrated.defaultProfile.linux": "bash",
   }
 }
