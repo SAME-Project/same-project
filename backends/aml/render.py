@@ -3,32 +3,35 @@ from pathlib import Path
 from cli.same import helpers
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from typing import Tuple
+
 import logging
 
 from uuid import uuid4
+
 
 kubeflow_root_template = "aml/root.jinja"
 kubeflow_step_template = "aml/step.jinja"
 
 
-def render_function(compile_path: str, steps: list, same_config: dict):
+def render_function(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
     same_config["compile_path"] = compile_path
     root_file_string = _build_root_file(env, steps, same_config)
 
-    root_path = Path(compile_path) / "root_pipeline.py"
+    root_pipeline_name = f"root_pipeline_{uuid4().hex.lower()}"
+    root_path = Path(compile_path) / f"{root_pipeline_name}.py"
     helpers.write_file(root_path, root_file_string)
 
     for step_name in steps:
         # Need a unique name so that libraries don't conflict in sys.modules. This is MOSTLY a test issue, but could be the case generally.
-        unique_step_name = f"{steps[step_name].name}-{uuid4()}"
-        step_file_string = _build_step_file(env, steps[step_name], unique_step_name)
-        (Path(compile_path) / step_name).mkdir()
-        helpers.write_file(Path(compile_path) / unique_step_name / f"{unique_step_name}.py", step_file_string)
+        step_file_string = _build_step_file(env, steps[step_name], steps[step_name].unique_step_name)
+        (Path(compile_path) / steps[step_name].unique_step_name).mkdir()
+        helpers.write_file(Path(compile_path) / steps[step_name].unique_step_name / f"{steps[step_name].unique_step_name}.py", step_file_string)
 
-    return compile_path
+    return (compile_path, root_pipeline_name)
 
 
 def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> str:
@@ -175,12 +178,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
     # For AML, each "step" needs to have '_step' attached (this may be historical)
     # and not necessary - look at it when we combine all these step rendering functions into one
-    step_names_for_aml = []
-
-    for step_name in all_steps:
-        step_names_for_aml.append(f"{step_name}_step")
-
-    root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([name for name in step_names_for_aml])
+    root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([f"{all_steps[this_step_name].unique_step_name}_step" for this_step_name in all_steps])
 
     root_contract["compile_path"] = same_config["compile_path"]
 

@@ -7,13 +7,15 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from kubernetes import client, config
 from uuid import uuid4
 
+from typing import Tuple
+
 import logging
 
 kubeflow_root_template = "kubeflow/root.jinja"
 kubeflow_step_template = "kubeflow/step.jinja"
 
 
-def render_function(compile_path: str, steps: list, same_config: dict):
+def render_function(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
@@ -25,10 +27,11 @@ def render_function(compile_path: str, steps: list, same_config: dict):
 
     root_file_string = _build_root_file(env, steps, same_config)
 
-    root_path = Path(compile_path) / "root_pipeline.py"
+    root_pipeline_name = f"root_pipeline_{uuid4().hex.lower()}"
+    root_path = Path(compile_path) / f"{root_pipeline_name}.py"
     helpers.write_file(root_path, root_file_string)
 
-    return compile_path
+    return (compile_path, root_pipeline_name)
 
 
 def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> str:

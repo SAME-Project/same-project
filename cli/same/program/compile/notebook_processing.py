@@ -7,6 +7,7 @@ from cli.same.stdlib import stdlibs
 from cli.same.mapping import library_mapping
 import re
 import traceback
+from typing import Tuple
 
 import backends.executor
 from io import BufferedReader
@@ -188,7 +189,7 @@ def get_pkg_names(pkgs: list) -> list:
     return sorted(result, key=lambda s: s.lower())
 
 
-def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> str:
+def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
     same_config = SameConfig(same_file)
 
     same_config = _add_secrets_to_same_config(secret_dict, same_config)

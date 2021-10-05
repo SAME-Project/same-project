@@ -41,7 +41,7 @@ def main({{ parameter_string }}) -> NamedTuple('FuncOutput',[('context', str),])
 	__json_data = {
 		"experiment_id": __run_info_dict["experiment_id"],
 		"run_id": __run_info_dict["run_id"],
-		"step_id": "{{ Name }}",
+		"step_id": "{{ name }}",
 		"metadata_type": "input",
 		"metadata_value": __context,
 		"metadata_time": __datetime.datetime.now().isoformat(),
@@ -63,7 +63,7 @@ import base64
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from types import ModuleType as __ModuleType
 
-{{ Inner_Code }}
+{{ inner_code }}
 
 __locals_keys = frozenset(locals().keys())
 __globals_keys = frozenset(globals().keys())

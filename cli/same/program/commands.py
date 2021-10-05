@@ -118,6 +118,6 @@ def run(
             raise ValueError("Missing values.")
 
     click.echo(f"File is: {same_file.name}")
-    compiled_same_file = nbproc.compile(same_file, target, secret_dict, aml_dict)
+    compiled_same_file, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
     if not no_deploy:
-        backends.executor.deploy(target, compiled_same_file, persist_temp_files)
+        backends.executor.deploy(target, compiled_same_file, root_module_name, persist_temp_files)

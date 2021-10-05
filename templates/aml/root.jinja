@@ -71,7 +71,7 @@ def root(
 
 	run_info_dict = {
 		"experiment_id": experiment.id,
-		"step_id": "same_step_0",
+		"step_id": "run_info_step",
 	}
 
 	output = {}
@@ -137,13 +137,13 @@ def root(
 	)
 
 {% for step in list_of_steps %}
-	entry_point = "{{step.name}}.py"
-	__pipelinedata_context_{{step.name}} = PipelineData(
-		"__pipelinedata_context_{{step.name}}", output_mode="mount"
+	entry_point = "{{step.unique_step_name}}.py"
+	__pipelinedata_context_{{step.unique_step_name}} = PipelineData(
+		"__pipelinedata_context_{{step.unique_step_name}}", output_mode="mount"
 	)
 
-	{{step.name}}_step = PythonScriptStep(
-		source_directory="{{compile_path}}/{{step.name}}",
+	{{step.unique_step_name}}_step = PythonScriptStep(
+		source_directory="{{compile_path}}/{{step.unique_step_name}}",
 		script_name=entry_point,
 		arguments=[
 			"--input_context",
@@ -153,11 +153,11 @@ def root(
 			"--metadata_url",
 			metadata_url,
 			"--output_context",
-			__pipelinedata_context_{{step.name}},
+			__pipelinedata_context_{{step.unique_step_name}},
 		],
 
 		{% if step.previous_step_name %}inputs=[__pipelinedata_context_{{step.previous_step_name}}],{% endif %}
-		outputs=[__pipelinedata_context_{{step.name}}],
+		outputs=[__pipelinedata_context_{{step.unique_step_name}}],
 		compute_target=compute_target,
 		runconfig=config_{{step.environment_name}},
 		allow_reuse=False,
