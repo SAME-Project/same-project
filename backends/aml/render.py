@@ -5,6 +5,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 import logging
 
+from uuid import uuid4
+
 kubeflow_root_template = "aml/root.jinja"
 kubeflow_step_template = "aml/step.jinja"
 
@@ -20,13 +22,11 @@ def render_function(compile_path: str, steps: list, same_config: dict):
     helpers.write_file(root_path, root_file_string)
 
     for step_name in steps:
-        step_file_string = _build_step_file(env, steps[step_name])
-
-        # with open(f"/Users/daaronch/code/out/{step_name}.py", "w+") as f:
-        #     f.writelines(step_file_string)
-
+        # Need a unique name so that libraries don't conflict in sys.modules. This is MOSTLY a test issue, but could be the case generally.
+        unique_step_name = f"{steps[step_name].name}-{uuid4()}"
+        step_file_string = _build_step_file(env, steps[step_name], unique_step_name)
         (Path(compile_path) / step_name).mkdir()
-        helpers.write_file(Path(compile_path) / step_name / f"{step_name}.py", step_file_string)
+        helpers.write_file(Path(compile_path) / unique_step_name / f"{unique_step_name}.py", step_file_string)
 
     return compile_path
 
@@ -140,6 +140,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         step_to_append = {}
         step_to_append["name"] = step_content.name
+        step_to_append["unique_step_name"] = step_content.unique_step_name
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
@@ -158,7 +159,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
             step_to_append["previous_step_name"] = previous_step_name
         root_contract["list_of_steps"].append(step_to_append)
 
-        previous_step_name = step_content.name
+        previous_step_name = step_content.unique_step_name
 
     # Text manipulation in jinja is pretty weak, we'll do both of these cleanings in python.
 
@@ -186,7 +187,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     return template.render(root_contract)
 
 
-def _build_step_file(env: Environment, step: Step) -> str:
+def _build_step_file(env: Environment, step: Step, step_name: str) -> str:
     template = env.get_template(kubeflow_step_template)
 
     # Create a parameter_string for putting in each step function
@@ -194,5 +195,5 @@ def _build_step_file(env: Environment, step: Step) -> str:
     # handle this a different way (allowing custom params to be passed in)
     # but haven't found this requirement from a customer yet.
     parameter_string = '__context="gAR9lC4=", __run_info="gAR9lC4=", __metadata_url=""'
-    step_contract = {"name": step.name, "inner_code": step.code, "parameter_string": parameter_string}
+    step_contract = {"name": step_name, "inner_code": step.code, "parameter_string": parameter_string}
     return template.render(step_contract)

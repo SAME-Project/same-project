@@ -132,7 +132,8 @@ def test_kubeflow_secrets(mocker, tmpdir, same_config):
     with open(same_config_file_path, "rb") as f:
         notebook_processing.compile(f, "kubeflow")
 
-    root_file_content = Path.write_text.call_args_list[0][0][0]
+    # Root file is the 4rd call zero indexed (there should be a cleaner way to do this - super fragile)
+    root_file_content = Path.write_text.call_args_list[3][0][0]
 
     # Skips over secret area properly
     assert "# Generate secrets (if not already created)\n\n\n\t'''kfp.dsl.RUN_ID_PLACEHOOLDER" in root_file_content
@@ -150,7 +151,8 @@ def test_kubeflow_secrets(mocker, tmpdir, same_config):
     with open(multienv_same_file, "rb") as f:
         notebook_processing.compile(f, "kubeflow", secret_dict)
 
-    root_file_content = Path.write_text.call_args_list[4][0][0]
+    # Root file is the 7th call zero indexed (there should be a cleaner way to do this - super fragile)
+    root_file_content = Path.write_text.call_args_list[6][0][0]
 
     assert "IMAGE_PULL_SECRET_PASSWORD" in root_file_content
 

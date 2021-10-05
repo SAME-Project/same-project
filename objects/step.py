@@ -1,20 +1,15 @@
 from __future__ import annotations
 from .json_serializable_object import JSONSerializableObject
 
+from uuid import uuid4
+
 
 class Step(JSONSerializableObject):
     """Object describing an individual code execution step and its associated metadata.
     This is the unit of execution and is dispatched to a code execution backend.
     """
-    def __init__(self,
-                 name="same_step_unset",
-                 cache_value="P0D",
-                 environment_name="default",
-                 tags=[],
-                 index=-1,
-                 code="",
-                 parameters=[],
-                 packages_to_install={}):
+
+    def __init__(self, name="same_step_unset", cache_value="P0D", environment_name="default", tags=[], index=-1, code="", parameters=[], packages_to_install={}):
         self.name = name
         self.cache_value = cache_value
         self.environment_name = environment_name
@@ -23,6 +18,15 @@ class Step(JSONSerializableObject):
         self.code = code
         self.parameters = parameters
         self.packages_to_install = packages_to_install
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+        self.unique_step_name = self.__generate_unique_name(name)
 
     @staticmethod
     def from_json_list(json_serialized_steps: str) -> list[Step]:
@@ -38,10 +42,13 @@ class Step(JSONSerializableObject):
 
     @staticmethod
     def to_json_array(steps_list: list[Step]):
-        """Takes as input a list of Step objects and produces an array of JSON serialized Steps in the same order.
-        """
+        """Takes as input a list of Step objects and produces an array of JSON serialized Steps in the same order."""
         steps_serialized = []
         for step in steps_list:
             step_serialized = Step.to_json(step)
             steps_serialized.append(step_serialized)
         return steps_serialized
+
+    # Need a unique name so that libraries don't conflict in sys.modules. This is MOSTLY a test issue, but could be the case generally.
+    def __generate_unique_name(self, name) -> str:
+        return f"{name}_{uuid4().hex.lower()}"

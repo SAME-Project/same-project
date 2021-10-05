@@ -72,7 +72,7 @@ def test_load_same_from_string():
     assert "unknown field" in str(e.value)
 
 
-@pytest.mark.skip("Writing tests not implemented")
+@pytest.mark.skip("Writing environment file from same.import not implemented")
 def test_write_same_file():
     assert False, "NYI"
     # Bad path

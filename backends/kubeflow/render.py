@@ -5,6 +5,7 @@ from cli.same import helpers
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from kubernetes import client, config
+from uuid import uuid4
 
 import logging
 
@@ -16,14 +17,16 @@ def render_function(compile_path: str, steps: list, same_config: dict):
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateLoader = FileSystemLoader(searchpath="./templates")
     env = Environment(loader=templateLoader)
+
+    # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
+    for step_name in steps:
+        step_file_string = _build_step_file(env, steps[step_name])
+        helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_step_name }.py", step_file_string)
+
     root_file_string = _build_root_file(env, steps, same_config)
 
     root_path = Path(compile_path) / "root_pipeline.py"
     helpers.write_file(root_path, root_file_string)
-
-    for step_name in steps:
-        step_file_string = _build_step_file(env, steps[step_name])
-        helpers.write_file(Path(compile_path) / f"{step_name}.py", step_file_string)
 
     return compile_path
 
@@ -121,6 +124,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         step_to_append = {}
         step_to_append["name"] = step_content.name
+        step_to_append["unique_step_name"] = step_content.unique_step_name
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
@@ -139,7 +143,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
             step_to_append["previous_step_name"] = previous_step_name
         root_contract["list_of_steps"].append(step_to_append)
 
-        previous_step_name = step_content.name
+        previous_step_name = step_content.unique_step_name
 
     # Text manipulation in jinja is pretty weak, we'll do both of these cleanings in python.
 
@@ -159,5 +163,5 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
 def _build_step_file(env: Environment, step: Step) -> str:
     template = env.get_template(kubeflow_step_template)
-    step_contract = {"name": step.name, "inner_code": step.code}
+    step_contract = {"name": step.name, "unique_step_name": step.unique_step_name, "inner_code": step.code}
     return template.render(step_contract)

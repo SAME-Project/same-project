@@ -68,13 +68,6 @@ def test_load_same_from_string():
     assert "environments does not contain a" in str(e.value)
 
 
-@pytest.mark.skip("Writing tests not implemented")
-def test_write_same_file():
-    assert False, "NYI"
-    # Bad path
-    # Bad file
-
-
 def test_load_same_config():
     same_file_path = Path(same_config_file_path)
     assert same_file_path.exists()

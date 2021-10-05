@@ -14,7 +14,7 @@ from pathlib import Path as __Path
 from kubernetes.client.models import V1EnvVar
 
 {% for step in list_of_steps %}
-import {{ step.name }}
+import {{ step.unique_step_name }}
 {% endfor %}
 
 def get_run_info(
@@ -165,22 +165,22 @@ def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% e
 	create_context_file_op = create_context_file_component(context_string=__original_context)
 
 {% for step in list_of_steps %}
-	{{step.name}}_op = create_component_from_func(
-		func={{step.name}}.generated_main,
+	{{step.unique_step_name}}_op = create_component_from_func(
+		func={{step.unique_step_name}}.generated_main,
 		base_image="{{step.image_tag}}",
 		packages_to_install=["dill", "requests", "mlflow==1.17.0", "boto3==1.17.79", {{step.package_string}}],
 	)
-	{{step.name}}_task = {{step.name}}_op(input_context={% if step.previous_step_name %}{{step.previous_step_name}}_task{% else %}create_context_file_op{% endif %}.outputs["output_context"], run_info=run_info_op.outputs["run_info"], metadata_url=metadata_url)
-	{% if step.cache_value %}{{step.name}}_task.execution_options.caching_strategy.max_cache_staleness = "{{step.cache_value}}"{% endif %}
+	{{step.unique_step_name}}_task = {{step.unique_step_name}}_op(input_context={% if step.previous_step_name %}{{step.previous_step_name}}_task{% else %}create_context_file_op{% endif %}.outputs["output_context"], run_info=run_info_op.outputs["run_info"], metadata_url=metadata_url)
+	{% if step.cache_value %}{{step.unique_step_name}}_task.execution_options.caching_strategy.max_cache_staleness = "{{step.cache_value}}"{% endif %}
 
 	for (k, v) in [("AWS_ACCESS_KEY_ID", AWS_ACCESS_KEY_ID),
 					("AWS_SECRET_ACCESS_KEY", AWS_SECRET_ACCESS_KEY),
 					("MLFLOW_S3_ENDPOINT_URL", MLFLOW_S3_ENDPOINT_URL),
 					("MLFLOW_TRACKING_URI", MLFLOW_TRACKING_URI)]:
-		{{step.name}}_task = {{step.name}}_task.add_env_variable(V1EnvVar(name=k, value=v))
+		{{step.unique_step_name}}_task = {{step.unique_step_name}}_task.add_env_variable(V1EnvVar(name=k, value=v))
 
 	{% if step.previous_step_name %}
-	{{ step.name }}_task.after({{step.previous_step_name}}_task)
+	{{ step.unique_step_name }}_task.after({{step.previous_step_name}}_task)
 	{% endif %}
 {% endfor %}
 
