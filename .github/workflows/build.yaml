@@ -133,7 +133,10 @@ jobs:
         shell: bash
         env:
           AZURE_SECRET_BLOB: ${{secrets.AZURE_SECRET_BLOB}}
-
+      - name: Debug action
+        # You may pin to the exact commit or the version.
+        # uses: hmarr/debug-action@f39144d2d4e186d75dbf4cac92cc91efadadc952
+        uses: hmarr/debug-action@v2.0.0
       - name: Checkout submodules
         uses: textbook/git-checkout-submodule-action@master
       - name: Set up Python
