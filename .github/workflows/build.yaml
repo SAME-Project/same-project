@@ -129,7 +129,9 @@ jobs:
       # export WORKSPACE_NAME="WORKSPACE_NAME"
       # Read here - https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication - to understand how to populate these values.
       # On your local machine, put these all in a dotenv compatible file (.env.sh) at the root of your project.
-      - run: 'echo "$AZURE_SECRET_BLOB" > ./env.sh'
+      - name: Download env variables
+        run: | 
+          echo "$AZURE_SECRET_BLOB" > ./env.sh
         shell: bash
         env:
           AZURE_SECRET_BLOB: ${{secrets.AZURE_SECRET_BLOB}}
