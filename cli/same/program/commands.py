@@ -106,16 +106,17 @@ def run(
 
     aml_dict = {}
     if target == "aml":
+        missing_values = []
         for aml_var in aml_required_values:
-            missing_values = []
             val = os.environ.get(aml_var, None)
             if val is not None:
                 aml_dict[aml_var] = val
             else:
                 missing_values.append(aml_var)
         if len(missing_values) > 0:
-            click.echo(f"You selected AML as a target, but are missing the following environment variables: {', '.join(missing_values)}")
-            raise ValueError("Missing values.")
+            missing_values_string = ", ".join(missing_values)
+            click.echo(f"You selected AML as a target, but are missing the following environment variables: {missing_values_string}")
+            raise ValueError(f"Missing values: {missing_values_string}")
 
     click.echo(f"File is: {same_file.name}")
     compiled_same_file, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)

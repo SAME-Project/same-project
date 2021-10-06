@@ -130,7 +130,7 @@ jobs:
       # Read here - https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication - to understand how to populate these values.
       # On your local machine, put these all in a dotenv compatible file (.env.sh) at the root of your project.
       - name: Download env variables
-        run: | 
+        run: |
           echo "$AZURE_SECRET_BLOB" > ./.env.sh
         shell: bash
         env:
