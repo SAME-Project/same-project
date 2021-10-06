@@ -156,10 +156,6 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.CORE_TEAM_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
-      - name: Debugging with tmate
-        # You may pin to the exact commit or the version.
-        # uses: mxschmitt/action-tmate@19a49ed72830f0810df81e42252ee9da19c8e4d8
-        uses: mxschmitt/action-tmate@v3.7
       - name: Test
         run: |
           mkdir -p artifacts/tests 
