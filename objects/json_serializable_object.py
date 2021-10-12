@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any
 from abc import ABC
+
 import json
 
 
@@ -38,19 +39,20 @@ class JSONSerializableObject(ABC):
             module = __import__(module_name, fromlist=[None])
             # Get the class from the module
             class_ = getattr(module, class_name)
-            # Use dictionary unpacking to initialize the object
-            obj = class_(**obj_dict)
+            obj = class_()
+            for attribute_name, attribute_value in obj_dict.items():
+                setattr(obj, attribute_name, attribute_value)
             return obj
         else:
             # Input is not of the appropriate type to be converted into a Step object
             raise TypeError(f"Object cannot be converted to an object of type: {cls.__name__}")
 
-    @staticmethod
-    def to_json(obj):
-        json_obj = json.dumps(obj, default=JSONSerializableObject.to_dict)
+    @classmethod
+    def to_json(cls, obj):
+        json_obj = json.dumps(obj, default=cls.to_dict)
         return json_obj
 
-    @staticmethod
-    def from_json(json_obj):
-        obj = json.loads(json_obj, object_hook=JSONSerializableObject.from_dict)
+    @classmethod
+    def from_json(cls, json_obj):
+        obj = json.loads(json_obj, object_hook=cls.from_dict)
         return obj
