@@ -24,6 +24,9 @@
             "purpose": [
                 "debug-test"
             ],
+            "env": {
+                "DURABLE_FUNCTIONS_BACKEND_TEST_HOST": "http://localhost/7071"
+            },
             "console": "integratedTerminal",
             "justMyCode": true
         },

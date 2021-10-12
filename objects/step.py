@@ -1,5 +1,6 @@
 from __future__ import annotations
 from .json_serializable_object import JSONSerializableObject
+from typing import Any
 
 from uuid import uuid4
 
@@ -9,7 +10,17 @@ class Step(JSONSerializableObject):
     This is the unit of execution and is dispatched to a code execution backend.
     """
 
-    def __init__(self, name="same_step_unset", cache_value="P0D", environment_name="default", tags=[], index=-1, code="", parameters=[], packages_to_install={}):
+    def __init__(
+        self,
+        name="same_step_unset",
+        cache_value="P0D",
+        environment_name="default",
+        tags=[],
+        index=-1,
+        code="",
+        parameters=[],
+        packages_to_install={}
+    ):
         self.name = name
         self.cache_value = cache_value
         self.environment_name = environment_name

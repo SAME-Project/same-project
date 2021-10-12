@@ -6,7 +6,7 @@
       "type": "python",
       "request": "attach",
       "port": 9091,
-      "preLaunchTask": "func: host start"
+      "preLaunchTask": "func: host start --verbose"
     }
   ]
 }
