@@ -10,13 +10,13 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
     """
     Orchestrates the execution of a given list of Steps.
     """
-    # Get all steps to execute
+    # Unpack inputs
     input = context.get_input()
-    steps_json_list = input["steps"]
-    steps = Step.from_json_list(steps_json_list)
-    
     user = input["user"]
 
+    # Get all steps to execute
+    steps_json_list = input["steps"]
+    steps = Step.from_json_list(steps_json_list)
     num_steps = len(steps)
     logging.info(f"Got {num_steps} steps to execute")
 
@@ -28,7 +28,7 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
     # results = yield context.task_all(executions)
 
     # Execute all steps one after the other
-    # Note: Assume that the list of steps is in order of required (sequential) execution
+    # Note: Assuming that the list of steps is in order of required (sequential) execution
     results = []
     id = 0
     for step in steps:
