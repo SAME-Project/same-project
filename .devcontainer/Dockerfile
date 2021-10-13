@@ -2,7 +2,11 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the Apache License 2.0.
 # ------------------------------------------------------------
-ARG VARIANT=3-bullseye
+
+# See pyproject.toml file for supported Python version range, currently <3.9 for Azure ML dependencies
+# Using buster instead of bullseye as Azure Functions Core Tools do not yet support Debian 11, see:
+# https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v3%2Clinux%2Ccsharp%2Cportal%2Cbash%2Ckeda#install-the-azure-functions-core-tools
+ARG VARIANT=3.8-buster
 FROM mcr.microsoft.com/vscode/devcontainers/python:${VARIANT}
 
 # Reuse existing username configured as part of base image. See:
@@ -37,18 +41,24 @@ RUN apt-get update \
     # Clean up packages and the staging folder.
     && apt-get autoremove -y && apt-get clean -y && rm -rf /tmp/staging
 
-# Install the Azure CLI
+# Install the Azure CLI and Azure Functions Core Tools
 RUN apt-get update \
     && apt-get install ca-certificates curl apt-transport-https lsb-release gnupg \
     && curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null \
-    && AZ_REPO=$(lsb_release -cs) \
-    && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list \
+    && TARGET_ARCH=$(dpkg-architecture -q DEB_BUILD_ARCH) \
+    && TARGET_CODENAME=$(lsb_release -cs) \
+    && TARGET_RELEASE=$(lsb_release -rs | cut -d'.' -f 1) \
+    && echo "deb [arch=${TARGET_ARCH}] https://packages.microsoft.com/repos/azure-cli/ ${TARGET_CODENAME} main" | tee /etc/apt/sources.list.d/azure-cli.list \
+    && echo "deb [arch=${TARGET_ARCH}] https://packages.microsoft.com/debian/${TARGET_RELEASE}/prod ${TARGET_CODENAME} main" | tee /etc/apt/sources.list.d/dotnetdev.list \
     && apt-get update \
-    && apt-get install azure-cli
+    && apt-get install azure-cli azure-functions-core-tools-3
 
 # Install Poetry as user for package building and dependency management
 USER ${USERNAME}
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+
+# Install Azure ML v2 extension as user
+RUN az extension add --name ml -y
 
 # Mount for docker-in-docker
 VOLUME [ "/var/lib/docker" ]
