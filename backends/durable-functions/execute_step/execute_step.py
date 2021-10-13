@@ -2,7 +2,7 @@ from __future__ import annotations
 from .context import code_executor
 from .context import exception_utils
 from .context import Step
-from backends.common.serialization_utils import deserialize_obj, serialize_obj
+from .context import serialization_utils
 import azure.functions as func
 import azure.functions.blob as blob
 import logging
@@ -56,7 +56,7 @@ def execute_step(
         logging.info(envin)
         if envin is not None:
             envin_serialized = envin.read()
-            env : ExecutionEnvironment = deserialize_obj(envin_serialized)
+            env : ExecutionEnvironment = serialization_utils.deserialize_obj(envin_serialized)
         else:
             env : ExecutionEnvironment = ExecutionEnvironment()
 
@@ -68,7 +68,7 @@ def execute_step(
                 env.local_namespace)
 
             # Serialize the exectuion environment and set the output
-            env_serialized = serialize_obj(env)
+            env_serialized = serialization_utils.serialize_obj(env)
             envout.set(env_serialized)
             output_env_size_bytes = len(env_serialized)
 
