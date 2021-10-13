@@ -15,7 +15,8 @@ HTTP_PARAM_STEP = 'step'
 
 
 def execute_step(req: func.HttpRequest) -> func.HttpResponse:
-    """Execute code (step) from the incoming HTTP request and respond back with the result and appropriate outputs.
+    """
+    Execute code (step) from the incoming HTTP request and respond back with the result and appropriate outputs.
     In case of any exceptions in code execution or handling of code/state will be returned in the response.
     """
     start_time = time.time()

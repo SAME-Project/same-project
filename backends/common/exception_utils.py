@@ -2,11 +2,14 @@
 """
 
 from . import serialization_utils
+from tblib import pickling_support
+pickling_support.install()
 import sys
 
 
 def get_exception_info() -> str:
-    """Get information about the currently raised exception.
+    """
+    Get information about the currently raised exception.
     """
     exc_info = sys.exc_info()
     exception_msg = str(exc_info[1])
