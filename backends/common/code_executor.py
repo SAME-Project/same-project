@@ -2,14 +2,17 @@
 """
 
 from io import StringIO
-from typing import Any, Generator
+from typing import Any
 import contextlib
 import sys
 
 
 @contextlib.contextmanager
-def capture_outputs(stdout=None, stderr=None) -> Generator[tuple[str, str], None, None]:
-    """Capture the outputs of stdout and stderr.
+def capture_outputs(stdout=None, stderr=None):
+    """
+    Capture the outputs of stdout and stderr.
+    Return type (which cannot be set as type annotation with Python <= 3.9):
+    Generator[tuple[str, str], None, None]:
     """
     oldstdout = sys.stdout
     oldstderr = sys.stderr
@@ -24,8 +27,11 @@ def capture_outputs(stdout=None, stderr=None) -> Generator[tuple[str, str], None
     sys.stderr = oldstderr
 
 
-def exec_with_output(code: str, user_global_ns: dict, user_ns: dict) -> tuple[Any, str, str]:
-    """It executes code statements and returns the execution result, the stdout, and the stderr.
+def exec_with_output(code: str, user_global_ns: dict, user_ns: dict):
+    """
+    It executes code statements and returns the execution result, the stdout, and the stderr.
+    Return type (which cannot be set as type annotation with Python <= 3.9):
+    tuple[Any, str, str]:
     """
     with capture_outputs() as (stdout, stderr):
         exec_result = exec(code, user_global_ns, user_ns)
