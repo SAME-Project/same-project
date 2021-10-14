@@ -13,7 +13,7 @@ dir=$1
 echo "Preparing application..."
 rm -rf $dir
 mkdir -p $dir
-cp -r ../objects $dir
+cp -r ../objects/ $dir
 cp -r ../backends/common/ $dir
 cp -r ../backends/durable-functions/* $dir
 cd $dir

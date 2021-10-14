@@ -1,3 +1,4 @@
+from .context import Step
 import logging
 import azure.durable_functions as df
 
@@ -6,10 +7,16 @@ EXECUTE_STEP_ACTIVITY_NAME = "execute_step"
 
 
 def _execute_steps_workflow(context: df.DurableOrchestrationContext):
-    """Orchestrates the execution of a given list of Steps.
     """
+    Orchestrates the execution of a given list of Steps.
+    """
+    # Unpack inputs
+    input = context.get_input()
+    user = input["user"]
+
     # Get all steps to execute
-    steps = context.get_input()
+    steps_json_list = input["steps"]
+    steps = Step.from_json_list(steps_json_list)
     num_steps = len(steps)
     logging.info(f"Got {num_steps} steps to execute")
 
@@ -21,10 +28,20 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
     # results = yield context.task_all(executions)
 
     # Execute all steps one after the other
-    # Note: Assume that the list of steps is in order of required (sequential) execution
+    # Note: Assuming that the list of steps is in order of required (sequential) execution
     results = []
+    id = 0
     for step in steps:
-        result = yield context.call_activity(EXECUTE_STEP_ACTIVITY_NAME, step)
+        idin = id
+        idout = id + 1
+        id += 1
+        input  = {
+            "step": step,
+            "user": user,
+            "idin": idin,
+            "idout": idout,
+        }
+        result = yield context.call_activity(EXECUTE_STEP_ACTIVITY_NAME, input)
         results.append(result)
 
     return results

@@ -1,7 +1,5 @@
 from __future__ import annotations
 from .json_serializable_object import JSONSerializableObject
-from typing import Any
-
 from uuid import uuid4
 
 
@@ -60,6 +58,7 @@ class Step(JSONSerializableObject):
             steps_serialized.append(step_serialized)
         return steps_serialized
 
-    # Need a unique name so that libraries don't conflict in sys.modules. This is MOSTLY a test issue, but could be the case generally.
+    # Need a unique name so that libraries don't conflict in sys.modules.
+    # This is MOSTLY a test issue, but could be the case generally.
     def __generate_unique_name(self, name) -> str:
         return f"{name}_{uuid4().hex.lower()}"

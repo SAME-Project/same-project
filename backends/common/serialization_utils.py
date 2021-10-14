@@ -17,6 +17,8 @@ def serialize_obj(obj: Any) -> str:
     """
     obj_dill = dill.dumps(obj)
     obj_base64 = base64.b64encode(obj_dill)
+    # TODO make the base64 encoding controlled via a parameter;
+    # don't need this unless serializing for HTTP (unnecessary slow down).
     obj_ascii = obj_base64.decode("ascii")
     return obj_ascii
 

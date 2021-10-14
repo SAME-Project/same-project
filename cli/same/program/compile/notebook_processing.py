@@ -41,7 +41,6 @@ def get_steps(notebook_dict: dict) -> dict:
     """Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
     and the value is the Step object.
     """
-    i = 0
     return_steps = {}
 
     # Start with a default step (if no step tags detected, everything will be added here)
@@ -62,20 +61,14 @@ def get_steps(notebook_dict: dict) -> dict:
                         this_step.code = "\n".join(code_buffer)
                         all_code += "\n" + this_step.code
                         return_steps[this_step.name] = this_step
-
-                        # This will cause a bug later - we basically ignore whatever
-                        # people have set as the step number and just increment it. Further, we
-                        # also only support linear DAGs.
-                        # TODO: When we actually build a DAG parser, we should change
-                        # index to something more DAG meaningful.
-                        i += 1
+                        step_tag_num = int(tag.split("same_step_")[1])
 
                         code_buffer = []
                         this_step = Step()
-                        this_step.index = i
+                        this_step.index = step_tag_num
 
                         # left padding numbering because it's prettier
-                        this_step.name = f"same_step_{i:03}"
+                        this_step.name = f"same_step_{step_tag_num:03}"
                 elif str.startswith(tag, "cache="):
                     this_step.cache_value = str.split(tag, "=")[1]
                 elif str.startswith(tag, "environment="):
@@ -113,10 +106,12 @@ We cannot continue because the following lines cannot be converted into standard
 
 
 def get_sorted_list_of_steps(notebook_dict: dict) -> list:
-    """Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook."""
+    """
+    Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook.
+    """
     steps_dict = get_steps(notebook_dict)
     steps = list(steps_dict.values())
-    steps_sorted_by_index = sorted(steps, key=lambda x: x.index, reverse=True)
+    steps_sorted_by_index = sorted(steps, key=lambda x: x.index)
     return steps_sorted_by_index
 
 

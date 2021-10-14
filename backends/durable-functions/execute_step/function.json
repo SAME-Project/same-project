@@ -3,9 +3,25 @@
   "entryPoint": "execute_step",
   "bindings": [
     {
-      "name": "step",
+      "name": "input",
       "type": "activityTrigger",
       "direction": "in"
+    },
+    {
+    "name": "envin",
+    "type": "blob",
+    "direction": "in",
+    "path": "same/content-env-{user}-{idin}",
+    "connection":"AzureWebJobsStorage",
+    "dataType": "binary"
+    },
+    {
+        "name": "envout",
+        "type": "blob",
+        "direction": "out",
+        "path": "same/content-env-{user}-{idout}",
+        "connection":"AzureWebJobsStorage",
+        "dataType": "binary"
     }
   ]
 }
