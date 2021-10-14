@@ -13,7 +13,7 @@ import uuid
 DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR = "DURABLE_FUNCTIONS_BACKEND_TEST_HOST"
 
 # Name of the app deployed on Azure Functions running the backend.
-DURABLE_FUNCTIONS_APP_NAME_AZURE = "durable-functions-backend-001"
+DURABLE_FUNCTIONS_APP_NAME_AZURE = "same-df-backend"
 
 # Azure Functions host URL where the backend is running.
 DURABLE_FUNCTIONS_BACKEND_URL_AZURE = f"https://{DURABLE_FUNCTIONS_APP_NAME_AZURE}.azurewebsites.net"
@@ -28,6 +28,7 @@ class TestDurableFunctions():
         test_host = os.environ.get(DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR, DURABLE_FUNCTIONS_BACKEND_URL_AZURE)
         if test_host.endswith('/'):
             test_host = test_host[-1]
+        test_host = DURABLE_FUNCTIONS_BACKEND_URL_AZURE
         self.workflow_url = f"{test_host}/api/orchestrators/{EXECUTE_WORKFLOW_ACTIVITY_NAME}"
         logging.info(f"Workflow URL being used: {self.workflow_url}")
 

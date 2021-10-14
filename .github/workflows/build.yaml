@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DURABLE_FUNCTIONAPP_PACKAGE_PATH: "durable-functions-app-package"
-      DURABLE_FUNCTIONAPP_NAME: "durable-functions-backend-001"
+      DURABLE_FUNCTIONAPP_NAME: "same-df-backend"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
