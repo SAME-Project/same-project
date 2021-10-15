@@ -10,14 +10,14 @@ class Step(JSONSerializableObject):
 
     def __init__(
         self,
-        name="same_step_unset",
-        cache_value="P0D",
-        environment_name="default",
-        tags=[],
-        index=-1,
-        code="",
-        parameters=[],
-        packages_to_install={}
+        name: str = "same_step_unset",
+        cache_value: str = "P0D",
+        environment_name: str = "default",
+        tags: list = [],
+        index: int = -1,
+        code: str = "",
+        parameters: list = [],
+        packages_to_install: list = []
     ):
         self.name = name
         self.cache_value = cache_value

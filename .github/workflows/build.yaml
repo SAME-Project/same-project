@@ -133,6 +133,8 @@ jobs:
             --cov=./cli \
             --cov=./objects \
             --cov=./sdk \
+            --cov=./clients \
+            --cov=./jupyter \
             --cov-report=term \
             --cov-report=xml:artifacts/tests/coverage.xml \
             --cov-report=html:artifacts/tests/coverage.html \
