@@ -1456,6 +1456,23 @@ rtd = ["myst-parser (==0.14.0a3)", "sphinx-book-theme (>=0.1.0,<0.2.0)"]
 testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions"]
 
 [[package]]
+name = "metakernel"
+version = "0.27.5"
+description = "Metakernel for Jupyter"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+ipykernel = "*"
+pexpect = ">=4.2"
+
+[package.extras]
+activity = ["portalocker"]
+parallel = ["ipyparallel"]
+test = ["pytest", "pytest-cov", "requests"]
+
+[[package]]
 name = "mistune"
 version = "0.8.4"
 description = "The fastest markdown parser in pure Python"
@@ -2604,7 +2621,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "4979eb0e8595706980ddb3ab2b1bdb2b11e1c50db5a15c85c42ee6b17503a832"
+content-hash = "db677c737335c94a7d38fd8b8b2997b38c0df8ea87db65cd1725b5183dc7ab4d"
 
 [metadata.files]
 absl-py = [
@@ -3307,6 +3324,10 @@ mccabe = [
 mdit-py-plugins = [
     {file = "mdit-py-plugins-0.2.8.tar.gz", hash = "sha256:5991cef645502e80a5388ec4fc20885d2313d4871e8b8e320ca2de14ac0c015f"},
     {file = "mdit_py_plugins-0.2.8-py3-none-any.whl", hash = "sha256:1833bf738e038e35d89cb3a07eb0d227ed647ce7dd357579b65343740c6d249c"},
+]
+metakernel = [
+    {file = "metakernel-0.27.5-py2.py3-none-any.whl", hash = "sha256:f5542a858af7e4be95213f0a871360082cbfdd9b8ab0adad52b1f63f2a02f468"},
+    {file = "metakernel-0.27.5.tar.gz", hash = "sha256:fe1b603ac906f610ebc7086aa5d9c6876c6ab24500883d9eeef34043e34f182b"},
 ]
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},

@@ -15,7 +15,7 @@ rm -rf $dir
 mkdir -p $dir
 cp -r ../objects/ $dir
 cp -r ../backends/common/ $dir
-cp -r ../backends/durable-functions/* $dir
+cp -r ../backends/durable_functions/* $dir
 cd $dir
 
 echo "Listing application contents..."
