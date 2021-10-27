@@ -29,6 +29,7 @@ azureml-dataprep-native = "38.0.0"
 tblib = "^1.7.0"
 metakernel = "^0.27.5"
 libcst = "^0.3.21"
+astor = "^0.8.1"
 
 [tool.poetry.dev-dependencies]
 pip-tools = "^6.2.0"
