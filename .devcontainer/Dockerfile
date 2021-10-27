@@ -19,6 +19,8 @@ ARG MINIKUBE_VERSION="latest"
 
 COPY library-scripts/* custom-scripts/* first-run-notice.txt /tmp/staging/
 
+COPY py.sh /usr/local/bin/py.sh
+
 RUN apt-get update \
     # Additional custom configurations for non-root user.
     && bash /tmp/staging/setup-user.sh "${USERNAME}" "${PATH}" \

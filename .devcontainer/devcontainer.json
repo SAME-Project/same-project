@@ -18,6 +18,7 @@
     // Bind mount docker socket under an alias to support docker-from-docker
     "type=bind,source=/var/run/docker.sock,target=/var/run/docker-host.sock",
   ],
+  "postCreateCommand": "git submodule update --init --recursive && poetry install",
   // Always run image-defined default command
   "overrideCommand": false,
   "runArgs": [
@@ -34,7 +35,7 @@
   "remoteUser": "vscode",
   // Set *default* container specific settings.json values on container create.
   "settings": {
-    "python.pythonPath": "/usr/local/bin/python",
+    "python.pythonPath": "/usr/local/bin/py.sh",
     "python.languageServer": "Pylance",
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
