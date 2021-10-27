@@ -29,7 +29,7 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
         """
         if attr not in self._pandas_to_dask_functions:
             return False
-        if attr_id != self._pandas_import_name or attr_id != self._pandas_import_asname:
+        if attr_id != self._pandas_import_name and attr_id != self._pandas_import_asname:
             return False
         return True
 
@@ -54,10 +54,11 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
                 return updated_node
         return node
 
-    def transform_step(self, step: Step) -> Step:
+    def transform_step(self, step: Step) -> None:
         """
         Transform a given Step's source code into a semantically equivalent source code such that all supported Pandas
         operations are replaced by equivalent Dask operations.
+        Note: The transformation is applied to the input Step.
         Example:
             pd.read_csv -> dd.read_csv
         """
@@ -68,11 +69,13 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
         updated_tree = self.visit(tree)
         # Update node locations in the tree after potential changes due to transformation
         ast.fix_missing_locations(updated_tree)
+        # Add any import statements that are required after transformation
+        self.perform_imports(updated_tree)
         # Convert back the AST into source code
         updated_code = astor.to_source(updated_tree)
         # Update the source code in the Step
         step.code = updated_code
         # Update the packages required for the Step
-        for package in self.required_imports.keys():
+        for package in self._required_imports.keys():
             if package not in step.packages_to_install:
                 step.packages_to_install.append(package)
