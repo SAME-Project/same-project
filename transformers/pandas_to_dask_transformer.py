@@ -23,7 +23,7 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
         if self._dask_dataframe_import_name not in self._required_imports:
             self._required_imports[self._dask_dataframe_import_name] = self._dask_dataframe_import_asname
 
-    def _is_pandas_to_dask_function_translation_valid(self, attr, attr_id):
+    def _is_translation_valid(self, attr, attr_id):
         """
         Checks if it is valid to convert the given function call from Pandas to Dask.
         """
@@ -37,12 +37,12 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
         if isinstance(node.func, ast.Attribute):
             attr = node.func.attr
             attr_id = node.func.value.id
-            if self._is_pandas_to_dask_function_translation_valid(attr, attr_id):
+            if self._is_translation_valid(attr, attr_id):
                 self._import_dask_dataframe()
                 updated_node = ast.Call(
                     func=ast.Attribute(
                         value=ast.Name(
-                            id='dd',
+                            id=self._dask_dataframe_import_asname,
                             ctx=node.func.value.ctx
                         ),
                         attr=node.func.attr,
