@@ -1,12 +1,21 @@
+from typing import Any, Optional
 from .context import Step
 from .transformer import Transformer
 import ast
 import astor
+import dask.dataframe
+import inspect
 
 
 class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
-    def __init__(self):
+    def __init__(
+        self,
+        user_namespace: Optional[dict] = None,
+        global_namespace: Optional[dict] = None
+    ):
         super().__init__()
+        self.user_namespace = user_namespace if user_namespace is not None else {}
+        self.global_namespace = global_namespace if global_namespace is not None else {}
         # Import statement for Dask
         self._dask_dataframe_import_name = 'dask.dataframe'
         self._dask_dataframe_import_asname = 'dd'
@@ -20,36 +29,68 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
         # Function call for .compute
         self._dask_compute = 'compute'
 
-    def _import_dask_dataframe(self):
+    def _import_dask_dataframe(self) -> None:
         """
         Import Dask DataFrame into the environment.
         """
         if self._dask_dataframe_import_name not in self._required_imports:
             self._required_imports[self._dask_dataframe_import_name] = self._dask_dataframe_import_asname
 
-    def _is_one_to_one_mapping_valid(self, node):
+    def _get_val_from_namespaces(self, id: str) -> Any:
+        """
+        Get the object associated to a particular key from user/global namespaces.
+        Preference is given to user namespace.
+        Returns None if an object is not found in either namespace.
+        """
+        # Look up the value for the variable from the user namespace
+        val_from_namespace = self.user_namespace.get(id, None)
+        if val_from_namespace is None:
+            # If not found, look up the value for the variable from the global namespace
+            val_from_namespace = self.global_namespace.get(id, None)
+        return val_from_namespace
+
+    def _is_one_to_one_mapping_valid(self, node: ast.AST) -> bool:
         """
         Checks if it is valid to convert the given function call from Pandas to Dask.
         """
         attr = node.func.attr
-        attr_id = node.func.value.id
+        id = node.func.value.id
         if attr not in self._pandas_to_dask_functions:
             return False
-        if attr_id != self._pandas_import_name and attr_id != self._pandas_import_asname:
+        if id != self._pandas_import_name and id != self._pandas_import_asname:
+            return False
+        val_from_namespace = self._get_val_from_namespaces(id)
+        if val_from_namespace is None:
+            return False
+        if not inspect.ismodule(val_from_namespace):
+            return False
+        if val_from_namespace.__name__ != self._pandas_import_name:
             return False
         return True
 
-    def _is_compute_required(self, node):
+    def _is_compute_required(self, node: ast.AST) -> bool:
+        """
+        Checks if the Pandas operation being performed requires .compute() when translated to Dask.
+        """
         attr = node.func.attr
-        if attr in self._pandas_to_dask_with_compute_functions:
-            return True
-        return False
+        id = node.func.value.id
+        if attr not in self._pandas_to_dask_with_compute_functions:
+            return False
+        val_from_namespace = self._get_val_from_namespaces(id)
+        if val_from_namespace is None:
+            return False
+        if not isinstance(val_from_namespace, dask.dataframe.core.DataFrame):
+            return False
+        return True
 
-    def _try_translate(self, node):
+    def _try_translate(self, node: ast.AST) -> Optional[ast.AST]:
+        """
+        If the code in the given node requires any translation, it will create an updated node and return that.
+        If no translation was performed, it will return None.
+        """
         updated_node = None
         if isinstance(node.func, ast.Attribute):
             if self._is_one_to_one_mapping_valid(node):
-                self._import_dask_dataframe()
                 updated_node = ast.Call(
                     func=ast.Attribute(
                         value=ast.Name(
@@ -62,6 +103,8 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
                     args=node.args,
                     keywords=node.keywords
                 )
+                # Requires importing the dask.dataframe class as we are converting Pandas to Dask dataframe
+                self._import_dask_dataframe()
             elif self._is_compute_required(node):
                 updated_node = ast.Call(
                     func=ast.Attribute(
@@ -85,7 +128,10 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
                 )
         return updated_node
 
-    def visit_Call(self, node: ast.Call):
+    def visit_Call(self, node: ast.Call) -> ast.Call:
+        """
+        Visit (and translate, if applicable) the Call nodes in the AST.
+        """
         translated_node = self._try_translate(node)
         if translated_node is not None:
             # Translation resulted in updating the node, so replace it
@@ -99,7 +145,8 @@ class PandasToDaskTransformer(ast.NodeTransformer, Transformer):
         operations are replaced by equivalent Dask operations.
         Note: The transformation is applied to the input Step.
         Example:
-            pd.read_csv -> dd.read_csv
+            1) pd.read_csv   -->  dd.read_csv
+            2) x = df.sum()  -->  x = df.sum().compute()
         """
         super().transform_step(step)
         # Parse the code into its AST

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from .json_serializable_object import JSONSerializableObject
+from typing import Optional
 from uuid import uuid4
 
 
@@ -13,20 +14,20 @@ class Step(JSONSerializableObject):
         name: str = "same_step_unset",
         cache_value: str = "P0D",
         environment_name: str = "default",
-        tags: list = [],
+        tags: Optional[list] = None,
         index: int = -1,
         code: str = "",
-        parameters: list = [],
-        packages_to_install: list = []
+        parameters: Optional[list] = None,
+        packages_to_install: Optional[list] = None
     ):
         self.name = name
         self.cache_value = cache_value
         self.environment_name = environment_name
-        self.tags = tags
+        self.tags = tags if tags is not None else []
         self.index = index
         self.code = code
-        self.parameters = parameters
-        self.packages_to_install = packages_to_install
+        self.parameters = parameters if parameters is not None else []
+        self.packages_to_install = packages_to_install if packages_to_install is not None else []
 
     @property
     def name(self):
