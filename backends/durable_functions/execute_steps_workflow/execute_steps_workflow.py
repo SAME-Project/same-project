@@ -34,13 +34,6 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
     # TODO: Add unit test to resume from non-zero ID
     id = input.get("idin", 0)
 
-    # TODO Determine which ones can be executed in parallel and construct the appropriate DAG
-    # executions = []
-    # for step in steps:
-    #     execution = context.call_activity(EXECUTE_STEP_ACTIVITY_NAME, step)
-    #     executions.append(execution)
-    # results = yield context.task_all(executions)
-
     # Execute all steps one after the other
     # Note: Assuming that the list of steps is in order of required (sequential) execution
     results = []

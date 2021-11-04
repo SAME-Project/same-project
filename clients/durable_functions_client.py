@@ -20,9 +20,6 @@ class DurableFunctionsClient:
         user: str,
         start_state_id: int = 0
     ):
-        if backend_host.endswith('/'):
-            backend_host = backend_host[-1]
-        self.backend_host = backend_host
         self.user = user
         self.next_state_id = start_state_id
         self.connect_timeout_sec = 10
@@ -30,10 +27,15 @@ class DurableFunctionsClient:
         self.status_query_timeout_sec = 10
         self.retry_interval_sec = 1
         self.session = requests.Session()
-        self.workflow_url = f"{self.backend_host}/api/orchestrators/{EXECUTE_WORKFLOW_ACTIVITY_NAME}"
+        self.set_workflow_url(backend_host)
 
     def __del__(self):
         self.session.close()
+
+    def set_workflow_url(self, backend_host: str):
+        if backend_host.endswith('/'):
+            backend_host = backend_host[-1]
+        self.workflow_url = f"{backend_host}/api/orchestrators/{EXECUTE_WORKFLOW_ACTIVITY_NAME}"
 
     def execute_notebook(self, notebook_path: str) -> List[dict]:
         """
