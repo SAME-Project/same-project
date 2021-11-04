@@ -131,10 +131,11 @@ jobs:
             --junitxml=artifacts/tests/results.xml \
             --cov=./backends \
             --cov=./cli \
-            --cov=./objects \
-            --cov=./sdk \
             --cov=./clients \
             --cov=./jupyter \
+            --cov=./objects \
+            --cov=./sdk \
+            --cov=./transformers \
             --cov-report=term \
             --cov-report=xml:artifacts/tests/coverage.xml \
             --cov-report=html:artifacts/tests/coverage.html \
