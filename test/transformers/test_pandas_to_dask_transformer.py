@@ -1,3 +1,4 @@
+from objects.execution_environment import ExecutionEnvironment
 from .context import PandasToDaskTransformer
 from .context import Step
 
@@ -11,15 +12,14 @@ class TestPandasToDaskTransformer:
         test_csv_input_path = "test/transformers/testdata/table1.csv"
         # Before transformation, the namespaces need to have the imported modules
         pre_transform_code = """import pandas as pd"""
-        user_ns = {}
-        global_ns = {}
-        exec(pre_transform_code, user_ns, global_ns)
+        env : ExecutionEnvironment = ExecutionEnvironment()
+        exec(pre_transform_code, env.global_namespace, env.local_namespace)
         # Transform the use of Pandas to Dask
         transform_code = f"""df = pd.read_csv('{test_csv_input_path}')
 print(df)
 """
         step = Step(code=transform_code)
-        transformer = PandasToDaskTransformer(user_ns, global_ns)
+        transformer = PandasToDaskTransformer(env)
         transformer.transform_step(step)
         # Verify that the transformed code includes the Dask DataFrame and replaced the use of Pandas with Dask
         expected_code = f"""import dask.dataframe as dd
@@ -37,15 +37,14 @@ print(df)
         test_csv_input_path = "test/transformers/testdata/table1.csv"
         # Before transformation, the namespaces need to have the imported modules
         pre_transform_code = """import pandas as pd"""
-        user_ns = {}
-        global_ns = {}
-        exec(pre_transform_code, user_ns, global_ns)
+        env : ExecutionEnvironment = ExecutionEnvironment()
+        exec(pre_transform_code, env.global_namespace, env.local_namespace)
         # Transform the use of Pandas to Dask
         transform_code = f"""
 df = pd.read_csv('{test_csv_input_path}')
 """
         step_1 = Step(code=transform_code)
-        transformer = PandasToDaskTransformer(user_ns, global_ns)
+        transformer = PandasToDaskTransformer(env)
         transformer.transform_step(step_1)
         # Verify that the transformed code includes the Dask DataFrame and replaced the use of Pandas with Dask
         expected_code = f"""import dask.dataframe as dd
@@ -55,13 +54,13 @@ df = dd.read_csv('{test_csv_input_path}')
         assert 1 == len(step_1.packages_to_install)
         assert ['dask.dataframe'] == step_1.packages_to_install
         # Execute the translated code so that the df variable is in the namespaces
-        exec(step_1.code, user_ns, global_ns)
+        exec(step_1.code, env.global_namespace, env.local_namespace)
         # Transform again so the Pandas sum() is replaced with Dask sum().compute()
         transform_code = """x = df.sum()
 print(x)
 """
         step_2 = Step(code=transform_code)
-        transformer = PandasToDaskTransformer(user_ns, global_ns)
+        transformer = PandasToDaskTransformer(env)
         transformer.transform_step(step_2)
         # Verify that sum() is now replaced with sum().compute()
         expected_code = """x = df.sum().compute()
@@ -75,14 +74,13 @@ print(x)
         Since we transform Pandas sum(), make sure that non-Pandas sum() is not transformed.
         """
         pre_transform_code = """x = [1, 2]"""
-        user_ns = {}
-        global_ns = {}
-        exec(pre_transform_code, user_ns, global_ns)
+        env : ExecutionEnvironment = ExecutionEnvironment()
+        exec(pre_transform_code, env.global_namespace, env.local_namespace)
         transform_code = """y = sum(x)
 print(y)
 """
         step = Step(code=transform_code)
-        transformer = PandasToDaskTransformer()
+        transformer = PandasToDaskTransformer(env)
         transformer.transform_step(step)
         # There should be no difference (no transformation should happen)
         expected_code = transform_code
@@ -104,14 +102,13 @@ print(y)
 
 x = MyList([1, 2])
         """
-        user_ns = {}
-        global_ns = {}
-        exec(pre_transform_code, user_ns, global_ns)
+        env : ExecutionEnvironment = ExecutionEnvironment()
+        exec(pre_transform_code, env.global_namespace, env.local_namespace)
         transform_code = """y = x.sum()
 print(y)
 """
         step = Step(code=transform_code)
-        transformer = PandasToDaskTransformer()
+        transformer = PandasToDaskTransformer(env)
         transformer.transform_step(step)
         # There should be no difference (no transformation should happen)
         expected_code = transform_code

@@ -1,9 +1,12 @@
 from __future__ import annotations
+from typing import List
 from .context import code_executor
 from .context import exception_utils
-from .context import serialization_utils
 from .context import Step
-from .execution_environment import ExecutionEnvironment
+from .context import NumpyToNumsTransformer
+from .context import PandasToDaskTransformer
+from .context import Transformer
+from .context import ExecutionEnvironment
 import azure.functions as func
 import azure.functions.blob as blob
 import logging
@@ -29,19 +32,27 @@ def execute_step(
         logging.info(envin)
         if envin is not None:
             envin_serialized = envin.read()
-            env : ExecutionEnvironment = serialization_utils.deserialize_obj(envin_serialized)
+            env : ExecutionEnvironment = ExecutionEnvironment.deserialize(envin_serialized)
         else:
             env : ExecutionEnvironment = ExecutionEnvironment()
 
         try:
+            # Perform code transformations
+            transformers : List[Transformer] = [
+                PandasToDaskTransformer(env),
+                NumpyToNumsTransformer(env)
+            ]
+            for t in transformers:
+                t.transform_step(step)
+
             # Execute the code from the given Step
             exec_result, stdout, stderr = code_executor.exec_with_output(
                 step.code,
                 env.global_namespace,
                 env.local_namespace)
 
-            # Serialize the exectuion environment and set the output
-            env_serialized = serialization_utils.serialize_obj(env)
+            # Serialize the execution environment and set the output
+            env_serialized = ExecutionEnvironment.serialize(env)
             envout.set(env_serialized)
             output_env_size_bytes = len(env_serialized)
 
