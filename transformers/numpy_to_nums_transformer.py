@@ -250,3 +250,23 @@ class NumpyToNumsTransformer(ast.NodeTransformer, Transformer):
         elif self._is_get_required(node):
             updated_node = self._create_updated_compute_required_node(node)
         return updated_node
+
+    def post_process(self):
+        """
+        """
+        updates = {}
+        for key, value in self.env.global_namespace.items():
+            if key in self.env.temporary_entries:
+                continue
+            if isinstance(value, BlockArray):
+                resolved_value = value.get()
+                updates[key] = resolved_value
+        for key, value in updates:
+            self.env.global_namespace[key] = value
+        updates.clear()
+        for key, value in self.env.local_namespace.items():
+            if isinstance(value, BlockArray):
+                resolved_value = value.get()
+                updates[key] = resolved_value
+        for key, value in updates:
+            self.env.local_namespace[key] = value

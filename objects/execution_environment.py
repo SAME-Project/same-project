@@ -9,7 +9,11 @@ class ExecutionEnvironment:
     TODO: Add imports.
     TODO: Add ability to update namespaces and serialize only diffs.
     """
-    def __init__(self, global_namespace : dict = {}, local_namespace : dict = {}):
+    def __init__(
+        self,
+        global_namespace : dict = {},
+        local_namespace : dict = {}
+    ):
         self.global_namespace = global_namespace
         self.local_namespace = local_namespace
         self.temporary_entries = set()

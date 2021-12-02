@@ -76,3 +76,6 @@ class Transformer(ABC):
             if package not in step.packages_to_install:
                 step.packages_to_install.append(package)
         logging.debug(f'Transformed step: {step}')
+
+    def post_process(self):
+        pass

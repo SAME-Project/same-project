@@ -51,6 +51,10 @@ def execute_step(
                 env.global_namespace,
                 env.local_namespace)
 
+            # Post-process for each transformer
+            for t in transformers:
+                t.post_process()
+
             # Serialize the execution environment and set the output
             env_serialized = ExecutionEnvironment.serialize(env)
             envout.set(env_serialized)
