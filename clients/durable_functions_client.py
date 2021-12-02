@@ -23,8 +23,8 @@ class DurableFunctionsClient:
         self.user = user
         self.next_state_id = start_state_id
         self.connect_timeout_sec = 10
-        self.read_timeout_sec = 60
-        self.status_query_timeout_sec = 10
+        self.read_timeout_sec = 20 * 60
+        self.status_query_timeout_sec = 20 * 60
         self.retry_interval_sec = 1
         self.session = requests.Session()
         self.set_workflow_url(backend_host)

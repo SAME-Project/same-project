@@ -42,8 +42,8 @@ def execute_step(
                 PandasToDaskTransformer(env),
                 NumpyToNumsTransformer(env)
             ]
-            for t in transformers:
-                t.transform_step(step)
+            for transformer in transformers:
+                transformer.transform_step(step)
 
             # Execute the code from the given Step
             exec_result, stdout, stderr = code_executor.exec_with_output(
@@ -52,8 +52,8 @@ def execute_step(
                 env.local_namespace)
 
             # Post-process for each transformer
-            for t in transformers:
-                t.post_process()
+            for transformer in transformers:
+                transformer.post_process()
 
             # Serialize the execution environment and set the output
             env_serialized = ExecutionEnvironment.serialize(env)

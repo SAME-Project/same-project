@@ -7,7 +7,7 @@ setup(name='same_kernel',
       long_description='A Python kernel for Jupyter/IPython to run on SAME backend, based on MetaKernel',
       author='Gohar Irfan Chaudhry',
       author_email='gohar.irfan@microsoft.com',
-      install_requires=['metakernel', 'jedi', 'astor'],
+      install_requires=['metakernel', 'jedi', 'astor', 'regex'],
       py_modules=['same_kernel'],
       classifiers = [
           'Framework :: IPython',

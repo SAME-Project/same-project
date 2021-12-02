@@ -1,12 +1,11 @@
-from logging import exception
 from typing import Optional
 
-from nums.core import application_manager
 from .context import ExecutionEnvironment
 from .transformer import Transformer
 from nums.core.array.blockarray import BlockArray
 from nums.core import settings
 from nums.core.application_manager import instance
+from nums.core.array.application import ArrayApplication
 import ast
 import inspect
 
@@ -263,30 +262,49 @@ class NumpyToNumsTransformer(ast.NodeTransformer, Transformer):
             return
         visited.add(addr)
 
-        properties = []
-        for a in dir(obj):
+        attributes = []
+        for attr in dir(obj):
             try:
-                if not a.startswith('_') and not callable(getattr(obj, a)):
-                    properties.append(a)
+                if not attr.startswith('_') and not callable(getattr(obj, attr)):
+                    attributes.append(attr)
             except:
                 continue
 
-        for property in properties:
-            value = getattr(obj, property)
+        for attribute in attributes:
+            value = getattr(obj, attribute)
             if isinstance(value, BlockArray):
                 resolved_value = value.get()
-                setattr(obj, property, resolved_value)
+                setattr(obj, attribute, resolved_value)
             else:
                 self._resolve_blockarray(value, visited)
 
     def post_process(self):
         """
         """
+        updates = {}
         for key, value in self.env.global_namespace.items():
             if key in self.env.temporary_entries:
                 continue
-            # self._resolve_blockarray(value)
+            if isinstance(value, ArrayApplication):
+                self._resolve_blockarray(value)
+            elif isinstance(value, BlockArray):
+                resolved_value = value.get()
+                updates[key] = resolved_value
+        for key, value in updates.items():
+            self.env.global_namespace[key] = value
+        updates.clear()
         for key, value in self.env.local_namespace.items():
             if key in self.env.temporary_entries:
                 continue
-            # self._resolve_blockarray(value)
+            if isinstance(value, ArrayApplication):
+                self._resolve_blockarray(value)
+            elif isinstance(value, BlockArray):
+                resolved_value = value.get()
+                updates[key] = resolved_value
+        for key, value in updates.items():
+            self.env.local_namespace[key] = value
+        # Remove NumS from the namespace since it is not serializable
+        if self._nums_import_asname in self.env.local_namespace:
+            del self.env.local_namespace[self._nums_import_asname]
+        if self._nums_import_asname in self.env.global_namespace:
+            del self.env.global_namespace[self._nums_import_asname]
