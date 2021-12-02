@@ -1,4 +1,7 @@
+from logging import exception
 from typing import Optional
+
+from nums.core import application_manager
 from .context import ExecutionEnvironment
 from .transformer import Transformer
 from nums.core.array.blockarray import BlockArray
@@ -251,22 +254,39 @@ class NumpyToNumsTransformer(ast.NodeTransformer, Transformer):
             updated_node = self._create_updated_compute_required_node(node)
         return updated_node
 
+    def _resolve_blockarray(self, obj, visited=None):
+        if visited is None:
+            visited = set()
+
+        addr = id(obj)
+        if addr in visited:
+            return
+        visited.add(addr)
+
+        properties = []
+        for a in dir(obj):
+            try:
+                if not a.startswith('_') and not callable(getattr(obj, a)):
+                    properties.append(a)
+            except:
+                continue
+
+        for property in properties:
+            value = getattr(obj, property)
+            if isinstance(value, BlockArray):
+                resolved_value = value.get()
+                setattr(obj, property, resolved_value)
+            else:
+                self._resolve_blockarray(value, visited)
+
     def post_process(self):
         """
         """
-        updates = {}
         for key, value in self.env.global_namespace.items():
             if key in self.env.temporary_entries:
                 continue
-            if isinstance(value, BlockArray):
-                resolved_value = value.get()
-                updates[key] = resolved_value
-        for key, value in updates:
-            self.env.global_namespace[key] = value
-        updates.clear()
+            # self._resolve_blockarray(value)
         for key, value in self.env.local_namespace.items():
-            if isinstance(value, BlockArray):
-                resolved_value = value.get()
-                updates[key] = resolved_value
-        for key, value in updates:
-            self.env.local_namespace[key] = value
+            if key in self.env.temporary_entries:
+                continue
+            # self._resolve_blockarray(value)
