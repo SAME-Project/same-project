@@ -29,7 +29,6 @@ def execute_step(
         logging.info(f"Executing Step: {step.name}")
 
         # Get the execution environment from input
-        logging.info(envin)
         if envin is not None:
             envin_serialized = envin.read()
             env : ExecutionEnvironment = ExecutionEnvironment.deserialize(envin_serialized)
@@ -56,7 +55,7 @@ def execute_step(
                 transformer.post_process()
 
             # Serialize the execution environment and set the output
-            env_serialized = ExecutionEnvironment.serialize(env)
+            env_serialized = env.serialize()
             envout.set(env_serialized)
             output_env_size_bytes = len(env_serialized)
 
@@ -65,6 +64,8 @@ def execute_step(
                 "status": "success",
                 "exec_result": exec_result,
                 "step_index": step.index,
+                "executed_code": step.code,
+                "env_access_stats": env.access_stats,
                 "stdout": stdout,
                 "stderr": stderr
             }
