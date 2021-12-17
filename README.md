@@ -23,6 +23,9 @@ Refer to the [SAME Project docs](https://samedocs.azurewebsites.net/getting-star
 
 ## Releases
 
-This repo does not currently publish redistributables.
+To release to PyPI run:
+```
+poetry publish
+```
 
-> ⚠ The [latest SAME CLI release](https://github.com/SAME-Project/SAMPLE-CLI-TESTER/releases/tag/0.0.65) is still based off the old Go-based implementation from https://github.com/azure-octo/same-cli. When issue [#21](https://github.com/SAME-Project/same-mono-private/issues/21) is resolved, new binary releases from this repo can be published to https://github.com/SAME-Project/SAMPLE-CLI-TESTER as well, although it would be preferred to only publish releases from this repo when it is made public.
+The version number is defined in `pyproject.toml`.

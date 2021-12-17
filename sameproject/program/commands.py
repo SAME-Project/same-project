@@ -1,10 +1,10 @@
 from io import BufferedReader
 import click
 
-from cli.same.program.compile import notebook_processing as nbproc
+from sameproject.program.compile import notebook_processing as nbproc
 
 import backends.executor
-import cli.same.helpers
+import sameproject.helpers
 
 import os
 
@@ -90,7 +90,7 @@ def run(
     persist_temp_files: bool = False,
     no_deploy: bool = False,
 ):
-    secret_dict = cli.same.helpers.create_secret_dict(
+    secret_dict = sameproject.helpers.create_secret_dict(
         image_pull_secret_name, image_pull_secret_registry_uri, image_pull_secret_username, image_pull_secret_password, image_pull_secret_email
     )
 
