@@ -3,19 +3,19 @@ import logging
 from pathlib import Path
 import jupytext
 from .context import Step
-from cli.same.stdlib import stdlibs
-from cli.same.mapping import library_mapping
+from sameproject.stdlib import stdlibs
+from sameproject.mapping import library_mapping
 import re
 import traceback
 from typing import Tuple
 
 import backends.executor
 from io import BufferedReader
-from cli.same.same_config import SameConfig
+from sameproject.same_config import SameConfig
 
 import click
 
-from cli.same.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
+from sameproject.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
 
 REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (?:.*)$")]
 

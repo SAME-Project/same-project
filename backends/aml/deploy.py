@@ -1,5 +1,5 @@
 from cli import same
-from cli.same import helpers
+from sameproject import helpers
 
 import importlib
 

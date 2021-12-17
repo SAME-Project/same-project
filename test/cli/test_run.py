@@ -1,10 +1,10 @@
 from click.testing import CliRunner
 import pytest
 from pathlib import Path
-from cli.same.same_config import SameConfig
-from cli.same.program.commands import run
-from cli.same.program.compile import notebook_processing
-import cli.same.helpers
+from sameproject.same_config import SameConfig
+from sameproject.program.commands import run
+from sameproject.program.compile import notebook_processing
+import sameproject.helpers
 import logging
 from backends.executor import render as template_render
 from backends.executor import deploy
@@ -40,7 +40,7 @@ def test_live_test_kubeflow(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
 
-    mocker.patch.object(cli.same.helpers, "recursively_remove_dir")
+    mocker.patch.object(sameproject.helpers, "recursively_remove_dir")
 
     dotenv.load_dotenv("./.env.sh")
     same_file_path = Path(same_config_file_path)
@@ -65,7 +65,7 @@ def test_live_test_aml(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
 
-    mocker.patch.object(cli.same.helpers, "recursively_remove_dir")
+    mocker.patch.object(sameproject.helpers, "recursively_remove_dir")
 
     dotenv.load_dotenv("./.env.sh")
     same_file_path = Path(same_config_file_path)

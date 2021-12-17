@@ -1,6 +1,5 @@
-from cli import same
 from pathlib import Path
-from cli.same import helpers
+from sameproject import helpers
 
 import kfp
 from pprint import pprint

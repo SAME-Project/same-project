@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "same-mono-private"
+name = "sameproject"
 version = "0.1.0"
-description = ""
+description = "Notebooks to Pipelines, reproducible data science, oh my."
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
 
 [tool.poetry.dependencies]

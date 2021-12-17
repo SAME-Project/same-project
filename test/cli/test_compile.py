@@ -1,9 +1,9 @@
 from click.testing import CliRunner
 import pytest
 from pathlib import Path
-from cli.same.same_config import SameConfig
-from cli.same.program.commands import run
-from cli.same.program.compile import notebook_processing
+from sameproject.same_config import SameConfig
+from sameproject.program.commands import run
+from sameproject.program.compile import notebook_processing
 import logging
 from backends.executor import render as template_render
 from backends.executor import deploy

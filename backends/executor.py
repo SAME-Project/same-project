@@ -9,7 +9,7 @@ import backends.aml.deploy
 
 from typing import Tuple
 
-import cli.same.helpers
+import sameproject.helpers
 
 import click
 
@@ -35,7 +35,7 @@ def deploy(target: str, root_file_absolute_path: str, root_module_name: str, per
 
     deploy_return = deploy_function(root_file_absolute_path, root_module_name)
     if not persist_temp_files:
-        cli.same.helpers.recursively_remove_dir(Path(root_file_absolute_path))
+        sameproject.helpers.recursively_remove_dir(Path(root_file_absolute_path))
     else:
         click.echo(f"Files persisted in: {Path(root_file_absolute_path).parent}")
 

@@ -12,7 +12,7 @@ from vendor.conda.conda.cli.common import spec_from_line, MatchSpec, arg2spec
 
 from io import BufferedReader
 
-import cli.same.helpers as helpers
+import sameproject.helpers as helpers
 
 import pprint
 
