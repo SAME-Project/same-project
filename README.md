@@ -25,7 +25,7 @@ Refer to the [SAME Project docs](https://samedocs.azurewebsites.net/getting-star
 
 To release to PyPI run:
 ```
-poetry publish
+poetry publish --build
 ```
 
 The version number is defined in `pyproject.toml`.
