@@ -5,7 +5,7 @@ description = ""
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 click = "^7"
 jupytext = "^1.11.5"
 pywin32 = { version = "227", platform = 'win32'}
