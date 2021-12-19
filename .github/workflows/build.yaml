@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Checkout submodules
-        uses: textbook/git-checkout-submodule-action@master
+        with:
+          submodules: recursive
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -51,10 +51,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Python 3.8 Environment
+        with:
+          submodules: recursive
+      - name: Setup Python 3.10 Environment
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.10
       - name: Package Durable Functions Backend App
         shell: bash
         run: |
@@ -84,6 +86,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
       # AZURE SECRET BLOB contains variables for connecting to AML. Specifically:
       # export AML_SP_NAME="xxxx"
       # export AML_SP_APP_ID="<UID>"
