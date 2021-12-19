@@ -35,7 +35,7 @@ def run_before_and_after_tests():
     sys.modules.clear()
     sys.modules.update(original_sys_modules)
 
-
+@pytest.mark.skip("Skipping until we mock or create a live Kubeflow cluster")
 def test_live_test_kubeflow(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
@@ -60,7 +60,7 @@ def test_live_test_kubeflow(mocker, tmpdir, same_config):
     )
     assert result.exit_code == 0
 
-
+@pytest.mark.skip("Skipping until we mock or create AML account")
 def test_live_test_aml(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
@@ -85,7 +85,7 @@ def test_live_test_aml(mocker, tmpdir, same_config):
     )
     assert result.exit_code == 0
 
-
+@pytest.mark.skip("Skipping until we mock or create a live Kubeflow cluster")
 def test_kubeflow_same_program_run_with_secrets_e2e():
     multi_env_same_config_file_path = "test/testdata/multienv_notebook/same.yaml"
     same_file_path = Path(multi_env_same_config_file_path)

@@ -9,6 +9,7 @@ import os
 import time
 import requests
 import uuid
+import pytest
 
 
 class TestDurableFunctionsBackend():
@@ -24,6 +25,7 @@ class TestDurableFunctionsBackend():
     def teardown_class(self):
         self.session.close()
 
+    @pytest.mark.skip("Skipping until we mock or create Azure Functions account")
     def test_single_step_execution_with_output(self):
         # Setup test parameters
         notebook_path = "test/backends/testdata/sample_notebooks/single_cell_code_with_output.ipynb"
@@ -89,6 +91,7 @@ class TestDurableFunctionsBackend():
         assert stdout == "SAME OUTPUT\n"
         assert status == "success"
 
+    @pytest.mark.skip("Skipping until we mock or create Azure Functions account")
     def test_multi_step_execution_with_output(self):
         # Setup test parameters
         notebook_path = "test/backends/testdata/sample_notebooks/multi_step_code_with_data_flow.ipynb"

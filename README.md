@@ -2,11 +2,15 @@
 
 This is the central repository for continuing development of the SAME project.
 
-> ⚠ This repo supersedes https://github.com/azure-octo/same-cli and extends its functionality.
-
 ## Getting Started
 
 Refer to the [SAME Project docs](https://samedocs.azurewebsites.net/getting-started/dev-build/) for building and running this repo. They can also be referenced directly from the [SAME-Docs repo](https://github.com/SAME-Project/SAME-Docs/blob/main/content/getting-started/dev-build.md) if the docs site is down.
+
+**SUBMODULES** If you are getting this error `E ModuleNotFoundError: No module named 'vendor.conda.conda_env`, it's because you haven't updated your submodules (usually after an initial clone). Do this:
+
+```bash
+git submodule update --init --recursive
+```
 
 ## Project Structure
 
@@ -24,6 +28,7 @@ Refer to the [SAME Project docs](https://samedocs.azurewebsites.net/getting-star
 ## Releases
 
 To release to PyPI run:
+
 ```
 poetry publish --build
 ```
