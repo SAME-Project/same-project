@@ -3,11 +3,10 @@
 # Licensed under the Apache License 2.0.
 # ------------------------------------------------------------
 
-# See pyproject.toml file for supported Python version range, currently <3.9 for Azure ML dependencies
 # Using buster instead of bullseye as Azure Functions Core Tools do not yet support Debian 11, see:
 # https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v3%2Clinux%2Ccsharp%2Cportal%2Cbash%2Ckeda#install-the-azure-functions-core-tools
-ARG VARIANT=3.8-buster
-FROM mcr.microsoft.com/vscode/devcontainers/python:${VARIANT}
+ARG VARIANT=3.10
+FROM python:${VARIANT}
 
 # Reuse existing username configured as part of base image. See:
 # https://github.com/microsoft/vscode-dev-containers/blob/main/containers/python-3/.devcontainer/base.Dockerfile
