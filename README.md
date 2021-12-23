@@ -1,4 +1,4 @@
-# SAME Mono Private
+# SAME Project
 
 This is the central repository for continuing development of the SAME project.
 
