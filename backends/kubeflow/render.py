@@ -1,4 +1,3 @@
-from cli import same
 from objects.step import Step
 from pathlib import Path
 from sameproject import helpers
