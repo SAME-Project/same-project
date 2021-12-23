@@ -1,4 +1,3 @@
-from cli import same
 from sameproject import helpers
 
 import importlib
