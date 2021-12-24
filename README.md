@@ -1,4 +1,4 @@
-# SAME Mono Private
+# SAME Project
 
 This is the central repository for continuing development of the SAME project.
 
@@ -18,6 +18,7 @@ git submodule update --init --recursive
 
 - **[/backends](backends/README.md):** Python module used by SAME CLI to compile & deploy SAME configurations on different workflow execution backends.
 - **[/cli](cli/README.md):** Python implmentation of the SAME CLI for converting Jupyter notebooks to SAME configurations and running them against a target environment.
+- **[/docs](docs/README.md):** Documentation mkdocs github pages website
 - **/objects:** Helper library for a JSON serialization object shared by other Python modules.
 - **/scripts:** Helper shell scripts for testing and test environment setup.
 - **[/sdk](sdk/README.md):** Experimental Python module for functions to be used in Jupyter notebooks making them easier to integrate into DevOps.
