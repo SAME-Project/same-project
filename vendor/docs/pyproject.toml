@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "same-installer-website"
+version = "0.1.0"
+description = ""
+authors = ["David Aronchick <aronchick@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+mkdocs = "^1.2.1"
+mkdocs-material = "^7.1.8"
+pymdown-extensions = "^8.2"
+fontawesome-markdown = "^0.2.6"
+PyGithub = "^1.54.1"
+ipython = "^7.21.0"
+regex = "^2021.3.17"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
