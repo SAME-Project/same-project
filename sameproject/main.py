@@ -1,6 +1,6 @@
 import click
-from program import commands as program_group
-from version import commands as version
+from sameproject.program import commands as program_group
+from sameproject.version import commands as version
 
 
 @click.group()

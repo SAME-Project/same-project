@@ -26,7 +26,7 @@ git submodule update --init --recursive
 - **[/test](test/README.md):** Unit and functional tests for each of the major Python modules.
 - **/vendor:** Folder for 3rd party submodules imported by `same-mono-repo`, such as https://github.com/conda/conda.
 
-## Releases
+## Releasing
 
 To release to PyPI run:
 

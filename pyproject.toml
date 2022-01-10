@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "sameproject"
-version = "0.1.0"
+version = "0.1.1"
 description = "Notebooks to Pipelines, reproducible data science, oh my."
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
+
+[tool.poetry.scripts]
+same = 'sameproject.main:main'
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
