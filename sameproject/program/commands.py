@@ -3,7 +3,7 @@ import click
 
 from sameproject.program.compile import notebook_processing as nbproc
 
-import backends.executor
+import sameproject.backends.executor
 import sameproject.helpers
 
 import os

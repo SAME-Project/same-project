@@ -9,7 +9,7 @@ import re
 import traceback
 from typing import Tuple
 
-import backends.executor
+import sameproject.backends.executor
 from io import BufferedReader
 from sameproject.same_config import SameConfig
 

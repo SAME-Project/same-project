@@ -1,11 +1,11 @@
-import backends
-from objects.step import Step
+from sameproject import backends
+from sameproject.objects.step import Step
 from pathlib import Path
 import tempfile
-import backends.kubeflow.render
-import backends.kubeflow.deploy
-import backends.aml.render
-import backends.aml.deploy
+import sameproject.backends.kubeflow.render
+import sameproject.backends.kubeflow.deploy
+import sameproject.backends.aml.render
+import sameproject.backends.aml.deploy
 
 from typing import Tuple
 
