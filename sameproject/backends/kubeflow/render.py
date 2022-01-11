@@ -8,15 +8,21 @@ from uuid import uuid4
 
 from typing import Tuple
 
+import os
 import logging
 
 kubeflow_root_template = "kubeflow/root.jinja"
 kubeflow_step_template = "kubeflow/step.jinja"
 
 
+
 def render_function(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
-    templateLoader = FileSystemLoader(searchpath="./templates")
+    sourceDir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    print(f"In sourceDir {sourceDir}")
+    templateDir = os.path.join(sourceDir, "templates")
+    templateLoader = FileSystemLoader(templateDir)
+    print(f"Template dir {templateDir}")
     env = Environment(loader=templateLoader)
 
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath

@@ -197,7 +197,7 @@ def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_
 
     all_steps = get_steps(notebook_dict)
 
-    return backends.executor.render(target=target, steps=all_steps, same_config=same_config)
+    return sameproject.backends.executor.render(target=target, steps=all_steps, same_config=same_config)
 
 
 def _add_secrets_to_same_config(secret_dict, same_config) -> dict:

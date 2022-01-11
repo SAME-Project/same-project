@@ -90,6 +90,7 @@ def run(
     persist_temp_files: bool = False,
     no_deploy: bool = False,
 ):
+    #import pdb; pdb.set_trace()
     secret_dict = sameproject.helpers.create_secret_dict(
         image_pull_secret_name, image_pull_secret_registry_uri, image_pull_secret_username, image_pull_secret_password, image_pull_secret_email
     )
@@ -121,4 +122,4 @@ def run(
     click.echo(f"File is: {same_file.name}")
     compiled_same_file, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
     if not no_deploy:
-        backends.executor.deploy(target, compiled_same_file, root_module_name, persist_temp_files)
+        sameproject.backends.executor.deploy(target, compiled_same_file, root_module_name, persist_temp_files)

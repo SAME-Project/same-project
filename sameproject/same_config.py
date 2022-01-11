@@ -4,6 +4,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 from ruamel.yaml.parser import ParserError
 import logging
+import pprint
 
 from io import BufferedReader
 
@@ -110,11 +111,11 @@ class SameConfig(Box):
             logging.fatal(f"Content does not appear to be well-formed yaml. Error: {str(e)}")
 
         if same_config_dict is None:
-            raise ValueError(f"SAME file at '{self._path}' is empty.")
+            raise ValueError(f"SAME file at '{self.path}' is empty.")
 
         v = SameValidator.get_validator()
         if not v.validate(same_config_dict):
-            raise SyntaxError(f"SAME file at '{self._path}' is invalid. \n {v.errors}")
+            raise SyntaxError(f"SAME file at '{self.path}' is invalid: {v.errors}; {pprint.pformat(same_config_dict)}")
 
         temp_box = Box(same_config_dict)
         self.update(temp_box)
