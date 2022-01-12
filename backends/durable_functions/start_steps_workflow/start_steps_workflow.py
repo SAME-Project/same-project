@@ -29,6 +29,6 @@ async def start_steps_workflow(req: func.HttpRequest, starter: str) -> func.Http
             "stats": stats,
             "HTTP_params": req.params,
         }
-        return http_utils.generate_response(response_payload, status_code)
+        return http_utils.generate_json_response(response_payload, status_code)
 
     return client.create_check_status_response(req, instance_id)

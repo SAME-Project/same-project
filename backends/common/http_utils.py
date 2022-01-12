@@ -6,13 +6,24 @@ import json
 import azure.functions as func
 
 
-def generate_response(body: dict, status_code: int) -> func.HttpResponse:
+def generate_json_response(body: dict, status_code: int) -> func.HttpResponse:
     """
     """
     body_json_str = json.dumps(body)
     response = func.HttpResponse(
         body=body_json_str,
         mimetype="application/json",
+        status_code=status_code,
+    )
+    return response
+
+
+def generate_binary_response(body: bytes, status_code: int) -> func.HttpResponse:
+    """
+    """
+    response = func.HttpResponse(
+        body=body,
+        mimetype="application/octet-stream",
         status_code=status_code,
     )
     return response

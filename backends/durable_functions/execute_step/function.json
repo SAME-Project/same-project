@@ -8,12 +8,12 @@
       "direction": "in"
     },
     {
-    "name": "envin",
-    "type": "blob",
-    "direction": "in",
-    "path": "same/content-env-{user}-{idin}",
-    "connection":"AzureWebJobsStorage",
-    "dataType": "binary"
+      "name": "envin",
+      "type": "blob",
+      "direction": "in",
+      "path": "same/content-env-{user}-{idin}",
+      "connection":"AzureWebJobsStorage",
+      "dataType": "binary"
     },
     {
         "name": "envout",

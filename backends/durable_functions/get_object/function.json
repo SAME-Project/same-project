@@ -1,0 +1,29 @@
+{
+  "scriptFile": "get_object.py",
+  "entryPoint": "get_object",
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "name": "obj",
+      "type": "blob",
+      "direction": "in",
+      "path": "same/content-env-{user}-{obj_name}.obj",
+      "connection":"AzureWebJobsStorage",
+      "dataType": "binary"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    }
+  ]
+}

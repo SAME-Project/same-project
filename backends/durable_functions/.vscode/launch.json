@@ -6,7 +6,10 @@
       "type": "python",
       "request": "attach",
       "port": 9091,
-      "preLaunchTask": "func: host start --verbose"
+      "preLaunchTask": "func: host start --verbose",
+      "env": {
+        "PYTHON_THREADPOOL_THREAD_COUNT": "8"
+      }
     }
   ]
 }

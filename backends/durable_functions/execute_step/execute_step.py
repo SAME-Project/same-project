@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import List
+
 from .context import code_executor
 from .context import exception_utils
 from .context import Step
@@ -7,6 +8,7 @@ from .context import NumpyToNumsTransformer
 from .context import PandasToDaskTransformer
 from .context import Transformer
 from .context import ExecutionEnvironment
+from .context import LazyExecutionEnvironment
 import azure.functions as func
 import azure.functions.blob as blob
 import logging
@@ -26,14 +28,19 @@ def execute_step(
 
     try:
         step : Step = input["step"]
-        logging.info(f"Executing Step: {step.name}")
+        user : str = input["user"]
+        logging.info(f"Executing Step: {step.name}, User: {user}")
 
         # Get the execution environment from input
-        if envin is not None:
-            envin_serialized = envin.read()
-            env : ExecutionEnvironment = ExecutionEnvironment.deserialize(envin_serialized)
-        else:
-            env : ExecutionEnvironment = ExecutionEnvironment()
+        # NOTE: THIS IS A REGULAR ENVIRONMENT WHICH LOADS EVERYTHING.
+        # if envin is not None:
+        #     envin_serialized = envin.read()
+        #     env : ExecutionEnvironment = ExecutionEnvironment.deserialize(envin_serialized)
+        # else:
+        #     env : ExecutionEnvironment = ExecutionEnvironment()
+
+        # NOTE: THIS IS A LAZY ENVIRONMENT WHICH LOADS ELEMENTS AS NEEDED.
+        env : LazyExecutionEnvironment = LazyExecutionEnvironment(user)
 
         try:
             # Perform code transformations
