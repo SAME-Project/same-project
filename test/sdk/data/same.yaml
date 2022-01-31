@@ -1,0 +1,6 @@
+datasets:
+   USER_HISTORY:
+     default: user_history.csv
+     STAGING: s3://contoso_test_DS/reco/202101211344/user_data.parquet
+     PROD: s3://contoso_DS/reco/202101250655/user_data.parquet
+     IPFS: ipfs://bafybeihymreqqcrajfghv2kbz6pjll3wwq5as6ihwszlko2bp2cjos4bea/data.json
