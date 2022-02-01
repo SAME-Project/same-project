@@ -4,9 +4,9 @@ from typing import Tuple
 from johnnydep.lib import JohnnyDist
 import importlib
 import pkg_resources
-from sdk.same.conda_env import CondaEnv
+from sameproject import CondaEnv
 import logging
-import sdk.same.helpers
+import sameproject
 from pathlib import Path
 
 default_conda = """
@@ -111,7 +111,7 @@ def _update_conda_env(file_path):
         conda_env_path_object = Path(conda_env_path).absolute
         logging.info(f"No file found at '{conda_env_path_object}', creating one.")
         conda_env = CondaEnv(content=default_conda)
-        conda_env.name = sdk.same.helpers.ipy_nb_name()
+        conda_env.name = sameproject.helpers.ipy_nb_name()
         conda_env.dependencies = []
 
     conda_dependencies = {}

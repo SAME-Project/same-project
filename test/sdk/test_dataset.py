@@ -1,7 +1,7 @@
 # pylint: disable=protected-access,missing-function-docstring, missing-class-docstring
 # pylint: disable=missing-module-docstring, missing-class-docstring
 # -*- coding: utf-8 -*-
-import sdk.same as same
+import sameproject as same
 import subprocess
 import sys
 import csv
