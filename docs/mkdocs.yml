@@ -1,5 +1,5 @@
 nav:
-  # - Home: index.md
+  - Home: index.md
   - Getting started:
       # - SAME Quickstart: getting-started/_index.md
       - Installing: getting-started/installing.md
@@ -25,6 +25,8 @@ theme:
   favicon: images/favicon/favicon-32x32.png
   custom_dir: overrides
   nav_style: dark
+  features:
+    - navigation.expand
 
 markdown_extensions:
   # - mdx_include:
@@ -58,7 +60,7 @@ site_url: https://sameproject.ml/
 site_description: SAME PROJECT Documentation
 repo_url: https://github.com/SAME-Project/same-project/
 # repo_name: SAME-Project/same-mkdocs
-edit_uri: edit/mkdocs/docs/docs
+edit_uri: edit/main/docs/docs
 extra_css:
   - stylesheets/extra.css
 
