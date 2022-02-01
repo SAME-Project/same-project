@@ -3,8 +3,9 @@ from .context import DURABLE_FUNCTIONS_BACKEND_URL_AZURE
 from .context import DurableFunctionsClient
 import os
 import uuid
+import pytest
 
-
+@pytest.mark.skip("not using durable functions right now")
 class TestDurableFunctionsClient():
     def setup_class(self):
         # Check if a user specified host is specified for the backend, otherwise use the Azure Functions URL.

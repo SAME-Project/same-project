@@ -91,7 +91,7 @@ class SameValidator(Validator):
 class SameConfig(Box):
     """Class for SAME Config Object. Currently, just subclasses Box, but building in now as I expect we'll need custom processing here."""
 
-    _path = ""
+    path = ""
 
     def __init__(self, buffered_reader: BufferedReader = None, content: str = ""):
         if buffered_reader is not None and content != "":
