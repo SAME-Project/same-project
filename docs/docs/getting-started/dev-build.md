@@ -17,8 +17,8 @@ If you are using the same-mono-private repo, it does not currently produce a bin
 1. Clone the repo to your local machine and initialize the submodules:
 
     ```bash
-    git clone https://github.com/SAME-Project/same-mono-private.git
-    cd same-mono-private
+    git clone https://github.com/SAME-Project/same-project.git
+    cd same-project
     git submodule update --init --recursive
     ```
 
@@ -42,13 +42,13 @@ If you are using [Visual Studio Code (VSCode)](https://code.visualstudio.com) to
 2. [Visual Studio Code](https://code.visualstudio.com/Download)
 3. [Visual Studio Code Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-### Opening same-mono-private in a devcontainer
+### Opening same-project in a devcontainer
 
 1. After you have cloned the dapr repo locally, open the dapr folder in VSCode. For example:
 
     ```bash
-    git clone https://github.com/SAME-Project/same-mono-private.git
-    cd same-mono-private
+    git clone https://github.com/SAME-Project/same-project.git
+    cd same-project
     git submodule update --init --recursive
     code .
     ```
@@ -79,7 +79,7 @@ poetry shell
 > which python3
 > ```
 >
-> This should result in a response like: `.../pypoetry/virtualenvs/same-mono-private-88mixeKa-py3.8/bin/python3`. If it reports something like `/usr/bin/python` or `/usr/local/bin/python`, you are using the system python, and things will not work as expected.
+> This should result in a response like: `.../pypoetry/virtualenvs/same-project-88mixeKa-py3.8/bin/python3`. If it reports something like `/usr/bin/python` or `/usr/local/bin/python`, you are using the system python, and things will not work as expected.
 
 ## How to execute against a notebook from source code
 
@@ -89,7 +89,7 @@ From the root of project, execute:
 python3 cli/same/main.py <cli-arguments>
 ```
 
-> **TODO:** Enable building the CLI into a redistributable binary via something like [PyOxidiser](https://pyoxidizer.readthedocs.io/en/stable/index.html) in same-mono-private.
+> **TODO:** Enable building the CLI into a redistributable binary via something like [PyOxidiser](https://pyoxidizer.readthedocs.io/en/stable/index.html) in same-project.
 
 When we get to binary builds of the CLI that can be run locally, you can execute the local build with:
 
@@ -100,77 +100,28 @@ bin/same <cli-arguments>
 After we start publishing builds, you can install and execute with the following:
 
 ```bash
-curl -L0 https://get.sameproject.org/ | bash -
+curl -L0 https://get.sameproject.ml/ | bash -
 same <cli-arguments>
 ```
 
-## How to run the tests in the repo
+## Running tests
+To run all the tests against the CLI and SDK:
 
-1. Setup kubeconfig to Azure Kubernetes Service configured for Kubeflow
+```bash
+pytest
+```
 
-    To run the CLI pytests, you will need a Kubernetes cluster configured with Kubeflow.
+To run a subset of tests for a single file:
 
-    We already have a Kubernetes cluster set up in the `SAME-sample-vm_group` resource group. To use that cluster as a member of the `SAME Dev` subscription, import the cluster credentials to your local kubeconfig as the current context:
-
-    ```bash
-    az login
-    az account set -s "SAME Dev"
-    az aks get-credentials --name AKSMLProductionCluster --resource-group SAME-sample-vm_group
-    ```
-
-    > **NOTE:** You will also need to be logged into Azure with the `SAME Dev` subscription every time to run the tests. The Azure login will also allow the Durable Functions backend tests to run.
-
-2. Setup the environment variables for Azure Machine Learning (AML)
-
-    To run the AML tests, the local environment variables for AML must be populated. You can set them by providing a file named `.env.sh` at the root of the directory containing the following export statements:
-
-    ```bash
-    # Set using the following instructions: https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication#configure-a-service-principal
-    export AML_SP_APP_ID=<clientId from `az ad sp create-for-rbac`>
-    export AML_SP_TENANT_ID=<tenantId from `az ad sp create-for-rbac`>
-    export AML_SP_PASSWORD_VALUE=<clientSecret from `az ad sp create-for-rbac`>
-
-    # Set using the following instructions: https://docs.microsoft.com/en-us/azure/machine-learning/how-to-configure-cli#set-up
-    export WORKSPACE_SUBSCRIPTION_ID=<id from `az account show` when creating the workspace> 
-    export WORKSPACE_RESOURCE_GROUP=<resource-group value passed to `az ml workspace create`>
-    export WORKSPACE_NAME=<workgroup-name value passed to `az ml workspace create`>
-
-    # Compute name instance that can be setup using: https://docs.microsoft.com/en-us/azure/machine-learning/how-to-create-manage-compute-instance?tabs=azure-cli#create
-    export AML_COMPUTE_NAME=<name passed to `az ml compute create`>
-    ```
-
-    For example, using the pre-configured `SAME-test-aml-rg` available to the `SAME Dev` subscription:
-
-    ```bash
-    #!/usr/bin/env bash
-    export AML_SP_APP_ID="2dd71611-83d6-4950-b4b2-ccfb6efe6528"
-    export AML_SP_TENANT_ID="72f988bf-86f1-41af-91ab-2d7cd011db47"
-    export AML_SP_PASSWORD_VALUE=<copy from same-aml-test-sp `clientSecret` in the same-infra-keyvault>
-    export WORKSPACE_SUBSCRIPTION_ID="1367ca4d-9e6c-4c41-937f-c657878ee8d5"
-    export WORKSPACE_RESOURCE_GROUP="SAME-test-aml-rg"
-    export WORKSPACE_NAME="SAME-test-aml-workspace"
-    export AML_COMPUTE_NAME="SAME-test-aml-compute"
-    ```
-
-3. Run the tests
-
-    To run all the tests against the CLI and SDK:
-
-    ```bash
-    pytest
-    ```
-
-    To run a subset of tests for a single file:
-
-    ```bash
-    pytest test/cli/test_<file>.py -k "test_<name>"
-    ```
+```bash
+pytest test/cli/test_<file>.py -k "test_<name>"
+```
 
 ## How to setup private test environments
 
 ### Local Kubeflow cluster on Minikube in devcontainer
 
-The devcontainer image for same-mono-private comes with [minikube](https://minikube.sigs.k8s.io/docs/) preinstalled, so you can set up a local Kubeflow cluster to run the CLI pytests against if you wish:
+The devcontainer image for same-project comes with [minikube](https://minikube.sigs.k8s.io/docs/) preinstalled, so you can set up a local Kubeflow cluster to run the CLI pytests against if you wish:
 
 1. Start a minikube cluster in the devcontainer:
 
