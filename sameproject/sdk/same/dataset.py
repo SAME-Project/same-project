@@ -6,7 +6,7 @@ import pandas as pd
 def dataset(name, same_file = 'same.yaml'):
     """Imports the dataset based upon the env provided
        wrapper around pd.read_<file> and I/O APIs
-    NOTE: cuurently tested for json,csv and ipfs
+    NOTE: curently tested for json,csv and ipfs
     """
     try:
       env_var = os.environ['SAME_ENV'] if os.environ['SAME_ENV'] != "" else "default"
