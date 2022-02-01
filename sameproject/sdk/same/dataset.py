@@ -3,20 +3,24 @@ import os
 from urllib.parse import urlparse
 import pandas as pd
 
-def dataset(name, same_file='same.yaml'):
+def dataset(name, same_file = 'same.yaml'):
+    """Imports the dataset based upon the env provided
+       wrapper around pd.read_<file> and I/O APIs
+    NOTE: cuurently tested for json,csv and ipfs
+    """
     try:
-      env_var=os.environ['SAME_ENV'] if os.environ['SAME_ENV']!="" else "default"
+      env_var = os.environ['SAME_ENV'] if os.environ['SAME_ENV'] != "" else "default"
     except:
-      env_var="default"
-
-
+      env_var = "default"
     with open(same_file, 'r') as file:
         same_variables = yaml.safe_load(file)
 
-
-    urlpar = urlparse(same_variables['datasets'][name][env_var])
-    
-    url = 'https://gateway.ipfs.io/ipfs/'+urlpar.netloc+urlpar.path if urlpar.scheme=='ipfs' else same_variables['datasets'][name][env_var]
+    parsed_url = urlparse(same_variables['datasets'][name][env_var])
+    # If URL is an IPFS url, access it via the IPFS gateway
+    if parsed_url.scheme == "ipfs":
+      url = 'https://gateway.ipfs.io/ipfs/'+parsed_url.netloc+parsed_url.path
+    else:
+      url = same_variables['datasets'][name][env_var]
     filename, file_extension = os.path.splitext(url)
     
     extensions = {
@@ -37,10 +41,11 @@ def dataset(name, same_file='same.yaml'):
       ('.xlsx', '.ods'): 'read_excel',
     }
     
-    for key,value in list(extensions.items()):
-      if type(key)==tuple:
+    for key, value in list(extensions.items()):
+      if type(key) == tuple:
         for ext in key:
-          extensions[ext]=value
+          extensions[ext] = value
         extensions.pop(key)
-    ds=eval("pd."+extensions[file_extension])(url)
+    reader = getattr(pd, extensions[file_extension])
+    ds = reader(url)
     return ds
