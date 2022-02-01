@@ -14,8 +14,8 @@
 }
 
 .md-header__button.md-logo img {
-  width: 5rem;
-  height: 4rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .md-nav__item--nested>.md-nav__link, .md-nav__item a {
@@ -44,6 +44,18 @@ md-tabs__link a{
 .md-nav__title .md-nav__button.md-logo img,
 .md-nav__title .md-nav__button.md-logo svg {
   width: auto;
+}
+
+.md-header__title {
+  margin-left: 0
+}
+
+.md-source__repository {
+  color: white;
+}
+
+.md-source__icon {
+  color: white
 }
 
 /**Modify H1**/

@@ -9,7 +9,7 @@ If you are using the same-mono-private repo, it does not currently produce a bin
 
 ## Prerequisites
 
-- [Python 3.8](https://www.python.org/downloads/). _Note that 3.9 is not currently supported due to Azure Machine Learning dependencies._
+- [Python 3.8](https://www.python.org/downloads/). _Note that 3.9 is not currently supported due to Azure Machine Learning dependencies.
 - [Poetry 1.1.7](https://python-poetry.org/docs/#installation) or higher.
 - [Azure CLI 2.27](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=script) or higher.
 - [Azure Functions Work Tools v3.x](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v3%2Clinux%2Ccsharp%2Cportal%2Cbash%2Ckeda) or higher (Optional).

@@ -14,6 +14,7 @@ First, go to the notebook settings and view "Cell Metadata":
 ![The menu item for displaying tags for Jupyter cells](../images/add-tags-to-jupyter-cell.jpg)
 
 ### Adding an Environment Specifier
+
 You can add alternate base images with the following tag structure:
 
 ```bash
