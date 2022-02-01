@@ -1,6 +1,10 @@
 # pylint: disable=protected-access,missing-function-docstring, missing-class-docstring
 # pylint: disable=missing-module-docstring, missing-class-docstring
 # -*- coding: utf-8 -*-
+import sys
+print(sys.path)
+from pathlib import Path
+sys.path.append(Path(__file__).parent.parent.absolute().name)
 import sameproject.sdk.same as same
 import subprocess
 import sys

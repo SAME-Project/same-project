@@ -1,16 +1,20 @@
 # pylint: disable=protected-access,missing-function-docstring, missing-class-docstring
 # pylint: disable=missing-module-docstring, missing-class-docstring
 # -*- coding: utf-8 -*-
-import sameproject.sdk.same as same
-import subprocess
 import sys
-import csv
+print(sys.path)
+from pathlib import Path
+sys.path.append(Path(__file__).parent.parent.absolute().name)
+import sameproject.sdk.same as same
+# import subprocess
+# import sys
+# import csv
 import os
-import pytest
-import pytest_virtualenv as venv
-from urllib.parse import urlparse
-import yaml
-import importlib
+# import pytest
+# import pytest_virtualenv as venv
+# from urllib.parse import urlparse
+# import yaml
+# import importlib
 
 
 csv={
