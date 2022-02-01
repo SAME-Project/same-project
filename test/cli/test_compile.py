@@ -5,8 +5,8 @@ from sameproject.same_config import SameConfig
 from sameproject.program.commands import run
 from sameproject.program.compile import notebook_processing
 import logging
-from backends.executor import render as template_render
-from backends.executor import deploy
+from sameproject.backends.executor import render as template_render
+from sameproject.backends.executor import deploy
 
 same_config_file_path = "test/testdata/generic_notebook/same.yaml"
 
