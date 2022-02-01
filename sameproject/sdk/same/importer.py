@@ -4,7 +4,7 @@ from typing import Tuple
 from johnnydep.lib import JohnnyDist
 import importlib
 import pkg_resources
-from sameproject import CondaEnv
+from .conda_env import CondaEnv
 import logging
 import sameproject
 from pathlib import Path

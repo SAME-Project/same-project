@@ -26,6 +26,7 @@ tblib = "^1.7.0"
 metakernel = "^0.27.5"
 regex = "^2021.11.10"
 azureml-core = "^1.37.0"
+pandas = "^1.4.0"
 
 [tool.poetry.extras]
 # AzureML seems to have binary components which don't work on Python >3.8 or
