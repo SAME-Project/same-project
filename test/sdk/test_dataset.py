@@ -11,7 +11,8 @@ import pytest_virtualenv as venv
 from urllib.parse import urlparse
 import yaml
 import importlib
-import pandas as pd
+
+
 csv={
     'longitude': [
         -114.31,
