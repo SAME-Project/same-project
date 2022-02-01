@@ -6,11 +6,12 @@ print(sys.path)
 from pathlib import Path
 sys.path.append(Path(__file__).parent.parent.absolute().name)
 import sameproject.sdk.same as same
+from sameproject.same_config import SameConfig
 # import subprocess
 # import sys
 # import csv
 import os
-# import pytest
+import pytest
 # import pytest_virtualenv as venv
 # from urllib.parse import urlparse
 # import yaml
@@ -145,11 +146,22 @@ json={
 	    {"item" : "<span class='item'><h1>14</h1></span>"}
 	]
 }
-def test_dataset_csv():
+
+@pytest.fixture
+def same_config():
+    with open('test/sdk/same.yaml', "rb") as f:
+        return SameConfig(buffered_reader=f)
+
+
+
+def test_dataset_csv(same_config):
     os.environ["SAME_ENV"] = ""
+    print(same.dataset(name="USER_HISTORY"))
     assert list(csv) == list(same.dataset(name="USER_HISTORY"))
 
 
-def test_dataset_ipfs():
+def test_dataset_ipfs(same_config):
+    
     os.environ["SAME_ENV"] = "IPFS"
+    print(same.dataset(name="USER_HISTORY"))
     assert list(json) == list(same.dataset(name="USER_HISTORY"))
