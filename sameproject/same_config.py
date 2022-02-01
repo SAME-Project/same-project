@@ -91,9 +91,10 @@ class SameValidator(Validator):
 class SameConfig(Box):
     """Class for SAME Config Object. Currently, just subclasses Box, but building in now as I expect we'll need custom processing here."""
 
-    path = ""
-
     def __init__(self, buffered_reader: BufferedReader = None, content: str = ""):
+        # NB: The default path value has to be set on self, not as a class
+        # variable, otherwise the __setattr__ hack below doesn't work.
+        self.path = ""
         if buffered_reader is not None and content != "":
             raise ValueError("SameConfig accepts either a buffered reader or content value, but not both.")
         elif buffered_reader is not None:

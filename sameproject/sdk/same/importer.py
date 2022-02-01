@@ -111,7 +111,7 @@ def _update_conda_env(file_path):
         conda_env_path_object = Path(conda_env_path).absolute
         logging.info(f"No file found at '{conda_env_path_object}', creating one.")
         conda_env = CondaEnv(content=default_conda)
-        conda_env.name = sameproject.helpers.ipy_nb_name()
+        conda_env.name = sameproject.sdk.same.helpers.ipy_nb_name()
         conda_env.dependencies = []
 
     conda_dependencies = {}
