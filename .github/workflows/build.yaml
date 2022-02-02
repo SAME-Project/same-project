@@ -43,44 +43,44 @@ jobs:
       - name: Lint Python Files
         run: |
           flake8 **/*.py
-  deploy-durable-functions-backend:
-    runs-on: ubuntu-latest
-    env:
-      DURABLE_FUNCTIONAPP_PACKAGE_PATH: "durable-functions-app-package"
-      DURABLE_FUNCTIONAPP_NAME: "same-df-backend"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Setup Python 3.10 Environment
-        uses: actions/setup-python@v1
-        with:
-          python-version: "3.10"
-      - name: Package Durable Functions Backend App
-        shell: bash
-        run: |
-          pushd scripts
-          ./generate-durable-functions-app-package.sh ../${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
-          popd
-      - name: Resolve Durable Functions Backend Dependencies Using Pip
-        shell: bash
-        run: |
-          pushd './${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}'
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-          popd
-      - name: Deploy Durable Functions Backend to Azure
-        uses: Azure/functions-action@v1
-        id: fa
-        with:
-          app-name: ${{ env.DURABLE_FUNCTIONAPP_NAME }}
-          package: ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.DURABLE_FUNCTIONAPP_PUBLISH_PROFILE }}
-      - name: Cleanup Durable Functions App Package
-        shell: bash
-        run: |
-          rm -rf ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+  # deploy-durable-functions-backend:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     DURABLE_FUNCTIONAPP_PACKAGE_PATH: "durable-functions-app-package"
+  #     DURABLE_FUNCTIONAPP_NAME: "same-df-backend"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         submodules: recursive
+  #     - name: Setup Python 3.10 Environment
+  #       uses: actions/setup-python@v1
+  #       with:
+  #         python-version: "3.10"
+  #     - name: Package Durable Functions Backend App
+  #       shell: bash
+  #       run: |
+  #         pushd scripts
+  #         ./generate-durable-functions-app-package.sh ../${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+  #         popd
+  #     - name: Resolve Durable Functions Backend Dependencies Using Pip
+  #       shell: bash
+  #       run: |
+  #         pushd './${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}'
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+  #         popd
+  #     - name: Deploy Durable Functions Backend to Azure
+  #       uses: Azure/functions-action@v1
+  #       id: fa
+  #       with:
+  #         app-name: ${{ env.DURABLE_FUNCTIONAPP_NAME }}
+  #         package: ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+  #         publish-profile: ${{ secrets.DURABLE_FUNCTIONAPP_PUBLISH_PROFILE }}
+  #     - name: Cleanup Durable Functions App Package
+  #       shell: bash
+  #       run: |
+  #         rm -rf ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
   test:
     runs-on: ubuntu-latest
     steps:
