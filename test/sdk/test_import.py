@@ -1,7 +1,11 @@
 # pylint: disable=protected-access,missing-function-docstring, missing-class-docstring
 # pylint: disable=missing-module-docstring, missing-class-docstring
 # -*- coding: utf-8 -*-
-import sdk.same as same
+import sys
+print(sys.path)
+from pathlib import Path
+sys.path.append(Path(__file__).parent.parent.absolute().name)
+import sameproject.sdk.same as same
 import subprocess
 import sys
 
@@ -20,7 +24,7 @@ def init_env(mocker):
 
 
 def test_install_package(init_env, mocker):
-    mocker.patch("sdk.same.helpers.ipy_nb_name", return_value="TEST_NOTEBOOK_NAME")
+    mocker.patch("sameproject.sdk.same.helpers.ipy_nb_name", return_value="TEST_NOTEBOOK_NAME")
 
     reqs = init_env.installed_packages()
     six_package_name = "six"
@@ -31,7 +35,7 @@ def test_install_package(init_env, mocker):
 
 
 def test_install_two_packages_output(init_env, mocker):
-    mocker.patch("sdk.same.helpers.ipy_nb_name", return_value="TEST_NOTEBOOK_NAME")
+    mocker.patch("sameproject.sdk.same.helpers.ipy_nb_name", return_value="TEST_NOTEBOOK_NAME")
     reqs = init_env.installed_packages()
 
     # Need to add virtual env manually because it doesn't play well with importlib - https://stackoverflow.com/questions/36103169/how-to-import-packages-in-virtualenv-in-python-shell

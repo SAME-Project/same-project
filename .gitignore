@@ -147,3 +147,4 @@ requirements-dev.txt
 **/local.settings.json
 
 .env.sh
+test.py

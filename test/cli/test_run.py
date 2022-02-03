@@ -6,8 +6,8 @@ from sameproject.program.commands import run
 from sameproject.program.compile import notebook_processing
 import sameproject.helpers
 import logging
-from backends.executor import render as template_render
-from backends.executor import deploy
+from sameproject.backends.executor import render as template_render
+from sameproject.backends.executor import deploy
 
 import tempfile
 import dotenv
