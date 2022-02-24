@@ -21,7 +21,7 @@ git submodule update --init --recursive
 - **[/docs](docs/README.md):** Documentation mkdocs github pages website
 - **/objects:** Helper library for a JSON serialization object shared by other Python modules.
 - **/scripts:** Helper shell scripts for testing and test environment setup.
-- **[/sdk](sdk/README.md):** Experimental Python module for functions to be used in Jupyter notebooks making them easier to integrate into DevOps.
+- **[/sdk](sameproject/sdk/README.md):** Experimental Python module for functions to be used in Jupyter notebooks making them easier to integrate into DevOps.
 - **/templates:** Jinja templates used by the AML and Kubeflow backends for code generation. Current implementation detail for those backends.
 - **[/test](test/README.md):** Unit and functional tests for each of the major Python modules.
 - **/vendor:** Folder for 3rd party submodules imported by `same-mono-repo`, such as https://github.com/conda/conda.
