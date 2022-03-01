@@ -92,7 +92,6 @@ def run(
     persist_temp_files: bool = False,
     no_deploy: bool = False,
 ):
-    # import pdb; pdb.set_trace()
     secret_dict = sameproject.helpers.create_secret_dict(
         image_pull_secret_name,
         image_pull_secret_registry_uri,
