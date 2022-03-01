@@ -16,6 +16,7 @@ git clone git@github.com:SAME-Project/SAME-samples.git
 Next, change into the hello-world directory:
 
 ```bash
+cd SAME-samples
 cd hello-world
 poetry shell
 ```
