@@ -10,7 +10,7 @@ weight: 20
 To get started, first you'll need to clone our sample repo. To do so, execute the following command:
 
 ```bash
-git clone git@github.com:SAME-Project/SAME-samples.git
+git clone https://github.com/SAME-Project/SAME-samples.git
 ```
 
 Next, change into the hello-world directory:
