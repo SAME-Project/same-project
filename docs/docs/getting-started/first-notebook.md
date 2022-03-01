@@ -17,7 +17,7 @@ Next, change into the hello-world directory:
 
 ```bash
 cd SAME-samples
-cd hello-world
+cd 01-hello-world
 poetry shell
 ```
 
