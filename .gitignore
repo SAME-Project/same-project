@@ -148,3 +148,4 @@ requirements-dev.txt
 
 .env.sh
 test.py
+.vscode
