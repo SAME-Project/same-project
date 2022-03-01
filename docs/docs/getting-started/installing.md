@@ -49,8 +49,9 @@ To run SAME, you will need a workflow engine to connect to. We support a variety
 2. Set `KUBECONFIG` environment variable. While SAME can operate without setting the environment variable, some tools
    may expect this to be set.
    ```shell
-   set KUBECONFIG="~/.kube/config"
+   export KUBECONFIG="~/.kube/config"
    ```
+   If you use a non-`bash` shell, you may need to spell this command to set an environment variable differently.
 3. Install Kubeflow on Kubernetes
     - We recommend using a [Terrachain from Combinator.ml](https://combinator.ml/stacks/kubeflow-mlflow/).
 
