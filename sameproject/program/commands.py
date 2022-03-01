@@ -41,6 +41,7 @@ def program():
     "--same-file",
     "same_file",
     type=click.File("rb"),
+    default="same.yaml",
     help="Configuration file (same.yaml) for this project. We currently only support notebooks/python files describing pipelines in the same directory as the same configuration file.",
     show_default=True,
 )
