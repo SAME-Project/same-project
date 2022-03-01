@@ -26,7 +26,7 @@ Finally, deploy your notebook to your environment. If you are using kubeflow, yo
 same program run -t kubeflow
 ```
 
-This command converts the notebook into a single python script, and deploys it to your [previously configured]({{< ref installing.md >}}) Kubeflow.
+This command converts the notebook into a single python script, and deploys it to your [previously configured](installing.md) Kubeflow.
 
 ![Sample three step graph](../images/three-step-execution.jpg)
 
