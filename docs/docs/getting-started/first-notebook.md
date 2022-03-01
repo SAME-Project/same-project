@@ -18,10 +18,7 @@ Next, change into the hello-world directory:
 ```bash
 cd SAME-samples
 cd 01-hello-world
-poetry shell
 ```
-
-**Note** If you do not have `poetry` installed, this will fail. Make sure you do `python -m pip install poetry` if this is not present.
 
 Finally, deploy your notebook to your environment. If you are using kubeflow, you would execute the following command:
 
