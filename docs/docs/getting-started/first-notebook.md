@@ -10,7 +10,7 @@ weight: 20
 To get started, first you'll need to clone our sample repo. To do so, execute the following command:
 
 ```bash
-git clone git@github.com:SAME-Project/SAME-samples.git
+git clone https://github.com/SAME-Project/SAME-samples.git
 ```
 
 Next, change into the hello-world directory:
@@ -28,10 +28,6 @@ same program run -t kubeflow
 
 This command converts the notebook into a single python script, and deploys it to your [previously configured](installing.md) Kubeflow.
 
+In the Kubeflow UI, click on **Pipelines -> Experiments** to see your runs!
+
 ![Sample three step graph](../images/three-step-execution.jpg)
-
-To do the same against Azure Machine Learning, you should execute the following command:
-
-```bash
-same program run -t aml
-```

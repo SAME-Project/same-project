@@ -9,5 +9,6 @@
       "front_matter_title": ""
     }
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "black"
 }
