@@ -42,7 +42,7 @@ To run SAME, you will need a workflow engine to connect to. We support a variety
 
 ### Install Kubeflow
 
-1. Verify that correct Kubernetes cluster has been configured with a local `kubectl` context set as the default.
+1. Verify that correct Kubernetes cluster has been configured with the desired `kubectl` context set as the default.
    ```shell
    kubectl config current-context
    ```
