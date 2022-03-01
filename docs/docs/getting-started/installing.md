@@ -18,16 +18,16 @@ If you want to try SAME without a Kubernetes cluster with Kubeflow installed, cl
 ### System Requirements
 
 - Python >=3.8, <3.11, with pip
-  - Ubuntu/Debian: `sudo apt install -y python3-pip`
+  - Ubuntu/Debian: `sudo apt update && sudo apt install -y python3-pip`
 
 ### Install SAME using pip
 
-Before installing the pip package, using a [virtual environment](https://docs.python.org/3/tutorial/venv.html) is highly recommended to isolate package installation from the system.
+Before installing the pip package, using a [virtual environment](https://docs.python.org/3/tutorial/venv.html) is highly recommended to isolate package installation from the system. (You can skip this step in the test drive, since the test drive VM is already isolated.)
 
 SAME project is available through [PyPI](https://pypi.org/project/sameproject/):
 
 ```shell
-pip install sameproject
+pip3 install sameproject
 ```
 
 ### Verify installation
@@ -35,7 +35,10 @@ pip install sameproject
 Validate successful installation by running `same version`. Output should look similar to below
 
 ```shell
-$ same version
+same version
+```
+
+```shell
 0.0.1
 ```
 
