@@ -63,6 +63,7 @@ repo_url: https://github.com/SAME-Project/same-project/
 edit_uri: edit/main/docs/docs
 extra_css:
   - stylesheets/extra.css
+  - https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css
 
 extra:
   social:

@@ -41,12 +41,14 @@ def program():
     "--same-file",
     "same_file",
     type=click.File("rb"),
+    default="same.yaml",
     help="Configuration file (same.yaml) for this project. We currently only support notebooks/python files describing pipelines in the same directory as the same configuration file.",
     show_default=True,
 )
 @click.option(
     "-t",
     "--target",
+    default="kubeflow",
     type=click.Choice(["kubeflow", "aml"]),
 )
 @click.option(
@@ -90,9 +92,12 @@ def run(
     persist_temp_files: bool = False,
     no_deploy: bool = False,
 ):
-    #import pdb; pdb.set_trace()
     secret_dict = sameproject.helpers.create_secret_dict(
-        image_pull_secret_name, image_pull_secret_registry_uri, image_pull_secret_username, image_pull_secret_password, image_pull_secret_email
+        image_pull_secret_name,
+        image_pull_secret_registry_uri,
+        image_pull_secret_username,
+        image_pull_secret_password,
+        image_pull_secret_email,
     )
 
     aml_required_values = [
@@ -116,7 +121,9 @@ def run(
                 missing_values.append(aml_var)
         if len(missing_values) > 0:
             missing_values_string = ", ".join(missing_values)
-            click.echo(f"You selected AML as a target, but are missing the following environment variables: {missing_values_string}")
+            click.echo(
+                f"You selected AML as a target, but are missing the following environment variables: {missing_values_string}"
+            )
             raise ValueError(f"Missing values: {missing_values_string}")
 
     click.echo(f"File is: {same_file.name}")
