@@ -52,7 +52,7 @@ def get_steps(notebook_dict: dict) -> dict:
     all_code = ""
 
     for num, cell in enumerate(notebook_dict["cells"]):
-        if len(cell["metadata"]) > 0 and len(cell["metadata"]["tags"]) > 0:
+        if len(cell["metadata"]) > 0 and "tags" in cell["metadata"] and len(cell["metadata"]["tags"]) > 0:
             for tag in cell["metadata"]["tags"]:
                 if tag.startswith("same_step_"):
                     # Skip over this logic if it's the zeroth cell (cleaner way to do this? probably)
