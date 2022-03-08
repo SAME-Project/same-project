@@ -219,7 +219,9 @@ def _add_secrets_to_same_config(secret_dict, same_config) -> dict:
         secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = same_config.metadata.name
 
     # Make the secret name safe for a Secret (if the rest of the secret name is not set, don't worry about it)
-    secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = lowerAlphaNumericOnly(secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME])
+    secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = lowerAlphaNumericOnly(
+        secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME]
+    )
 
     # Below, we're going to inject these secrets into the in-memory struct of same_config, which will later render it into the compiled template.
     # This only makes sense if there are environments and one of them is private
@@ -231,16 +233,26 @@ def _add_secrets_to_same_config(secret_dict, same_config) -> dict:
                     missing_secrets_dict[name] = these_missing_secrets
                 else:
                     same_config.environments[name]["credentials"] = {}
-                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME]
-                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI] = secret_dict[
+                    same_config.environments[name].credentials[
+                        REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME
+                    ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME]
+                    same_config.environments[name].credentials[
                         REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI
-                    ]
-                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME]
-                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD]
-                    same_config.environments[name].credentials[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL]
+                    ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI]
+                    same_config.environments[name].credentials[
+                        REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME
+                    ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME]
+                    same_config.environments[name].credentials[
+                        REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD
+                    ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD]
+                    same_config.environments[name].credentials[
+                        REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL
+                    ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL]
 
     if len(missing_secrets_dict):
-        click.echo("You set an environment with as 'private' but did not supply all the necessary secrets. Please correct this:")
+        click.echo(
+            "You set an environment with as 'private' but did not supply all the necessary secrets. Please correct this:"
+        )
         for k in missing_secrets_dict:
             these_missing_secrets = missing_secrets_dict[k]
             if len(these_missing_secrets) > 0:
