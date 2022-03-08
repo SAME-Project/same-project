@@ -30,4 +30,5 @@ This command converts the notebook into a single python script, and deploys it t
 
 In the Kubeflow UI, click on **Pipelines -> Experiments** to see your runs!
 
-![Sample three step graph](../images/three-step-execution.jpg)
+<img width="830" alt="one-step-execution" src="https://user-images.githubusercontent.com/264658/157191116-42bc92eb-2814-4622-81ba-0a2e048c59c4.png">
+
