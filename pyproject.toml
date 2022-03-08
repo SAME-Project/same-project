@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sameproject"
-version = "0.1.5"
+version = "0.1.6"
 description = "Notebooks to Pipelines, reproducible data science, oh my."
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
 
