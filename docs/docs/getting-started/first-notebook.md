@@ -23,7 +23,7 @@ cd 01-hello-world
 Finally, deploy your notebook to your environment. If you are using kubeflow, you would execute the following command:
 
 ```bash
-same program run -t kubeflow
+same program run
 ```
 
 This command converts the notebook into a single python script, and deploys it to your [previously configured](installing.md) Kubeflow.
