@@ -88,12 +88,18 @@ __context_export = {}
 
 for val in __globals_keys:
 	if not val.startswith("_") and not isinstance(val, __ModuleType):
-		__context_export[val] = dill.dumps(globals()[val])
+		try:
+			__context_export[val] = dill.dumps(globals()[val])
+		except Exception as e:
+			print(f"Skipping export of global {val} because: {e}")
 
 # Locals needs to come after globals in case we made changes
 for val in __locals_keys:
 	if not val.startswith("_") and not isinstance(val, __ModuleType):
-		__context_export[val] = dill.dumps(locals()[val])
+		try:
+			__context_export[val] = dill.dumps(locals()[val])
+		except Exception as e:
+			print(f"Skipping export of local {val} because: {e}")
 
 __b64_string = str(urlsafe_b64encode(dill.dumps(__context_export)), encoding="ascii")
 	"""
