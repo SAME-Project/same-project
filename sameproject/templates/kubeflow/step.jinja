@@ -71,7 +71,7 @@ import base64
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from types import ModuleType as __ModuleType
 
-{{ inner_code | replace("\"", "\\\"") }}
+{{ inner_code | replace("\\", "\\\\") | replace("\"", "\\\"") }}
 
 __locals_keys = frozenset(locals().keys())
 __globals_keys = frozenset(globals().keys())
