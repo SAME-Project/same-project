@@ -13,6 +13,8 @@ from base64 import (
 	urlsafe_b64decode as __urlsafe_b64decode,
 )
 from kfp.components import InputPath, OutputPath
+import tempfile
+
 
 def generated_main(
 	input_context_path: InputPath(str),
@@ -64,6 +66,13 @@ def generated_main(
 				__r.raise_for_status()
 			except requests.exceptions.HTTPError as __err:
 				print(f"Error: {__err}")
+
+		# Before executing user code, change our pwd to a writable path
+		# (defaults to /, which is not writable). User code might want to
+		# download files etc.
+		# XXX: Although currently it won't persist between steps I guess?
+		dirpath = tempfile.mkdtemp()
+		os.chdir(dirpath)
 
 		__inner_code_to_execute = """
 import dill
