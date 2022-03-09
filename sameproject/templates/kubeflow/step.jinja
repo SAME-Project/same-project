@@ -13,7 +13,6 @@ from base64 import (
 	urlsafe_b64decode as __urlsafe_b64decode,
 )
 from kfp.components import InputPath, OutputPath
-import tempfile
 
 
 def generated_main(
@@ -37,6 +36,7 @@ def generated_main(
 		import requests
 		import mlflow
 		mlflow.autolog()
+		import tempfile, os
 
 		__run_info_dict = dill.loads(urlsafe_b64decode(__run_info))
 		__base64_decode = urlsafe_b64decode(__context)
