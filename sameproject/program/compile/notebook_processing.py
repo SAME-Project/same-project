@@ -97,10 +97,10 @@ We cannot continue because the following lines cannot be converted into standard
         # After logging.error, what's pythonic? Raising? I'm doing it, but curious.
         raise SyntaxError
 
-    for k in return_steps:
-        # If we want to do it just by code block, uncomment the below
-        # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
-        return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
+    # for k in return_steps:
+    #     # If we want to do it just by code block, uncomment the below
+    #     # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
+    #     return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
 
     return return_steps
 
