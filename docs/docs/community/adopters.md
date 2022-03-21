@@ -1,2 +1,1 @@
 # Adopters of SAME
-
