@@ -1,0 +1,15 @@
+name: Labeler
+on:
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/labeler@v2
+      with:
+        github_token: ${{github.token}}
+        labels: "needs-ok-to-test"
