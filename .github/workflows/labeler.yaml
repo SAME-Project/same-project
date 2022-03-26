@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/labeler@v2
+    - uses: actions/labeler@v4
       with:
         repo-token: ${{github.token}}
-        sync-labels: "needs-ok-to-test"
-        configuration-path: .github/workflows/labeler.yml
