@@ -1,6 +1,6 @@
 apiVersion: sameproject.io/v1alpha1
 metadata:
-  name: Needs Conda
+  name: "Needs Conda"
   version: 0.0.53
 environments:
   default:
