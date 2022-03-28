@@ -1,144 +1,84 @@
-{% autoescape off %}
-
-import argparse as __argparse
-from multiprocessing import context
-import pathlib
-from typing import NamedTuple
-from pprint import pprint as __pp
-import os
-from pathlib import Path as __Path
-import dill
-from base64 import (
-	urlsafe_b64encode as __urlsafe_b64encode,
-	urlsafe_b64decode as __urlsafe_b64decode,
-)
-from kfp.components import InputPath, OutputPath
+{% autoescape off %}from kfp.components import InputPath, OutputPath
 
 
-def generated_main(
-	input_context_path: InputPath(str),
-	output_context_path: OutputPath(str),
-	run_info="gAR9lC4=",
-	metadata_url="",
+def component_fn(
+    input_context_path: InputPath(str),
+    output_context_path: OutputPath(str),
+    run_info="gAR9lC4=",
+    metadata_url="",
 ):
-	from pathlib import Path as __Path
+    from base64 import urlsafe_b64encode, urlsafe_b64decode
+    from pathlib import Path
+    import datetime
+    import requests
+    import tempfile
+    import dill
+    import os
 
-	def __inner_main(
-		__context, __run_info, __metadata_url
-	) -> NamedTuple("FuncOutput", [("context", str),]):
-		import dill
-		import base64
-		from base64 import urlsafe_b64encode, urlsafe_b64decode
-		from copy import copy as __copy
-		from types import ModuleType as __ModuleType
-		from pprint import pprint as __pp
-		import datetime as __datetime
-		import requests
-		import mlflow
-		mlflow.autolog()
-		import tempfile, os
+    # User code for step, which we run in its own execution frame.
+    CODE = """
+{{ inner_code }}
+"""
 
-		__run_info_dict = dill.loads(urlsafe_b64decode(__run_info))
-		__base64_decode = urlsafe_b64decode(__context)
-		__context_import_dict = dill.loads(__base64_decode)
+    # Helper function for posting metadata to mlflow.
+    def post_metadata(json):
+        if metadata_url == "":
+            return
 
-		__variables_to_mount = {}
-		__loc = {}
+        try:
+            req = requests.post(metadata_url, json=json)
+            req.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            print(f"Error posting metadata: {err}")
 
-		for __k in __context_import_dict:
-			__variables_to_mount[__k] = dill.loads(__context_import_dict[__k])
+    # The context contains locally bound variables from the execution of
+    # previous steps, which we inject into this step's namespace to simulate
+    # the name resolution behaviour of Jupyter notebooks.
+    context_enc = "gAR9lC4="
+    if input_context_path is not None:
+        with Path(input_context_path).open("r") as reader:
+            context_enc = reader.read()
+    context = dill.loads(urlsafe_b64decode(context_enc))
 
-		__json_data = {
-			"experiment_id": __run_info_dict["experiment_id"],
-			"run_id": __run_info_dict["run_id"],
-			"step_id": "{{ name }}",
-			"metadata_type": "input",
-			"metadata_value": __context,
-			"metadata_time": __datetime.datetime.now().isoformat(),
-		}
+    # Post pre-run metadata to mlflow.
+    run_info = dill.loads(urlsafe_b64decode(run_info))
+    post_metadata({
+        "experiment_id": run_info["experiment_id"],
+        "run_id": run_info["run_id"],
+        "step_id": "{{ name }}",
+        "metadata_type": "input",
+        "metadata_value": context_enc,
+        "metadata_time": datetime.datetime.now().isoformat(),
+    })
 
-		print(f"Metadata url: {__metadata_url}")
-		if __metadata_url != '':
-			print("Found metadata URL - executing.")
-			__pp(__json_data)
-			try:
-				__r = requests.post(__metadata_url, json=__json_data,)	
-				__r.raise_for_status()
-			except requests.exceptions.HTTPError as __err:
-				print(f"Error: {__err}")
+    # Move to writable directory as user might want to do file IO.
+    # TODO: won't persist across steps, might need support in SDK?
+    os.chdir(tempfile.mkdtemp())
 
-		# Before executing user code, change our pwd to a writable path
-		# (defaults to /, which is not writable). User code might want to
-		# download files etc.
-		# XXX: Although currently it won't persist between steps I guess?
-		dirpath = tempfile.mkdtemp()
-		os.chdir(dirpath)
+    # Runs the user code in a new execution frame with locals() and globals()
+    # both set to the given context. This imitates execution in a module block.
+    exec(CODE, context)
 
-		__inner_code_to_execute = """
-import dill
-import base64
-from base64 import urlsafe_b64encode, urlsafe_b64decode
-from types import ModuleType as __ModuleType
+    # Serialises the resulting context for the next step. The '__builtins__'
+    # key is automatically injected by exec(...), so no need to keep it.
+    output_context = {}
+    for k in context.keys():
+        if k == "__builtins__":
+            continue
+        output_context[k] = context[k]
+    output_context_enc = urlsafe_b64encode(dill.dumps(output_context)).decode()
 
-{{ inner_code | replace("\\", "\\\\") | replace("\"", "\\\"") }}
+    # Write resulting context to the output file.
+    with Path(output_context_path).open("w+") as writer:
+        writer.write(output_context_enc)
 
-__locals_keys = frozenset(locals().keys())
-__globals_keys = frozenset(globals().keys())
-__context_export = {}
-
-for val in __globals_keys:
-	if not val.startswith("_") and not isinstance(val, __ModuleType):
-		try:
-			__context_export[val] = dill.dumps(globals()[val])
-		except Exception as e:
-			print(f"Skipping export of global {val} because: {e}")
-
-# Locals needs to come after globals in case we made changes
-for val in __locals_keys:
-	if not val.startswith("_") and not isinstance(val, __ModuleType):
-		try:
-			__context_export[val] = dill.dumps(locals()[val])
-		except Exception as e:
-			print(f"Skipping export of local {val} because: {e}")
-
-__b64_string = str(urlsafe_b64encode(dill.dumps(__context_export)), encoding="ascii")
-	"""
-		exec(__inner_code_to_execute, __variables_to_mount, __loc)
-
-		__json_output_data = {
-			"experiment_id": __run_info_dict["experiment_id"],
-			"run_id": __run_info_dict["run_id"],
-			"step_id": "{{ name }}",
-			"metadata_type": "output",
-			"metadata_value": __loc["__b64_string"],
-			"metadata_time": __datetime.datetime.now().isoformat(),
-		}
-
-		print(f"Metadata url: {__metadata_url}")
-		if __metadata_url != '':
-			print("Found metadata URL - executing.")
-			__pp(__json_data)
-			try:
-				__r = requests.post(__metadata_url, json=__json_output_data,)	
-				__r.raise_for_status()
-			except requests.exceptions.HTTPError as err:
-				print(f"Error: {err}")
-
-		return __loc["__b64_string"]
-
-	__input_context_string = "gAR9lC4="
-	if input_context_path != None:
-		with open(input_context_path, 'r') as reader:
-			print(f"reading file: {input_context_path}")
-			__input_context_string = reader.read()
-
-	__output_context_string = __inner_main(__input_context_string,
-		__run_info=run_info,
-		__metadata_url=metadata_url,
-	)
-
-	__p = __Path(output_context_path)
-	with __p.open("w+") as __file_handle:
-		__file_handle.write(__output_context_string)
-
+    # Post post-run metadata to mlflow.
+    post_metadata({
+        "experiment_id": run_info["experiment_id"],
+        "run_id": run_info["run_id"],
+        "step_id": "{{ name }}",
+        "metadata_type": "output",
+        "metadata_value": output_context_enc,
+        "metadata_time": datetime.datetime.now().isoformat(),
+    })
 {% endautoescape %}
