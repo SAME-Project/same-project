@@ -15,7 +15,6 @@ kubeflow_root_template = "kubeflow/root.jinja"
 kubeflow_step_template = "kubeflow/step.jinja"
 
 
-
 def render_function(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     sourceDir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

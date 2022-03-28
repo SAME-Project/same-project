@@ -18,4 +18,4 @@ def deploy_function(compiled_path: Path, root_module_name: str):
 
         # Only works with the 'kubeflow' namespace for now
         kfp_client = kfp.Client()
-        kfp_client.create_run_from_pipeline_func(root_module.root, arguments={})  # type: ignore noqa
+        return kfp_client.create_run_from_pipeline_func(root_module.root, arguments={})  # type: ignore noqa

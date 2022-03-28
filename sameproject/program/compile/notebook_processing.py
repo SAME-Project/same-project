@@ -82,25 +82,25 @@ def get_steps(notebook_dict: dict) -> dict:
     all_code += "\n" + this_step.code
     return_steps[this_step.name] = this_step
 
-    #     magic_lines = []
-    #     for i, line in enumerate(all_code.split("\n")):
-    #         if jupytext.magics.is_magic(line, "python"):
-    #             magic_lines.append(f"line {i}: {line}")
+    magic_lines = []
+    for i, line in enumerate(all_code.split("\n")):
+        if jupytext.magics.is_magic(line, "python"):
+            magic_lines.append(f"line {i}: {line}")
 
-    #     if len(magic_lines) > 0:
-    #         magic_lines_string = "\n".join(magic_lines)
-    #         logging.fatal(
-    #             f"""
-    # We cannot continue because the following lines cannot be converted into standard python code. Please correct them:
-    # { magic_lines_string }"""
-    #         )
-    #         # After logging.error, what's pythonic? Raising? I'm doing it, but curious.
-    #         raise SyntaxError
+    if len(magic_lines) > 0:
+        magic_lines_string = "\n".join(magic_lines)
+        logging.fatal(
+            f"""
+We cannot continue because the following lines cannot be converted into standard python code. Please correct them:
+{ magic_lines_string }"""
+        )
+        # After logging.error, what's pythonic? Raising? I'm doing it, but curious.
+        raise SyntaxError
 
-    #     for k in return_steps:
-    #         # If we want to do it just by code block, uncomment the below
-    #         # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
-    #         return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
+    for k in return_steps:
+        # If we want to do it just by code block, uncomment the below
+        # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
+        return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
 
     return return_steps
 
