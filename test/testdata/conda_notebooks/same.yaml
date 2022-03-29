@@ -4,7 +4,7 @@ metadata:
   version: 0.0.53
 environments:
   default:
-    image_tag: library/python:3.9-slim-buster
+    image_tag: public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/codeserver-python:v1.5.0
 notebook:
   name: "Needs Conda"
   path: needs_conda.ipynb
