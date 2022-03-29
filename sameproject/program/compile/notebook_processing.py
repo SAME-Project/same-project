@@ -7,7 +7,7 @@ from sameproject.stdlib import stdlibs
 from sameproject.mapping import library_mapping
 import re
 import traceback
-from typing import Tuple
+from typing import Tuple, List
 
 import sameproject.backends.executor
 from io import BufferedReader
@@ -35,6 +35,18 @@ def read_notebook(notebook_path) -> dict:
         exit(1)
 
     return ntbk_dict
+
+
+def parse_magic_lines(code: str) -> List[str]:
+    parser = jupytext.magics.StringParser("python")
+
+    magic_lines = []
+    for i, line in enumerate(code.split("\n")):
+        if not parser.is_quoted() and jupytext.magics.is_magic(line, "python"):
+            magic_lines.append(f"line {i}: {line}")
+        parser.read_line(line)
+
+    return magic_lines
 
 
 def get_steps(notebook_dict: dict) -> dict:
@@ -82,11 +94,7 @@ def get_steps(notebook_dict: dict) -> dict:
     all_code += "\n" + this_step.code
     return_steps[this_step.name] = this_step
 
-    magic_lines = []
-    for i, line in enumerate(all_code.split("\n")):
-        if jupytext.magics.is_magic(line, "python"):
-            magic_lines.append(f"line {i}: {line}")
-
+    magic_lines = parse_magic_lines(all_code)
     if len(magic_lines) > 0:
         magic_lines_string = "\n".join(magic_lines)
         logging.fatal(
@@ -94,7 +102,6 @@ def get_steps(notebook_dict: dict) -> dict:
 We cannot continue because the following lines cannot be converted into standard python code. Please correct them:
 { magic_lines_string }"""
         )
-        # After logging.error, what's pythonic? Raising? I'm doing it, but curious.
         raise SyntaxError(f"Magic lines are not supported:\n{magic_lines_string}")
 
     for k in return_steps:
