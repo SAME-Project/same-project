@@ -16,9 +16,7 @@ def component_fn(
     import os
 
     # User code for step, which we run in its own execution frame.
-    CODE = """
-{{ inner_code }}
-"""
+    CODE = dill.loads(urlsafe_b64decode("{{ inner_code }}"))
 
     # Helper function for posting metadata to mlflow.
     def post_metadata(json):
