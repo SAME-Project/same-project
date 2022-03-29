@@ -95,7 +95,7 @@ We cannot continue because the following lines cannot be converted into standard
 { magic_lines_string }"""
         )
         # After logging.error, what's pythonic? Raising? I'm doing it, but curious.
-        raise SyntaxError
+        raise SyntaxError(f"Magic lines are not supported:\n{magic_lines_string}")
 
     for k in return_steps:
         # If we want to do it just by code block, uncomment the below
