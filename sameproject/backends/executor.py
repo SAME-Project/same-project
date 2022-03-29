@@ -37,6 +37,6 @@ def deploy(target: str, root_file_absolute_path: str, root_module_name: str, per
     if not persist_temp_files:
         sameproject.helpers.recursively_remove_dir(Path(root_file_absolute_path))
     else:
-        click.echo(f"Files persisted in: {Path(root_file_absolute_path).parent}")
+        click.echo(f"Files persisted in: {root_file_absolute_path}")
 
     return deploy_return

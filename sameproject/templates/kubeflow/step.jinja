@@ -29,6 +29,14 @@ def component_fn(
         except requests.exceptions.HTTPError as err:
             print(f"Error posting metadata: {err}")
 
+    # Helper function for checking if objects are dill-serialisable.
+    def is_dillable(obj):
+        try:
+            dill.dumps(obj)
+        except TypeError:
+            return False
+        return True
+
     # The context contains locally bound variables from the execution of
     # previous steps, which we inject into this step's namespace to simulate
     # the name resolution behaviour of Jupyter notebooks.
@@ -63,6 +71,10 @@ def component_fn(
     for k in context.keys():
         if k == "__builtins__":
             continue
+
+        if not is_dillable(context[k]):
+            continue
+
         output_context[k] = context[k]
     output_context_enc = urlsafe_b64encode(dill.dumps(output_context)).decode()
 

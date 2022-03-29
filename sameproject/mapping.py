@@ -1,4 +1,6 @@
 library_mapping = """
+cv2:opencv-python
+skimage:scikit-image
 AFQ:pyAFQ
 AG_fft_tools:agpy
 ANSI:pexpect
