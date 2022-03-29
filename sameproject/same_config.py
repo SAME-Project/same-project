@@ -27,7 +27,7 @@ class SameValidator(Validator):
         "metadata": {
             "type": "dict",
             "schema": {
-                "name": {"type": "string", "required": True, "regex": r"^[\d\w]+"},
+                "name": {"type": "string", "required": True, "regex": r"^[\d\w ]+"},
                 "version": {"type": "string", "required": True},
                 "labels": {"type": "list"},
                 "sha": {"type": "string"},
