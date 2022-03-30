@@ -1,4 +1,4 @@
-from sameproject.sdk.same import CondaEnv, CondaEnvValidator
+from sameproject.sdk import CondaEnv, CondaEnvValidator
 from cerberus import SchemaError
 import pytest
 from ruamel.yaml.compat import StringIO

@@ -7,7 +7,7 @@ print(sys.path)
 from pathlib import Path
 
 sys.path.append(Path(__file__).parent.parent.absolute().name)
-import sameproject.sdk.same as same
+import sameproject.sdk as same
 from sameproject.same_config import SameConfig
 import os
 import pytest

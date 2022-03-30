@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sameproject"
-version = "0.1.12"
+version = "0.1.15"
 description = "Notebooks to Pipelines, reproducible data science, oh my."
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
 
@@ -27,6 +27,7 @@ metakernel = "^0.27.5"
 regex = "^2021.11.10"
 azureml-core = "^1.37.0"
 pandas = "^1.4.0"
+johnnydep = "^1.8"
 
 [tool.poetry.extras]
 # AzureML seems to have binary components which don't work on Python >3.8 or
