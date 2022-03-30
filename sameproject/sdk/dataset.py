@@ -1,37 +1,37 @@
 from multiprocessing.sharedctypes import Value
-import yaml
-import os
+from sameproject.same_config import SameConfig
 from urllib.parse import urlparse
 import pandas as pd
-from sameproject.same_config import SameConfig
+import yaml
+import os
 
 
 def dataset(name, same_file="same.yaml"):
-    """Imports the dataset based upon the env provided
-       wrapper around pd.read_<file> and I/O APIs
-    NOTE: currently tested for json,csv and ipfs
     """
-    try:
-        env_var = os.environ["SAME_ENV"] if os.environ["SAME_ENV"] != "" else "default"
-    except:
-        env_var = "default"
+    Imports the dataset with the given name using the configured same
+    environment. Currently tested for json, csv and ipfs datasets.
+    """
     with open(same_file, "rb+") as file:
         same_config = SameConfig(file)
 
     if name not in same_config.datasets:
         raise ValueError(f"'{name}' is not a dataset in the same file at '{same_file}'.")
 
-    if env_var not in same_config.datasets[name].environments:
-        raise ValueError(f"'{env_var}' is not an environment in the '{name}' dataset in the same file at '{same_file}'.")
+    env = os.environ["SAME_ENV"] or "default"
+    if env not in same_config.datasets[name].environments:
+        raise ValueError(f"'{env}' is not an environment in the '{name}' dataset in the same file at '{same_file}'.")
 
-    parsed_url = urlparse(same_config.datasets[name].environments[env_var])
-    # If URL is an IPFS url, access it via the IPFS gateway
-    if parsed_url.scheme == "ipfs":
-        url = "https://gateway.ipfs.io/ipfs/" + parsed_url.netloc + parsed_url.path
+    url = urlparse(same_config.datasets[name].environments[env])
+    if url.scheme == "ipfs":
+        url = "https://gateway.ipfs.io/ipfs/" + url.netloc + url.path
     else:
-        url = same_config.datasets[name].environments[env_var]
-    filename, file_extension = os.path.splitext(url)
+        url = same_config.datasets[name].environments[env]
 
+    reader = _get_pandas_reader_for(url)
+    return reader(url)
+
+
+def _get_pandas_reader_for(url):
     extensions = {
         ".csv": "read_csv",
         ".dta": "read_stata",
@@ -55,6 +55,6 @@ def dataset(name, same_file="same.yaml"):
             for ext in key:
                 extensions[ext] = value
             extensions.pop(key)
-    reader = getattr(pd, extensions[file_extension])
-    ds = reader(url)
-    return ds
+
+    _, extension = os.path.splitext(url)
+    return getattr(pd, extensions[extension])
