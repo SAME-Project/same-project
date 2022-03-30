@@ -1,21 +1,14 @@
-from cerberus import Validator
-from box import Box
-from pathlib import Path
-from ruamel.yaml import YAML
+from conda.cli.common import spec_from_line, MatchSpec, arg2spec
+from conda_env.env import Dependencies as CondaDependencies
 from ruamel.yaml.parser import ParserError
-import logging
-import sys
-
-sys.path.append("vendor/conda")
-from vendor.conda.conda_env.env import Dependencies as CondaDependencies
-from vendor.conda.conda.cli.common import spec_from_line, MatchSpec, arg2spec
-
-from io import BufferedReader
-
 import sameproject.helpers as helpers
-
+from cerberus import Validator
+from io import BufferedReader
+from ruamel.yaml import YAML
+from pathlib import Path
+from box import Box
+import logging
 import pprint
-
 
 VALID_KEYS = ("name", "dependencies", "prefix", "channels", "variables", "extras")
 

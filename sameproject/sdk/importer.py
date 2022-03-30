@@ -1,13 +1,13 @@
-import subprocess
-import sys
-from typing import Tuple
 from johnnydep.lib import JohnnyDist
-import importlib
-import pkg_resources
 from .conda_env import CondaEnv
-import logging
-import sameproject
+from typing import Tuple
 from pathlib import Path
+import pkg_resources
+import sameproject
+import subprocess
+import importlib
+import logging
+import sys
 
 default_conda = """
 name: NULL_NAME
