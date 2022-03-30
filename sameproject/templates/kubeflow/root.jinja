@@ -166,7 +166,7 @@ def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% e
 
 {% for step in list_of_steps %}
 	{{step.unique_step_name}}_op = create_component_from_func(
-		func={{step.unique_step_name}}.generated_main,
+		func={{step.unique_step_name}}.component_fn,
 		base_image="{{step.image_tag}}",
 		packages_to_install=["dill", "requests", "mlflow==1.17.0", "boto3==1.17.79", {{step.package_string}}],
 	)
