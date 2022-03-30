@@ -114,31 +114,3 @@ def test_kubeflow_same_program_run_with_secrets_e2e():
         ],
     )
     assert result.exit_code == 0
-
-    multi_env_same_config_file_path = "test/testdata/multienv_notebook/same.yaml"
-    same_file_path = Path(multi_env_same_config_file_path)
-    assert same_file_path.exists()
-
-    same_file_path_as_string = str(same_file_path.absolute())
-    runner = CliRunner()
-
-    result = runner.invoke(
-        run,
-        [
-            "-f",
-            same_file_path_as_string,
-            "-t",
-            "kubeflow",
-            "--image-pull-secret-name",
-            "IMAGE_PULL_SECRET_NAME",
-            "--image-pull-secret-registry-uri",
-            "IMAGE_PULL_SECRET_REGISTRY_URI",
-            "--image-pull-secret-username",
-            "IMAGE_PULL_SECRET_USERNAME",
-            "--image-pull-secret-password",
-            "IMAGE_PULL_SECRET_PASSWORD",
-            "--image-pull-secret-email",
-            "IMAGE_PULL_SECRET_EMAIL",
-        ],
-    )
-    assert result.exit_code == 0

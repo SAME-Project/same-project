@@ -1,15 +1,16 @@
-from sameproject.objects.step import Step
-from pathlib import Path
-from sameproject import helpers
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
 from kubernetes import client, config
-from uuid import uuid4
-
+from base64 import urlsafe_b64encode
+from pathlib import Path
 from typing import Tuple
-
-import os
+from uuid import uuid4
 import logging
+import dill
+import os
+
+from sameproject.objects.step import Step
+from sameproject import helpers
+
 
 kubeflow_root_template = "kubeflow/root.jinja"
 kubeflow_step_template = "kubeflow/step.jinja"
@@ -169,6 +170,10 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
 
 def _build_step_file(env: Environment, step: Step) -> str:
-    template = env.get_template(kubeflow_step_template)
-    step_contract = {"name": step.name, "unique_step_name": step.unique_step_name, "inner_code": step.code}
-    return template.render(step_contract)
+    step_contract = {
+        "name": step.name,
+        "unique_step_name": step.unique_step_name,
+        "inner_code": urlsafe_b64encode(dill.dumps(step.code)).decode()
+    }
+
+    return env.get_template(kubeflow_step_template).render(step_contract)
