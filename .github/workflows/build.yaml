@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -92,6 +93,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          ref: ${{ github.event.pull_request.head.sha }}
       # AZURE SECRET BLOB contains variables for connecting to AML. Specifically:
       # export AML_SP_NAME="xxxx"
       # export AML_SP_APP_ID="<UID>"
