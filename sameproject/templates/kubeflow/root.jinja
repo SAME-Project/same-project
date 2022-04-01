@@ -65,12 +65,11 @@ def create_context_file(
 	context_string,
 	output_context_path: OutputPath(str),
 ):
-	from pathlib import Path as __Path
-
-	__p = __Path(output_context_path)
-	with __p.open("w+") as __file_handle:
-		__file_handle.write(context_string)
-
+	exec(f"""
+import dill
+dill.dump_session("{output_context_path}")
+""")
+	
 
 create_context_file_component = kfp.components.create_component_from_func(
 	func=create_context_file,
