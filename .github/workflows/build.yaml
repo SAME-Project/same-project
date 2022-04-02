@@ -29,10 +29,10 @@ jobs:
           python -m pip install poetry
       - name: Install Packages
         run: |
-          python -m poetry install --no-root
+          poetry install --no-root
       - name: Lint Python Files
         run: |
-          flake8 **/*.py
+          poetry run flake8 **/*.py
   test:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
@@ -58,7 +58,7 @@ jobs:
           python -m pip install poetry
       - name: Install Packages
         run: |
-          python -m poetry install --no-root
+          poetry install --no-root
       - name: Set up Kubeconfig from Github Secret
         run: |
           mkdir -p $HOME/.kube
@@ -67,7 +67,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts/tests 
-          pytest \
+          poetry run pytest \
             --junitxml=artifacts/tests/results.xml \
             --cov=./backends \
             --cov=./cli \
