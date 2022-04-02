@@ -27,64 +27,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
-      - name: Update Generated Files
-        run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
-          poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --dev
       - name: Install Packages
         run: |
-          python -m pip install -r requirements-dev.txt
-      - name: Validate Generated Files
-        id: diff
-        continue-on-error: true
-        run: |
-          git diff --exit-code
-      - name: Report Outdated Generated Files
-        if: steps.diff.outcome != 'success'
-        run: |
-          echo "Generated requirements files are not up to date, see requirements.txt and requirements-dev.text for instructions."
-          exit 1
+          poetry install --no-root
       - name: Lint Python Files
         run: |
-          flake8 **/*.py
-  # deploy-durable-functions-backend:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     DURABLE_FUNCTIONAPP_PACKAGE_PATH: "durable-functions-app-package"
-  #     DURABLE_FUNCTIONAPP_NAME: "same-df-backend"
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #       with:
-  #         submodules: recursive
-  #     - name: Setup Python 3.10 Environment
-  #       uses: actions/setup-python@v1
-  #       with:
-  #         python-version: "3.10"
-  #     - name: Package Durable Functions Backend App
-  #       shell: bash
-  #       run: |
-  #         pushd scripts
-  #         ./generate-durable-functions-app-package.sh ../${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
-  #         popd
-  #     - name: Resolve Durable Functions Backend Dependencies Using Pip
-  #       shell: bash
-  #       run: |
-  #         pushd './${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}'
-  #         python -m pip install --upgrade pip
-  #         pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-  #         popd
-  #     - name: Deploy Durable Functions Backend to Azure
-  #       uses: Azure/functions-action@v1
-  #       id: fa
-  #       with:
-  #         app-name: ${{ env.DURABLE_FUNCTIONAPP_NAME }}
-  #         package: ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
-  #         publish-profile: ${{ secrets.DURABLE_FUNCTIONAPP_PUBLISH_PROFILE }}
-  #     - name: Cleanup Durable Functions App Package
-  #       shell: bash
-  #       run: |
-  #         rm -rf ${{ env.DURABLE_FUNCTIONAPP_PACKAGE_PATH }}
+          poetry run flake8 **/*.py
   test:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
@@ -94,19 +42,6 @@ jobs:
         with:
           submodules: recursive
           ref: ${{ github.event.pull_request.head.sha }}
-      # AZURE SECRET BLOB contains variables for connecting to AML. Specifically:
-      # export AML_SP_NAME="xxxx"
-      # export AML_SP_APP_ID="<UID>"
-      # export AML_SP_OBJECT_ID="<UID>"
-      # export AML_SP_TENANT_ID="<UID>"
-      # export AML_SP_PASSWORD_VALUE="**PASSWORD**"
-      # export AML_SP_PASSWORD_ID="<UID>"
-
-      # export WORKSPACE_SUBSCRIPTION_ID="<UID>"
-      # export WORKSPACE_RESOURCE_GROUP="Resource_Group_Name"
-      # export WORKSPACE_NAME="WORKSPACE_NAME"
-      # Read here - https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication - to understand how to populate these values.
-      # On your local machine, put these all in a dotenv compatible file (.env.sh) at the root of your project.
       - name: Download env variables
         run: |
           echo "$AZURE_SECRET_BLOB" > ./.env.sh
@@ -121,13 +56,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
-      - name: Update Generated Files
-        run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
-          poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --dev
       - name: Install Packages
         run: |
-          python -m pip install -r requirements-dev.txt
+          poetry install --no-root
       - name: Set up Kubeconfig from Github Secret
         run: |
           mkdir -p $HOME/.kube
@@ -136,7 +67,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p artifacts/tests 
-          pytest \
+          poetry run pytest \
             --junitxml=artifacts/tests/results.xml \
             --cov=./backends \
             --cov=./cli \
