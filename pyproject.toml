@@ -28,7 +28,6 @@ regex = "^2021.11.10"
 azureml-core = "^1.37.0"
 pandas = "^1.4.0"
 johnnydep = "^1.8"
-conda = "^4.3.16"
 cytoolz = "^0.11.2"
 
 [tool.poetry.extras]

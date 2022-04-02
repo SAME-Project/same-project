@@ -6,6 +6,6 @@
 
 Experimental SDK module for use in Jupyter notebooks to help integration with ML DevOps. Refer to the [initial roadmap scenarios](https://github.com/SAME-Project/same-mono-private/issues/7) for more information.
 
-- **same:** Python module for SAME SDK functions such as `import_packages`.
+## Vendored Dependencies
 
-> ⚠ The rest of this folder are template placeholders and can be deleted/refactored as needed.
+The SDK relies on the `conda` package to support Conda environments. Conda's `setup.py` is incompatible with python ^3.10, however, so we have vendored the package directly in the `vendor` directory. Do *not* make changes to the vendored code, unless you are pulling in upstream commits from the `conda` repo.
