@@ -79,7 +79,7 @@ def test_kubeflow_function_references():
 
     # Check that the output context has 'x' set to '1'.
     artifacts = fetch_output_contexts(deployment)
-    assert artifacts["component-fn-output_context"].x == 1
+    assert get_artifact_attr(artifacts["component-fn-output_context"], "x") == 1
 
 
 @pytest.mark.kubeflow
@@ -95,7 +95,7 @@ def test_kubeflow_imported_functions():
 
     # Check that the output context has a json dump in it.
     artifacts = fetch_output_contexts(deployment)
-    dump = json.loads(artifacts["component-fn-output_context"].x)
+    dump = json.loads(get_artifact_attr(artifacts["component-fn-output_context"], "x"))
     assert dump["x"] == 0
 
 
