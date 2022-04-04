@@ -35,6 +35,7 @@ def run_before_and_after_tests():
     sys.modules.clear()
     sys.modules.update(original_sys_modules)
 
+
 @pytest.mark.kubeflow
 def test_live_test_kubeflow(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")

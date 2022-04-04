@@ -56,6 +56,19 @@ if "{input_context_path}" != "None":
 
 {dill.loads(urlsafe_b64decode("{{ inner_code }}"))}
 
+# Remove anything from the global namespace that cannot be serialised.
+# TODO: this will include things like pandas dataframes, needs sdk support?
+_bad_keys = []
+_all_keys = list(globals().keys())
+for k in _all_keys:
+    try:
+        dill.dumps(globals()[k])
+    except TypeError:
+        _bad_keys.append(k)
+
+for k in _bad_keys:
+    del globals()[k]
+
 # Save new session context to disk for the next component:
 dill.dump_session("{output_context_path}")
 """
