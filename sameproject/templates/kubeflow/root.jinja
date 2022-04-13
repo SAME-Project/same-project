@@ -1,186 +1,136 @@
-{% autoescape off %}
-
-import kfp
-import kfp.dsl as dsl
-from kfp.components import create_component_from_func, InputPath, OutputPath
-import kfp.compiler as compiler
-from kfp.dsl.types import Dict as KFPDict, List as KFPList
-from typing import NamedTuple
-import kubernetes.client
-from kubernetes import client, config
-import base64
-import json
-from pathlib import Path as __Path
+{% autoescape off %}from kfp.components import create_component_from_func
 from kubernetes.client.models import V1EnvVar
+from kubernetes import client, config
+from typing import NamedTuple
+from base64 import b64encode
+import kfp.dsl as dsl
+import kubernetes
+import json
+import kfp
 
+from run_info import run_info_fn
 {% for step in list_of_steps %}
-import {{ step.unique_step_name }}
+from {{ step.unique_step_name }} import {{ step.unique_step_name }}_fn
 {% endfor %}
 
-def get_run_info(
-	run_id: str,
-) -> NamedTuple("RunInfoOutput", [("run_info", str),]):
-	"""Example of getting run info for current pipeline run"""
-	import kfp
-	import json
-	import dill
-	import base64
-	import datetime
-	from dateutil.tz import tzlocal
-	from pprint import pprint as pp
 
-	print(f"Current run ID is {run_id}.")
-	client = kfp.Client(host="http://ml-pipeline:8888")
-	run_info = client.get_run(run_id=run_id)
-	# Hide verbose info
-	run_info.run.pipeline_spec.workflow_manifest = None
-
-	from collections import namedtuple
-
-	pp(run_info.run)
-
-	run_info_dict = {
-		"run_id": run_info.run.id,
-		"name": run_info.run.name,
-		"created_at": run_info.run.created_at.isoformat(),
-		"pipeline_id": run_info.run.pipeline_spec.pipeline_id,
-	}
-	for r in run_info.run.resource_references:
-		run_info_dict[f"{r.key.type.lower()}_id"] = r.key.id
-
-	output = namedtuple("RunInfoOutput", ["run_info"])
-	return output(
-		str(base64.urlsafe_b64encode(dill.dumps(run_info_dict)), encoding="ascii")
-	)
-
-get_run_info_component = kfp.components.create_component_from_func(
-	func=get_run_info,
-	packages_to_install=[
-		"kfp",
-		"dill",
-	],
+run_info_comp = kfp.components.create_component_from_func(
+    func=run_info_fn,
+    packages_to_install=[
+        "kfp",
+        "dill",
+    ],
 )
 
-def create_context_file(
-	context_string,
-	output_context_path: OutputPath(str),
-):
-	exec(f"""
-import dill
-dill.dump_session("{output_context_path}")
-""")
-	
-
-create_context_file_component = kfp.components.create_component_from_func(
-	func=create_context_file,
-	packages_to_install=[
-		"kfp",
-		"dill",
-	],
+{% for step in list_of_steps %}
+{{ step.unique_step_name }}_comp = create_component_from_func(
+    func={{ step.unique_step_name }}_fn,
+    base_image="{{ step.image_tag }}",
+    packages_to_install=[
+        "dill",
+        "requests",
+        "mlflow==1.17.0",
+        "boto3==1.17.79",
+        {{ step.package_string }} # TODO: make this a loop
+    ],
 )
+{% endfor %}
 
-# TODO: set these mlflow defaults dynamically (and even disable mlflow if it's
-# not installed), see also "what to do next" comment in pkg/terrachain/main.go
-
+# TODO: support kubeflow-specific config like aws secrets, mlflow endpoints.
 @dsl.pipeline(name="Compilation of pipelines",)
-def root({{ root_parameters_as_string }}{% if root_parameters_as_string %}, {% endif %}
-	context='', metadata_url='',
-	AWS_ACCESS_KEY_ID: str = "minio",
-	AWS_SECRET_ACCESS_KEY: str = "minio123",
-	MLFLOW_S3_ENDPOINT_URL: str = "http://combinator-minio.mlflow.svc.cluster.local:9000",
-	MLFLOW_TRACKING_URI: str = "http://combinator-mlflow.mlflow.svc.cluster.local:5000",
+def root(
+    context='', metadata_url='',
+    AWS_ACCESS_KEY_ID: str = "minio",
+    AWS_SECRET_ACCESS_KEY: str = "minio123",
+    MLFLOW_S3_ENDPOINT_URL: str = "http://combinator-minio.mlflow.svc.cluster.local:9000",
+    MLFLOW_TRACKING_URI: str = "http://combinator-mlflow.mlflow.svc.cluster.local:5000",
 ):
-
-	# The below is base64 encoding of an empty locals() output
-	__original_context = ""
-	if context == '':
-		__original_context = "gAR9lC4="
-	else:
-		__original_context = context
-
-	secrets_by_env = {}
-
-# Generate secrets (if not already created)
+    # Generate secrets (if not already created)
+    secrets_by_env = {}
 {% for env_name in secrets_to_create_as_dict %}
-	{% set secret = secrets_to_create_as_dict[env_name] %}
-	config.load_kube_config()
-	v1 = client.CoreV1Api()
-	namespace = "kubeflow"
-	name = "{{ experiment_name_safe }}"
-	metadata = {"name": name, "namespace": "kubeflow"}
-	api_version = "v1"
-	kind = "Secret"
-	type = "kubernetes.io/dockerconfigjson"
+{% set secret = secrets_to_create_as_dict[env_name] %}
+    config.load_kube_config()
+    v1 = client.CoreV1Api()
+    namespace = "kubeflow"
+    name = "{{ experiment_name_safe }}"
+    metadata = {"name": name, "namespace": "kubeflow"}
+    api_version = "v1"
+    kind = "Secret"
+    type = "kubernetes.io/dockerconfigjson"
 
-	cred_payload = {
-		"auths": {
-			"{{secret.image_pull_secret_registry_uri}}": {
-				"username": "{{secret.image_pull_secret_username}}",
-				"password": "{{secret.image_pull_secret_password}}",
-				"email": "{{secret.image_pull_secret_email}}",
-				"auth": base64.b64encode(
-					f"{{secret.image_pull_secret_username}}:{{secret.image_pull_secret_password}}".encode()
-				).decode(),
-			}
-		}
-	}
+    cred_payload = {
+        "auths": {
+    		    "{{secret.image_pull_secret_registry_uri}}": {
+    			      "username": "{{secret.image_pull_secret_username}}",
+    			      "password": "{{secret.image_pull_secret_password}}",
+    			      "email": "{{secret.image_pull_secret_email}}",
+    			      "auth": b64encode(
+    				        f"{{secret.image_pull_secret_username}}:{{secret.image_pull_secret_password}}".encode()
+    			      ).decode(),
+    		    }
+    	  }
+    }
 
-	data = {
-		".dockerconfigjson": base64.b64encode(json.dumps(cred_payload).encode()).decode()
-	}
+    data = {
+        ".dockerconfigjson": b64encode(json.dumps(cred_payload).encode()).decode()
+    }
 
-	body = client.V1Secret(
-		api_version="v1",
-		data=data,
-		kind="Secret",
-		metadata=metadata,
-		type=type,
-	)
-	api_response = None
-	try:
-		api_response = v1.create_namespaced_secret(namespace, body)
-	except kubernetes.client.rest.ApiException as e:
-		if e.status == 409:
-			if (
-				cred_payload["auths"]
-				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]
-				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["username"]
-				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["password"]
-				and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["email"]
-			):
-				api_response = v1.replace_namespaced_secret(name, namespace, body)
-			else:
-				print(f"Missing value")
-		else:
-			raise e
-
-	dsl.get_pipeline_conf().set_image_pull_secrets([client.V1LocalObjectReference(name=name)])
-
+    body = client.V1Secret(
+        api_version="v1",
+        data=data,
+        kind="Secret",
+        metadata=metadata,
+        type=type,
+    )
+    api_response = None
+    try:
+        api_response = v1.create_namespaced_secret(namespace, body)
+    except kubernetes.client.rest.ApiException as e:
+        if e.status == 409:
+            if (
+                cred_payload["auths"]
+    		    	  and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]
+    		    	  and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["username"]
+    		    	  and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["password"]
+    		    	  and cred_payload["auths"]["{{secret.image_pull_secret_registry_uri}}"]["email"]
+    		    ):
+    		        api_response = v1.replace_namespaced_secret(name, namespace, body)
+            else:
+                print(f"Missing value")
+        else:
+            raise e
+    
+    dsl.get_pipeline_conf().set_image_pull_secrets([client.V1LocalObjectReference(name=name)])
 {% endfor %}
 
-	'''kfp.dsl.RUN_ID_PLACEHOOLDER inside a parameter will be populated with KFP Run ID at runtime.'''
-	run_info_op = get_run_info_component(run_id=kfp.dsl.RUN_ID_PLACEHOLDER)
+    # TODO: need a way to configure and handle env vars for backends properly
+    env_vars = {
+        "AWS_ACCESS_KEY_ID": AWS_ACCESS_KEY_ID,
+        "AWS_SECRET_ACCESS_KEY": AWS_SECRET_ACCESS_KEY,
+        "MLFLOW_S3_ENDPOINT_URL": MLFLOW_S3_ENDPOINT_URL,
+        "MLFLOW_TRACKING_URI": MLFLOW_TRACKING_URI,
+    }
 
-	create_context_file_op = create_context_file_component(context_string=__original_context)
+    run_info = run_info_comp(run_id=kfp.dsl.RUN_ID_PLACEHOLDER)
+
 
 {% for step in list_of_steps %}
-	{{step.unique_step_name}}_op = create_component_from_func(
-		func={{step.unique_step_name}}.component_fn,
-		base_image="{{step.image_tag}}",
-		packages_to_install=["dill", "requests", "mlflow==1.17.0", "boto3==1.17.79", {{step.package_string}}],
-	)
-	{{step.unique_step_name}}_task = {{step.unique_step_name}}_op(input_context={% if step.previous_step_name %}{{step.previous_step_name}}_task{% else %}create_context_file_op{% endif %}.outputs["output_context"], run_info=run_info_op.outputs["run_info"], metadata_url=metadata_url)
-	{% if step.cache_value %}{{step.unique_step_name}}_task.execution_options.caching_strategy.max_cache_staleness = "{{step.cache_value}}"{% endif %}
+    {{ step.unique_step_name }} = {{ step.unique_step_name }}_comp(
+{% if step.previous_step_name %}
+        input_context={{ step.previous_step_name }}.outputs["output_context"],
+{% else %}
+        input_context="",
+{% endif %}
+        run_info=run_info.outputs["run_info"],
+        metadata_url=metadata_url
+    )
 
-	for (k, v) in [("AWS_ACCESS_KEY_ID", AWS_ACCESS_KEY_ID),
-					("AWS_SECRET_ACCESS_KEY", AWS_SECRET_ACCESS_KEY),
-					("MLFLOW_S3_ENDPOINT_URL", MLFLOW_S3_ENDPOINT_URL),
-					("MLFLOW_TRACKING_URI", MLFLOW_TRACKING_URI)]:
-		{{step.unique_step_name}}_task = {{step.unique_step_name}}_task.add_env_variable(V1EnvVar(name=k, value=v))
-
-	{% if step.previous_step_name %}
-	{{ step.unique_step_name }}_task.after({{step.previous_step_name}}_task)
-	{% endif %}
+{% if step.previous_step_name %}
+    {{ step.unique_step_name }}.after({{ step.previous_step_name }})
+{% endif %}
+    {{ step.unique_step_name }}.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    for k in env_vars:
+        {{ step.unique_step_name }}.add_env_variable(V1EnvVar(name=k, value=env_vars[k]))
 {% endfor %}
 
 {% endautoescape %}

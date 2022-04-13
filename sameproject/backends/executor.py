@@ -35,7 +35,8 @@ def deploy(target: str, root_file_absolute_path: str, root_module_name: str, per
 
     deploy_return = deploy_function(root_file_absolute_path, root_module_name)
     if not persist_temp_files:
-        sameproject.helpers.recursively_remove_dir(Path(root_file_absolute_path))
+        pass  # TODO: removing temp files breaks things as the deployer runs async
+        # sameproject.helpers.recursively_remove_dir(Path(root_file_absolute_path))
     else:
         click.echo(f"Files persisted in: {root_file_absolute_path}")
 
