@@ -12,6 +12,7 @@ from sameproject.objects.step import Step
 from sameproject import helpers
 
 
+kubeflow_run_info_template = "kubeflow/run_info.jinja"
 kubeflow_root_template = "kubeflow/root.jinja"
 kubeflow_step_template = "kubeflow/step.jinja"
 
@@ -23,7 +24,7 @@ def render_function(compile_path: str, steps: list, same_config: dict) -> Tuple[
     templateDir = os.path.join(sourceDir, "templates")
     templateLoader = FileSystemLoader(templateDir)
     print(f"Template dir {templateDir}")
-    env = Environment(loader=templateLoader)
+    env = Environment(trim_blocks=True, loader=templateLoader)
 
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
@@ -36,7 +37,16 @@ def render_function(compile_path: str, steps: list, same_config: dict) -> Tuple[
     root_path = Path(compile_path) / f"{root_pipeline_name}.py"
     helpers.write_file(root_path, root_file_string)
 
+    run_info_path = Path(compile_path) / "run_info.py"
+    run_info_file_string = _build_run_info_file(env)
+    helpers.write_file(run_info_path, run_info_file_string)
+
     return (compile_path, root_pipeline_name)
+
+
+def _build_run_info_file(env: Environment) -> str:
+    template = env.get_template(kubeflow_run_info_template)
+    return template.render()
 
 
 def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> str:

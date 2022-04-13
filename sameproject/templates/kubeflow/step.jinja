@@ -1,7 +1,7 @@
 {% autoescape off %}from kfp.components import InputPath, OutputPath
 
 
-def component_fn(
+def {{ unique_step_name }}_fn(
     input_context_path: InputPath(str),
     output_context_path: OutputPath(str),
     run_info="gAR9lC4=",
@@ -14,6 +14,10 @@ def component_fn(
     import tempfile
     import dill
     import os
+
+    input_context = None
+    with Path(input_context_path).open("rb") as reader:
+        input_context = reader.read()
 
     # Helper function for posting metadata to mlflow.
     def post_metadata(json):
@@ -34,15 +38,14 @@ def component_fn(
     run_info = dill.loads(urlsafe_b64decode(run_info))
 
     # Post session context to mlflow.
-    if input_context_path is not None:
-        with Path(input_context_path).open("rb") as reader:
-            context = urlsafe_b64encode(reader.read())
+    if len(input_context) > 0:
+            input_context_str = urlsafe_b64encode(input_context)
             post_metadata({
                 "experiment_id": run_info["experiment_id"],
                 "run_id": run_info["run_id"],
                 "step_id": "{{ name }}",
                 "metadata_type": "input",
-                "metadata_value": context,
+                "metadata_value": input_context_str,
                 "metadata_time": datetime.datetime.now().isoformat(),
             })
 
@@ -51,8 +54,8 @@ def component_fn(
 import dill
 
 # Load session context into global namespace:
-if "{input_context_path}" != "None":
-    dill.load_session("{input_context_path}")
+if { len(input_context) } > 0:
+    dill.load_session("{ input_context_path }")
 
 {dill.loads(urlsafe_b64decode("{{ inner_code }}"))}
 

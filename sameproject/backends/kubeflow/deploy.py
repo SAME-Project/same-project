@@ -16,6 +16,6 @@ def deploy_function(compiled_path: Path, root_module_name: str):
     with helpers.add_path(str(compiled_path)):
         root_module = importlib.import_module(root_module_name)
 
-        # Only works with the 'kubeflow' namespace for now
+        # TODO: support kubeflow-specific config like kubeflow namespace
         kfp_client = kfp.Client()
-        return kfp_client.create_run_from_pipeline_func(root_module.root, arguments={})  # type: ignore noqa
+        return kfp_client.create_run_from_pipeline_func(root_module.root, arguments={})
