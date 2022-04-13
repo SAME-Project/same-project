@@ -1,6 +1,6 @@
-from sameproject.backends.executor import render as template_render
+from sameproject.ops.backends import render as template_render
 from sameproject.ops import notebooks
-from sameproject.backends.executor import deploy
+from sameproject.ops.backends import deploy
 from sameproject.data.same_config import SameConfig
 from click.testing import CliRunner
 from sameproject.cli import run

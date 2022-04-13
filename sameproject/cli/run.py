@@ -1,5 +1,5 @@
 from sameproject.ops import notebooks as nbproc
-import sameproject.backends.executor
+import sameproject.ops.backends
 from io import BufferedReader
 import sameproject.ops.helpers
 import click
@@ -123,4 +123,4 @@ def run(
     click.echo(f"File is: {same_file.name}")
     compiled_same_file, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
     if not no_deploy:
-        sameproject.backends.executor.deploy(target, compiled_same_file, root_module_name, persist_temp_files)
+        sameproject.ops.backends.deploy(target, compiled_same_file, root_module_name, persist_temp_files)
