@@ -1,5 +1,5 @@
+from sameproject.cli import version
 from click.testing import CliRunner
-from sameproject.version.commands import version
 
 
 def test_version():

@@ -1,4 +1,4 @@
-from sameproject.program.compile import notebook_processing as nbproc
+from sameproject.ops import notebooks as nbproc
 from sameproject.backends.executor import deploy
 from base64 import urlsafe_b64decode
 from pathlib import Path

@@ -9,7 +9,7 @@ same = 'sameproject.main:main'
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
-click = "^7"
+click = ">=8.1"
 jupytext = "^1.11.5"
 pywin32 = { version = ">=301", platform = 'win32'}
 jupyter = "^1.0.0"

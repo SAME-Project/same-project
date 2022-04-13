@@ -1,11 +1,11 @@
-from sameproject.same_config import SameConfig, SameValidator
+from sameproject.data.same_config import SameConfig, SameValidator
 from cerberus import SchemaError
 import pytest
 from pathlib import Path
 from ruamel.yaml import YAML
 from io import StringIO
 
-from sameproject import helpers
+from sameproject.ops import helpers
 
 same_config_file_path = "test/testdata/sample_same_configs/good_same.yaml"
 

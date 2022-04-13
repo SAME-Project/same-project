@@ -1,13 +1,13 @@
 from sameproject.sdk import CondaEnv, CondaEnvValidator
-from cerberus import SchemaError
-import pytest
 from ruamel.yaml.compat import StringIO
-from pathlib import Path
+from cerberus import SchemaError
 from ruamel.yaml import YAML
 from mock import MagicMock
-
-import os
+from pathlib import Path
 import builtins
+import pytest
+import os
+
 
 conda_env_file_path = "test/testdata/sample_conda_files/complicated_conda.yaml"
 

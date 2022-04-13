@@ -1,20 +1,27 @@
+from cli import run, version
 import click
-from sameproject.program import commands as program_group
-from sameproject.version import commands as version
 
 
 @click.group()
 def main():
-    """Project SAME CLI"""
+    """
+Command-line interface for the SAME project, a tool for easily converting
+Jupyter notebooks into pipelines and deploying them to your favourite backend.
+    """
 
 
-@main.group()
+# For backwards-compatibility with older versions of same.
+@click.group()
 def program():
-    """Work with a SAME program"""
+    """Historical alias for the `run` command."""
 
 
-main.add_command(program_group.program)
-main.add_command(version.version)
+main.add_command(run)
+main.add_command(program)
+main.add_command(version)
+program.add_command(run)
 
+
+# https://click.palletsprojects.com/en/8.1.x/options/#values-from-environment-variables
 if __name__ == "__main__":
     main(auto_envvar_prefix="SAME")
