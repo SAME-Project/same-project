@@ -87,13 +87,13 @@ jobs:
         if: ${{ always() }}
       - name: Report Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        if: ${{ always() && github.event_name == 'pull_request'}}
+        if: ${{ success() && github.event_name == 'pull_request_target'}}
         with:
           github_token: ${{github.token}}
           files: ./artifacts/tests/results.xml
       - name: Report Coverage
         uses: MishaKav/pytest-coverage-comment@v1.1.6
-        if: ${{ success() && github.event_name == 'pull_request'}}
+        if: ${{ success() && github.event_name == 'pull_request_target'}}
         with:
           github-token: ${{github.token}}
           pytest-coverage-path: ./artifacts/tests/output.txt
