@@ -1,20 +1,12 @@
-from io import BufferedReader
-import click
-
-from sameproject.program.compile import notebook_processing as nbproc
-
+from sameproject.ops import notebooks as nbproc
 import sameproject.backends.executor
-import sameproject.helpers
-
+from io import BufferedReader
+import sameproject.ops.helpers
+import click
 import os
 
 
-@click.group()
-def program():
-    pass
-
-
-@program.command(
+@click.command(
     context_settings=dict(
         ignore_unknown_options=True,
         allow_extra_args=True,
@@ -92,7 +84,9 @@ def run(
     persist_temp_files: bool = False,
     no_deploy: bool = False,
 ):
-    secret_dict = sameproject.helpers.create_secret_dict(
+    """Compiles and deploys a pipeline from a SAME config file."""
+
+    secret_dict = sameproject.ops.helpers.create_secret_dict(
         image_pull_secret_name,
         image_pull_secret_registry_uri,
         image_pull_secret_username,

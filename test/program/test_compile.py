@@ -1,5 +1,5 @@
 import pytest
-from sameproject.program.compile import notebook_processing as nbproc
+from sameproject.ops import notebooks as nbproc
 
 
 magic_line_testcases = [

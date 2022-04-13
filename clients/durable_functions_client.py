@@ -1,4 +1,4 @@
-from .context import notebook_processing
+from .context import notebooks
 from .context import Step
 from .context import EXECUTE_WORKFLOW_ACTIVITY_NAME
 from typing import List
@@ -40,8 +40,8 @@ class DurableFunctionsClient:
         Execute a given notebook and return the output of each Step.
         """
         # Read the notebook and convert it into a sorted list of Steps
-        notebook_dict = notebook_processing.read_notebook(notebook_path)
-        steps = notebook_processing.get_sorted_list_of_steps(notebook_dict)
+        notebook_dict = notebooks.read_notebook(notebook_path)
+        steps = notebooks.get_sorted_list_of_steps(notebook_dict)
         # Execute the steps
         output = self.execute_steps(steps)
         return output

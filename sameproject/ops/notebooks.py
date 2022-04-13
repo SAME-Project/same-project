@@ -1,21 +1,19 @@
-import ast
-import logging
-from pathlib import Path
-import jupytext
-from .context import Step
-from sameproject.stdlib import stdlibs
+from sameproject.ops.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
 from sameproject.mapping import library_mapping
-import re
-import traceback
+from sameproject.data.same_config import SameConfig
+from sameproject.stdlib import stdlibs
+from sameproject.data import Step
 from typing import Tuple, List
-
-import sameproject.backends.executor
 from io import BufferedReader
-from sameproject.same_config import SameConfig
-
+from pathlib import Path
+import sameproject.backends.executor
+import traceback
+import jupytext
+import logging
 import click
+import ast
+import re
 
-from sameproject.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
 
 REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (?:.*)$")]
 

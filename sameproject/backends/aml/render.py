@@ -1,6 +1,6 @@
-from sameproject.objects.step import Step
+from sameproject.data.step import Step
 from pathlib import Path
-from sameproject import helpers
+from sameproject.ops import helpers
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from typing import Tuple

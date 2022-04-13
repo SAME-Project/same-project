@@ -1,16 +1,16 @@
-from click.testing import CliRunner
-import pytest
-from pathlib import Path
-from sameproject.same_config import SameConfig
-from sameproject.program.commands import run
-from sameproject.program.compile import notebook_processing
-import sameproject.helpers
-import logging
 from sameproject.backends.executor import render as template_render
+from sameproject.ops import notebooks
 from sameproject.backends.executor import deploy
-
+from sameproject.data.same_config import SameConfig
+from click.testing import CliRunner
+from sameproject.cli import run
+from pathlib import Path
+import sameproject.ops.helpers
 import tempfile
+import logging
+import pytest
 import dotenv
+
 
 same_config_file_path = "test/testdata/generic_notebook/same.yaml"
 
@@ -41,7 +41,7 @@ def test_live_test_kubeflow(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
 
-    mocker.patch.object(sameproject.helpers, "recursively_remove_dir")
+    mocker.patch.object(sameproject.ops.helpers, "recursively_remove_dir")
 
     dotenv.load_dotenv("./.env.sh")
     same_file_path = Path(same_config_file_path)
@@ -66,7 +66,7 @@ def test_live_test_aml(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
 
-    mocker.patch.object(sameproject.helpers, "recursively_remove_dir")
+    mocker.patch.object(sameproject.ops.helpers, "recursively_remove_dir")
 
     dotenv.load_dotenv("./.env.sh")
     same_file_path = Path(same_config_file_path)

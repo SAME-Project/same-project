@@ -1,5 +1,5 @@
 from pathlib import Path
-from sameproject import helpers
+from sameproject.ops import helpers
 
 import kfp
 from pprint import pprint

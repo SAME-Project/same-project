@@ -1,4 +1,4 @@
-from .context import notebook_processing
+from .context import notebooks
 from .context import Step
 from .context import EXECUTE_WORKFLOW_ACTIVITY_NAME
 from .context import DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR
@@ -36,8 +36,8 @@ class TestDurableFunctionsBackend():
         user = str(uuid.uuid4())
 
         # Read inputs
-        notebook_dict = notebook_processing.read_notebook(notebook_path)
-        steps = notebook_processing.get_sorted_list_of_steps(notebook_dict)
+        notebook_dict = notebooks.read_notebook(notebook_path)
+        steps = notebooks.get_sorted_list_of_steps(notebook_dict)
 
         # Serialize input Steps into JSON to send over HTTP to the Azure Function application instance
         steps_serialized = Step.to_json_array(steps)
@@ -102,8 +102,8 @@ class TestDurableFunctionsBackend():
         user = str(uuid.uuid4())
 
         # Read inputs
-        notebook_dict = notebook_processing.read_notebook(notebook_path)
-        steps = notebook_processing.get_sorted_list_of_steps(notebook_dict)
+        notebook_dict = notebooks.read_notebook(notebook_path)
+        steps = notebooks.get_sorted_list_of_steps(notebook_dict)
 
         # Serialize input Steps into JSON to send over HTTP to the Azure Function application instance
         steps_serialized = Step.to_json_array(steps)

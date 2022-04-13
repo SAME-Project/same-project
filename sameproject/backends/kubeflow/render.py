@@ -8,8 +8,8 @@ import logging
 import dill
 import os
 
-from sameproject.objects.step import Step
-from sameproject import helpers
+from sameproject.data.step import Step
+from sameproject.ops import helpers
 
 
 kubeflow_run_info_template = "kubeflow/run_info.jinja"

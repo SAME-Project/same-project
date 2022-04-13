@@ -1,4 +1,4 @@
-from sameproject import helpers
+from sameproject.ops import helpers
 
 import importlib
 
