@@ -1,15 +1,13 @@
-from .context import notebooks
-from .context import Step
-from .context import EXECUTE_WORKFLOW_ACTIVITY_NAME
-from .context import DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR
-from .context import DURABLE_FUNCTIONS_BACKEND_URL_AZURE
-import json
-import logging
-import os
-import time
+from test.constants import DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR, DURABLE_FUNCTIONS_BACKEND_URL_AZURE
+from sameproject.ops.durable_functions.constants import EXECUTE_WORKFLOW_ACTIVITY_NAME
+from sameproject.ops import notebooks
 import requests
-import uuid
+import logging
 import pytest
+import time
+import uuid
+import json
+import os
 
 
 class TestDurableFunctionsBackend():

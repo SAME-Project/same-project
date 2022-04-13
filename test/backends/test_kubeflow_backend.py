@@ -1,5 +1,5 @@
 from sameproject.ops import notebooks as nbproc
-from sameproject.backends.executor import deploy
+from sameproject.ops.backends import deploy
 from base64 import urlsafe_b64decode
 from pathlib import Path
 import tempfile

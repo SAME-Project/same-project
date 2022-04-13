@@ -6,7 +6,7 @@ from sameproject.data import Step
 from typing import Tuple, List
 from io import BufferedReader
 from pathlib import Path
-import sameproject.backends.executor
+import sameproject.ops.backends
 import traceback
 import jupytext
 import logging
@@ -202,7 +202,7 @@ def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_
 
     all_steps = get_steps(notebook_dict)
 
-    return sameproject.backends.executor.render(target=target, steps=all_steps, same_config=same_config)
+    return sameproject.ops.backends.render(target=target, steps=all_steps, same_config=same_config)
 
 
 def _add_secrets_to_same_config(secret_dict, same_config) -> dict:

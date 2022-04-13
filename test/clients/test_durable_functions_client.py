@@ -1,9 +1,9 @@
-from .context import DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR
-from .context import DURABLE_FUNCTIONS_BACKEND_URL_AZURE
-from .context import DurableFunctionsClient
-import os
-import uuid
+from test.constants import DURABLE_FUNCTIONS_BACKEND_TEST_HOST_ENV_VAR, DURABLE_FUNCTIONS_BACKEND_URL_AZURE
+from clients.durable_functions_client import DurableFunctionsClient
 import pytest
+import uuid
+import os
+
 
 @pytest.mark.skip("not using durable functions right now")
 class TestDurableFunctionsClient():
