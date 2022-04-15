@@ -1,4 +1,4 @@
-from cli import run, version
+from cli import run, version, init, verify
 import click
 
 
@@ -17,8 +17,12 @@ def program():
 
 
 main.add_command(run)
-main.add_command(program)
+main.add_command(init)
+main.add_command(verify)
 main.add_command(version)
+
+# For backwards-compatibility with older versions of same.
+main.add_command(program)
 program.add_command(run)
 
 
