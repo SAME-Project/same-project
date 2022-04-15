@@ -1,6 +1,6 @@
 from sameproject.ops.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
 from sameproject.mapping import library_mapping
-from sameproject.data.same_config import SameConfig
+from sameproject.data.config import SameConfig
 from sameproject.stdlib import stdlibs
 from sameproject.data import Step
 from typing import Tuple, List

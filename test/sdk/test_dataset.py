@@ -1,17 +1,9 @@
-# pylint: disable=protected-access,missing-function-docstring, missing-class-docstring
-# pylint: disable=missing-module-docstring, missing-class-docstring
-# -*- coding: utf-8 -*-
-import sys
-
+from sameproject.data.config import SameConfig
 from pathlib import Path
-
-sys.path.append(Path(__file__).parent.parent.absolute().name)
 import sameproject.sdk as same
-from sameproject.data.same_config import SameConfig
-import os
-import pytest
-from pytest_mock import mocker
 import pandas
+import pytest
+import os
 
 csv = {
     "longitude": [
@@ -123,6 +115,7 @@ csv = {
         48100,
     ],
 }
+
 json = {
     "owl": [
         {"item": "<span class='item'><h1>1</h1></span>"},
@@ -143,7 +136,6 @@ json = {
 }
 
 test_same_file_location = "test/sdk/same.yaml"
-
 
 simple_dataframe = pandas.DataFrame.from_dict({"A": [1]})
 

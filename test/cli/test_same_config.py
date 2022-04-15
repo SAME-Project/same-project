@@ -1,4 +1,4 @@
-from sameproject.data.same_config import SameConfig, SameValidator
+from sameproject.data.config import SameConfig, SameValidator
 from cerberus import SchemaError
 import pytest
 from pathlib import Path
