@@ -9,6 +9,9 @@ import pprint
 from io import BufferedReader
 
 schema = {
+    # TODO: remove this attribute and the related hacks below
+    "path": {"type": "string"},
+
     "apiVersion": {"type": "string", "required": True},
     "metadata": {
         "type": "dict",
@@ -22,7 +25,6 @@ schema = {
     },
     "datasets": {
         "type": "dict",
-        "must_have_default": True,
         "keysrules": {"type": "string", "regex": r"^[\d\w]+"},
         "valuesrules": {
             "type": "dict",
@@ -30,6 +32,7 @@ schema = {
                 "schema_uri": {"type": "string"},
                 "environments": {
                     "type": "dict",
+                    "must_have_default": True,
                 },
             },
         },
