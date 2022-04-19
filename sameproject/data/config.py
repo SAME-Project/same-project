@@ -1,17 +1,15 @@
-from cerberus import Validator
-from box import Box
-from pathlib import Path
-from ruamel.yaml import YAML
 from ruamel.yaml.parser import ParserError
+from cerberus import Validator
+from io import BufferedReader
+from ruamel.yaml import YAML
+from pathlib import Path
+from box import Box
 import logging
 import pprint
 
-from io import BufferedReader
 
+# Schema for validating SAME config files.
 schema = {
-    # TODO: remove this attribute and the related hacks below
-    "path": {"type": "string"},
-
     "apiVersion": {"type": "string", "required": True},
     "metadata": {
         "type": "dict",
@@ -80,11 +78,10 @@ schema = {
 
 
 class SameValidator(Validator):
+    """Validator for SAME config files."""
+
     def _validate_must_have_default(self, constraint, field_name, values_needing_default):
-        """Test to ensure that a list of keys has at least one entry that matches 'default'
-        The rule's arguments are validated against this schema:
-        {'type': 'boolean'}
-        """
+        """Constrains 'dict' types to have at least one field called 'default'."""
         if constraint and (values_needing_default is None or values_needing_default.get("default", None) is None):
             self._error(field_name, f"{field_name} does not contain a 'default' entry.")
 
@@ -94,56 +91,19 @@ class SameValidator(Validator):
 
 
 class SameConfig(Box):
-    """Class for SAME Config Object. Currently, just subclasses Box, but building in now as I expect we'll need custom processing here."""
+    """Container for SAME config file data."""
 
-    def __init__(self, buffered_reader: BufferedReader = None, content: str = ""):
-        # NB: The default path value has to be set on self, not as a class
-        # variable, otherwise the __setattr__ hack below doesn't work.
-        self.path = ""
-        if buffered_reader is not None and content != "":
-            raise ValueError("SameConfig accepts either a buffered reader or content value, but not both.")
-        elif buffered_reader is not None:
-            self.path = buffered_reader.name
-            same_config_content = "".join(map(bytes.decode, buffered_reader.readlines()))
-        elif content == "":
-            raise ValueError("Content is empty.")
-        else:
-            same_config_content = content
+    def __init__(self, yaml_string: str):
+        data = Box.from_yaml(yaml_string=yaml_string)
 
-        yaml = YAML(typ="safe")
-        try:
-            same_config_dict = yaml.load(same_config_content)
-        except ParserError as e:
-            logging.fatal(f"Content does not appear to be well-formed yaml. Error: {str(e)}")
+        validator = SameValidator.get_validator()
+        if not validator.validate(data):
+            raise SyntaxError(f"SAME config file is invalid: {validator.errors}")
 
-        if same_config_dict is None:
-            raise ValueError(f"SAME file at '{self.path}' is empty.")
+        super(Box, self).__init__(
+            data,
+            frozen_box=True,
+        )
 
-        v = SameValidator.get_validator()
-        if not v.validate(same_config_dict):
-            raise SyntaxError(f"SAME file at '{self.path}' is invalid: {v.errors}; {pprint.pformat(same_config_dict)}")
-
-        temp_box = Box(same_config_dict)
-        self.update(temp_box)
-
-    def __setattr__(self, name, value):
-        if name == "path":
-            if not Path(value).exists():
-                raise FileNotFoundError(value)
-
-        super(SameConfig, self).__setattr__(name, value)
-
-    def write(self, path=""):
-        same_config_yaml = self.to_yaml()
-        v = SameValidator.get_validator()
-        if not v.validate(same_config_yaml):
-            raise SyntaxError("SAME Config object is invalid. \n %s" % "\n".join(v.errors))
-
-        if path == "":
-            if self.path == "":
-                raise ValueError("Need to specify location to write same file.")
-        else:
-            logging.info(f"Overwriting location of SAME config file ({self.path} -> {path})")
-            self.path = path
-
-        Path(self.path).write_text(same_config_yaml)
+    def write(self, path: str):
+        Path(path).write_text(self.to_yaml())
