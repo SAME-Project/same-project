@@ -1,21 +1,30 @@
 from sameproject.ops.helpers import REQUIRED_SECRET_VALUES, missing_secrets, lowerAlphaNumericOnly
-from sameproject.mapping import library_mapping
+from .code import get_magic_lines, get_installable_packages
 from sameproject.data.config import SameConfig
-from sameproject.stdlib import stdlibs
 from sameproject.data import Step
 from typing import Tuple, List
 from io import BufferedReader
 from pathlib import Path
 import sameproject.ops.backends
-import traceback
 import jupytext
 import logging
 import click
-import ast
-import re
 
 
-REGEXP = [re.compile(r"^import (.+)$"), re.compile(r"^from ((?!\.+).*?) import (?:.*)$")]
+def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
+    same_config = SameConfig(same_file)
+    same_config = _add_secrets_to_same_config(secret_dict, same_config)
+    same_config = _add_aml_values_to_same_config(aml_dict, same_config)
+
+    notebook_path = get_notebook_path(same_file.name, same_config)
+    notebook = read_notebook(notebook_path)
+    all_steps = get_steps(notebook)
+
+    return sameproject.ops.backends.render(
+        target=target,
+        steps=all_steps,
+        same_config=same_config
+    )
 
 
 def get_notebook_path(same_config_path, same_config_file_contents) -> str:
@@ -35,20 +44,9 @@ def read_notebook(notebook_path) -> dict:
     return ntbk_dict
 
 
-def parse_magic_lines(code: str) -> List[str]:
-    parser = jupytext.magics.StringParser("python")
-
-    magic_lines = []
-    for i, line in enumerate(code.split("\n")):
-        if not parser.is_quoted() and jupytext.magics.is_magic(line, "python"):
-            magic_lines.append(f"line {i}: {line}")
-        parser.read_line(line)
-
-    return magic_lines
-
-
-def get_steps(notebook_dict: dict) -> dict:
-    """Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
+def get_steps(notebook: dict) -> dict:
+    """
+    Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
     and the value is the Step object.
     """
     return_steps = {}
@@ -61,7 +59,7 @@ def get_steps(notebook_dict: dict) -> dict:
 
     all_code = ""
 
-    for num, cell in enumerate(notebook_dict["cells"]):
+    for num, cell in enumerate(notebook["cells"]):
         if len(cell["metadata"]) > 0 and "tags" in cell["metadata"] and len(cell["metadata"]["tags"]) > 0:
             for tag in cell["metadata"]["tags"]:
                 if tag.startswith("same_step_"):
@@ -92,7 +90,7 @@ def get_steps(notebook_dict: dict) -> dict:
     all_code += "\n" + this_step.code
     return_steps[this_step.name] = this_step
 
-    magic_lines = parse_magic_lines(all_code)
+    magic_lines = get_magic_lines(all_code)
     if len(magic_lines) > 0:
         magic_lines_string = "\n".join(magic_lines)
         logging.fatal(
@@ -103,106 +101,19 @@ We cannot continue because the following lines cannot be converted into standard
         raise SyntaxError(f"Magic lines are not supported:\n{magic_lines_string}")
 
     for k in return_steps:
-        # If we want to do it just by code block, uncomment the below
-        # return_steps[k].packages_to_install = parse_code_block_for_imports(return_steps[k].code)
-        return_steps[k].packages_to_install = parse_code_block_for_imports(all_code)
+        return_steps[k].packages_to_install = get_installable_packages(all_code)
 
     return return_steps
 
 
-def get_sorted_list_of_steps(notebook_dict: dict) -> list:
+def get_sorted_list_of_steps(notebook: dict) -> list:
     """
     Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook.
     """
-    steps_dict = get_steps(notebook_dict)
+    steps_dict = get_steps(notebook)
     steps = list(steps_dict.values())
     steps_sorted_by_index = sorted(steps, key=lambda x: x.index)
     return steps_sorted_by_index
-
-
-# Liberally stolen^W borrowed from here - https://github.com/bndr/pipreqs/blob/master/pipreqs/pipreqs.py
-# Possibly should steal more of these tests? https://github.com/bndr/pipreqs/blob/dea950dd077cd95a8de7aedcd6668b5942e8afc4/tests/test_pipreqs.py
-def parse_code_block_for_imports(code: str) -> list:
-    imports = set()
-    raw_imports = set()
-    candidates = []
-    ignore_errors = False
-
-    try:
-        tree = ast.parse(code)
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for subnode in node.names:
-                    raw_imports.add(subnode.name)
-            elif isinstance(node, ast.ImportFrom):
-                raw_imports.add(node.module)
-    except Exception as exc:
-        logging_error_text = "Failed on detecting imports"
-        if ignore_errors:
-            traceback.print_exc(exc)
-            logging.warn(logging_error_text)
-        else:
-            logging.error(logging_error_text)
-            raise exc
-
-    # Clean up imports
-    for name in [n for n in raw_imports if n]:
-        # Sanity check: Name could have been None if the import
-        # statement was as ``from . import X``
-        # Cleanup: We only want to first part of the import.
-        # Ex: from django.conf --> django.conf. But we only want django
-        # as an import.
-        cleaned_name, _, _ = name.partition(".")
-        imports.add(cleaned_name)
-
-    packages = imports - (set(candidates) & imports)
-    logging.debug("Found packages: {0}".format(packages))
-
-    data = {x.strip() for x in stdlibs.splitlines()}
-
-    return_list = list(packages - data)
-
-    # Clean up package names with a manual lookup
-    mapped_list = get_pkg_names(return_list)
-
-    return mapped_list
-
-
-def get_pkg_names(pkgs: list) -> list:
-    """Get PyPI package names from a list of imports.
-    Args:
-        pkgs (List[str]): List of import names.
-    Returns:
-        List[str]: The corresponding PyPI package names.
-    """
-    result = set()
-
-    # Clean up if there are empty lines
-    library_mapping_lines = [s for s in library_mapping.splitlines() if s]
-
-    data = dict(x.strip().split(":") for x in library_mapping_lines)
-    for pkg in pkgs:
-        # Look up the mapped requirement. If a mapping isn't found,
-        # simply use the package name.
-        result.add(data.get(pkg, pkg))
-    # Return a sorted list for backward compatibility.
-    return sorted(result, key=lambda s: s.lower())
-
-
-def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
-    same_config = SameConfig(same_file)
-
-    same_config = _add_secrets_to_same_config(secret_dict, same_config)
-
-    same_config = _add_aml_values_to_same_config(aml_dict, same_config)
-
-    notebook_path = get_notebook_path(same_file.name, same_config)  # noqa: F841
-
-    notebook_dict = read_notebook(notebook_path)
-
-    all_steps = get_steps(notebook_dict)
-
-    return sameproject.ops.backends.render(target=target, steps=all_steps, same_config=same_config)
 
 
 def _add_secrets_to_same_config(secret_dict, same_config) -> dict:

@@ -1,6 +1,7 @@
 from sameproject.ops import notebooks as nbproc
-import sameproject.ops.backends
+from .options import k8s_registry_secrets
 from io import BufferedReader
+import sameproject.ops.backends
 import sameproject.ops.helpers
 import click
 import os
@@ -11,22 +12,6 @@ import os
         ignore_unknown_options=True,
         allow_extra_args=True,
     )
-)
-@click.option(
-    "--no-deploy",
-    "no_deploy",
-    default=False,
-    is_flag=True,
-    type=bool,
-    help="Only run through the compilation but do not deploy.",
-)
-@click.option(
-    "--persist-temp-files",
-    "persist_temp_files",
-    default=False,
-    is_flag=True,
-    type=bool,
-    help="Persist the temporary compilation files.",
 )
 @click.option(
     "-f",
@@ -43,35 +28,22 @@ import os
     default="kubeflow",
     type=click.Choice(["kubeflow", "aml"]),
 )
+@k8s_registry_secrets
 @click.option(
-    "--image-pull-secret-name",
-    "image_pull_secret_name",
-    type=str,
-    help="The name of the secret to create (only relevant for Kubernetes based deployments such as Kubeflow).",
+    "--persist-temp-files",
+    "persist_temp_files",
+    default=False,
+    is_flag=True,
+    type=bool,
+    help="Persist compilation artifacts.",
 )
 @click.option(
-    "--image-pull-secret-registry-uri",
-    "image_pull_secret_registry_uri",
-    type=str,
-    help="The private registry URI - required as an argument during Docker pull.",
-)
-@click.option(
-    "--image-pull-secret-username",
-    "image_pull_secret_username",
-    type=str,
-    help="The username for pulling the Docker image from the private registry.",
-)
-@click.option(
-    "--image-pull-secret-password",
-    "image_pull_secret_password",
-    type=str,
-    help="The password for pulling the Docker image from the private registry.",
-)
-@click.option(
-    "--image-pull-secret-email",
-    "image_pull_secret_email",
-    type=str,
-    help="The email for pulling the Docker image from the private registry (required for Docker pulls from private registries).",
+    "--no-deploy",
+    "no_deploy",
+    default=False,
+    is_flag=True,
+    type=bool,
+    help="Do not deploy compiled pipelines.",
 )
 def run(
     same_file: BufferedReader,
@@ -95,13 +67,13 @@ def run(
     )
 
     aml_required_values = [
+        "AML_COMPUTE_NAME",
         "AML_SP_PASSWORD_VALUE",
         "AML_SP_TENANT_ID",
         "AML_SP_APP_ID",
         "WORKSPACE_SUBSCRIPTION_ID",
         "WORKSPACE_RESOURCE_GROUP",
         "WORKSPACE_NAME",
-        "AML_COMPUTE_NAME",
     ]
 
     aml_dict = {}
