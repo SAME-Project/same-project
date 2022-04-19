@@ -1,4 +1,4 @@
-library_mapping = """
+mapping = """
 cv2:opencv-python
 skimage:scikit-image
 AFQ:pyAFQ
