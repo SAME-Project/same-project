@@ -1,7 +1,0 @@
-export AML_SP_PASSWORD_VALUE=aXmpltA00yUmFCD3ZCps3B~-dlO5TVyhU~
-export AML_SP_TENANT_ID=21e3ecc7-6fb3-47f8-bc36-f6450a49a7da
-export AML_SP_APP_ID=b5ea4f4f-5c86-4c67-a40e-191c2c2eb90b
-export WORKSPACE_SUBSCRIPTION_ID=72ac7288-fb92-4ad6-83bc-5cfd361f47ef
-export WORKSPACE_RESOURCE_GROUP=same-project-rg
-export WORKSPACE_NAME=same-wg
-export AML_COMPUTE_NAME=
