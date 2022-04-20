@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
+    # if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
           poetry run flake8 **/*.py
   test:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
+    # if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
       - name: Set up Kubeconfig from Github Secret
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.CORE_TEAM_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBEFLOW_TEST_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
       - name: Test
         run: |
           set -o pipefail
