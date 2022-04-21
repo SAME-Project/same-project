@@ -1,3 +1,4 @@
+from sameproject.ops.explode import ExplodingVariable
 from sameproject.ops import notebooks as nbproc
 from sameproject.ops.backends import deploy
 from base64 import urlsafe_b64decode
@@ -9,6 +10,7 @@ import dill
 import json
 import time
 import kfp
+import sys
 import io
 
 
@@ -62,6 +64,22 @@ def test_kubeflow_multistep():
     assert get_artifact_attr(artifacts, 2, "y") == "1"
 
 
+@pytest.mark.kubeflow
+def test_kubeflow_exploding_variables():
+    """
+    Tests that unpickleable variables are replaced with exploding ones.
+    """
+    compiled_path, root_file = compile_testdata("exploding_variables")
+    deployment = deploy("kubeflow", compiled_path, root_file)
+    assert fetch_status(deployment) == "Succeeded"
+
+    # Check that the generator 'x' was replaced with an exploding variable:
+    artifacts = fetch_output_contexts(deployment)
+    x = get_artifact_attr(artifacts, 0, "x")
+    with pytest.raises(Exception):
+        next(x)  # boom - see ops/explode.py
+
+
 def extract_artifact_data(data):
     path = tempfile.mktemp()
     with Path(path).open("wb") as writer:
@@ -72,9 +90,11 @@ def extract_artifact_data(data):
 
 
 def get_artifact_attr(artifacts, step_num, attr):
+    # Monkey-patch of the main module to support loading exploding vars:
+    sys.modules["__main__"].__dict__["ExplodingVariable"] = ExplodingVariable
+
     # Dill seems to load modules into the global module cache, so if we load
     # every artifact module up front they clobber each other.
-    # TODO: no longer true, do this when loading artifacts
     artifact_data = get_artifact_for_step(artifacts, step_num)
     module = dill.loads(artifact_data)
     return getattr(module, attr)

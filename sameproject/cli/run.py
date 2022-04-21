@@ -93,6 +93,8 @@ def run(
             raise ValueError(f"Missing values: {missing_values_string}")
 
     click.echo(f"File is: {same_file.name}")
-    compiled_same_file, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
+    compile_dir, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
+    if persist_temp_files:
+        click.echo(f"Compile artifacts persisted at: {compile_dir}")
     if not no_deploy:
-        sameproject.ops.backends.deploy(target, compiled_same_file, root_module_name, persist_temp_files)
+        sameproject.ops.backends.deploy(target, compile_dir, root_module_name, persist_temp_files)

@@ -53,24 +53,26 @@ def {{ unique_step_name }}_fn(
     user_code = f"""
 import dill
 
+# Load the exploding variables module:
+{urlsafe_b64decode("{{ explode_code }}").decode()}
+
 # Load session context into global namespace:
 if { len(input_context) } > 0:
     dill.load_session("{ input_context_path }")
 
-{dill.loads(urlsafe_b64decode("{{ inner_code }}"))}
+# Run the user's notebook code:
+{urlsafe_b64decode("{{ user_code }}").decode()}
 
-# Remove anything from the global namespace that cannot be serialised.
-# TODO: this will include things like pandas dataframes, needs sdk support?
-_bad_keys = []
+# Various types of serialisation failures we'd like to inform the user of:
+def cannot_pickle_msg(k):
+    return f"Variable '" + k +"' was defined in previous steps, but is unusable as it cannot be pickled."
+
+# Replace unserialisable variables with exploding variables so that the user
+# knows why they cannot use them in future steps:
 _all_keys = list(globals().keys())
 for k in _all_keys:
-    try:
-        dill.dumps(globals()[k])
-    except TypeError:
-        _bad_keys.append(k)
-
-for k in _bad_keys:
-    del globals()[k]
+    if not dill.pickles(globals()[k], safe=True):
+        globals()[k] = ExplodingVariable(Exception(cannot_pickle_msg(k)))
 
 # Save new session context to disk for the next component:
 dill.dump_session("{output_context_path}")
