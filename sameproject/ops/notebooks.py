@@ -12,7 +12,7 @@ import click
 
 
 def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
-    same_config = SameConfig(same_file)
+    same_config = SameConfig(same_file.read())
     same_config = _add_secrets_to_same_config(secret_dict, same_config)
     same_config = _add_aml_values_to_same_config(aml_dict, same_config)
 

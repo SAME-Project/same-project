@@ -48,8 +48,8 @@ magic_strings_to_detect = [
 
 @pytest.fixture
 def same_config():
-    with open(same_config_file_path, "rb") as f:
-        return SameConfig(buffered_reader=f)
+    with open(same_config_file_path, "r") as f:
+        return SameConfig(f.read())
 
 
 def test_same_program_compile_e2e():
