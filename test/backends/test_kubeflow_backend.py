@@ -67,15 +67,22 @@ def test_kubeflow_multistep():
 @pytest.mark.kubeflow
 def test_kubeflow_exploding_variables():
     """
-    Tests that unpickleable variables are replaced with exploding ones.
+    Tests that unserialisable variables are replaced with exploding ones.
     """
     compiled_path, root_file = compile_testdata("exploding_variables")
     deployment = deploy("kubeflow", compiled_path, root_file)
     assert fetch_status(deployment) == "Succeeded"
 
-    # Check that the generator 'x' was replaced with an exploding variable:
+    # Fetch variables.
     artifacts = fetch_output_contexts(deployment)
+
+    # Check that the generator 'x' was replaced with an exploding variable:
     x = get_artifact_attr(artifacts, 0, "x")
+    with pytest.raises(Exception):
+        next(x)  # boom - see ops/explode.py
+
+    # Check that the large 'y' was replaced with an exploding variable:
+    x = get_artifact_attr(artifacts, 0, "y")
     with pytest.raises(Exception):
         next(x)  # boom - see ops/explode.py
 
