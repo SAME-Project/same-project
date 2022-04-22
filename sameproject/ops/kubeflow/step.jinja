@@ -51,6 +51,7 @@ def {{ unique_step_name }}_fn(
 
     # User code for step, which we run in its own execution frame.
     user_code = f"""
+from pympler import asizeof
 import dill
 
 # Load the exploding variables module:
@@ -64,15 +65,24 @@ if { len(input_context) } > 0:
 {urlsafe_b64decode("{{ user_code }}").decode()}
 
 # Various types of serialisation failures we'd like to inform the user of:
-def cannot_pickle_msg(k):
-    return f"Variable '" + k +"' was defined in previous steps, but is unusable as it cannot be pickled."
+def _cannot_pickle_msg(k):
+    return "Variable '" + k +"' was defined in previous steps, but could not be serialised as it was not supported by 'dill'."
+
+def _too_large_msg(k, mem):
+    return "Variable '" + k + "' was defined in previous steps, but could not be serialised as it used too much memory (" + str(mem) + "B)."
 
 # Replace unserialisable variables with exploding variables so that the user
 # knows why they cannot use them in future steps:
 _all_keys = list(globals().keys())
-for k in _all_keys:
-    if not dill.pickles(globals()[k], safe=True):
-        globals()[k] = ExplodingVariable(Exception(cannot_pickle_msg(k)))
+for _k in _all_keys:
+    if not dill.pickles(globals()[_k], safe=True):
+        globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
+        continue
+
+    _mem = asizeof.asizeof(globals()[_k])
+    if _mem >= {{ memory_limit }}:
+        globals()[_k] = ExplodingVariable(Exception(_too_large_msg(_k, _mem)))
+        continue
 
 # Save new session context to disk for the next component:
 dill.dump_session("{output_context_path}")

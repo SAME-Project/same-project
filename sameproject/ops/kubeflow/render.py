@@ -187,6 +187,7 @@ def _build_step_file(env: Environment, step: Step) -> str:
         "unique_step_name": step.unique_step_name,
         "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
+        "memory_limit": 50 * 2**20,  # 50MB
     }
 
     return env.get_template(kubeflow_step_template).render(step_contract)
