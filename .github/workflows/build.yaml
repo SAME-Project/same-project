@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
+    if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
           poetry run flake8 **/*.py
   test:
     runs-on: ubuntu-latest
-    # if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
+    if: contains(github.event.pull_request.labels.*.name, 'ok-to-test')
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -63,11 +63,12 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBEFLOW_TEST_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
-      - name: Test
+      - name: Run Tests
         run: |
           set -o pipefail
           mkdir -p artifacts/tests 
           poetry run pytest \
+            --kubeflow
             --junitxml=artifacts/tests/results.xml \
             --cov=./backends \
             --cov=./cli \
@@ -87,14 +88,11 @@ jobs:
           path: artifacts/tests
       - name: Report Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        if: ${{ success() && github.event_name == 'pull_request_target'}}
         with:
-          github_token: ${{github.token}}
           files: ./artifacts/tests/results.xml
       - name: Report Coverage
         uses: MishaKav/pytest-coverage-comment@main
-        if: ${{ success() && github.event_name == 'pull_request_target'}}
         with:
-          github-token: ${{github.token}}
           pytest-coverage-path: ./artifacts/tests/output.txt
           junitxml-path: ./artifacts/tests/results.xml
+          junitxml-title: Test Summary
