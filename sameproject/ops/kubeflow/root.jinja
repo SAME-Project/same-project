@@ -29,8 +29,7 @@ run_info_comp = kfp.components.create_component_from_func(
     packages_to_install=[
         "dill",
         "requests",
-        "mlflow==1.17.0",
-        "boto3==1.17.79",
+        "pympler==1.0.1",
         {{ step.package_string }} # TODO: make this a loop
     ],
 )
