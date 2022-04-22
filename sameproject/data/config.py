@@ -31,6 +31,8 @@ schema = {
                 "environments": {
                     "type": "dict",
                     "must_have_default": True,
+                    "keysrules": {"type": "string"},  # TODO: env name regex
+                    "valuesrules": {"type": "string"},  # TODO: URI regex
                 },
             },
         },
@@ -81,7 +83,12 @@ class SameValidator(Validator):
     """Validator for SAME config files."""
 
     def _validate_must_have_default(self, constraint, field_name, values_needing_default):
-        """Constrains 'dict' types to have at least one field called 'default'."""
+        """
+        Constrains 'dict' types to have at least one field called 'default'.
+
+        The rule's arguments are validated against this schema:
+          { 'type': 'boolean' }
+        """
         if constraint and (values_needing_default is None or values_needing_default.get("default", None) is None):
             self._error(field_name, f"{field_name} does not contain a 'default' entry.")
 

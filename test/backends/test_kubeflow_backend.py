@@ -67,7 +67,7 @@ def test_kubeflow_multistep():
 @pytest.mark.kubeflow
 def test_kubeflow_exploding_variables():
     """
-    Tests that unpickleable variables are replaced with exploding ones.
+    Tests that unserialisable variables are replaced with exploding ones.
     """
     compiled_path, root_file = compile_testdata("exploding_variables")
     deployment = deploy("kubeflow", compiled_path, root_file)
