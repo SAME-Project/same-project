@@ -3,13 +3,14 @@ from pathlib import Path
 from typing import Tuple
 import sameproject.ops.kubeflow as kubeflow
 import sameproject.ops.aml as aml
+import sameproject.ops.vertex as vertex
 import sameproject.ops.helpers
 import tempfile
 import click
 
 
 def render(target: str, steps: list, same_config: dict, compile_path: str = None) -> Tuple[Path, str]:
-    target_renderers = {"kubeflow": kubeflow.render, "aml": aml.render}
+    target_renderers = {"kubeflow": kubeflow.render, "aml": aml.render, "vertex": vertex.render}
     render_function = target_renderers.get(target, None)
     if render_function is None:
         raise ValueError(f"Unknown backend: {target}")
@@ -22,7 +23,7 @@ def render(target: str, steps: list, same_config: dict, compile_path: str = None
 
 
 def deploy(target: str, root_file_absolute_path: str, root_module_name: str, persist_temp_files: bool = False):
-    target_deployers = {"kubeflow": kubeflow.deploy, "aml": aml.deploy}
+    target_deployers = {"kubeflow": kubeflow.deploy, "aml": aml.deploy, "vertex": vertex.deploy}
     deploy_function = target_deployers.get(target, None)
     if deploy_function is None:
         raise ValueError(f"Unknown backend: {target}")

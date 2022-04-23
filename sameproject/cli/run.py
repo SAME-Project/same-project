@@ -26,7 +26,7 @@ import os
     "-t",
     "--target",
     default="kubeflow",
-    type=click.Choice(["kubeflow", "aml"]),
+    type=click.Choice(["kubeflow", "aml", "vertex"]),
 )
 @k8s_registry_secrets
 @click.option(
@@ -94,5 +94,8 @@ def run(
 
     click.echo(f"File is: {same_file.name}")
     compiled_same_file, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
+    if persist_temp_files:
+        click.echo(f"Compiled files persisted to: {compiled_same_file}")
+
     if not no_deploy:
         sameproject.ops.backends.deploy(target, compiled_same_file, root_module_name, persist_temp_files)
