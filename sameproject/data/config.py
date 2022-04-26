@@ -70,7 +70,7 @@ schema = {
         "type": "dict",
         "schema": {
             "name": {"type": "string", "required": True},
-            "sha": {"type": "string", "required": True},
+            "sha": {"type": "string"},
             "parameters": {
                 "type": "dict",
             },
