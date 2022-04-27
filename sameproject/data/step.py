@@ -1,44 +1,44 @@
-from __future__ import annotations
 from .json_serializable_object import JSONSerializableObject
 from uuid import uuid4
+from box import Box
 
 
-class Step(JSONSerializableObject):
-    """Object describing an individual code execution step and its associated metadata.
-    This is the unit of execution and is dispatched to a code execution backend.
+class Step(Box):
+    """
+    Contains an individual code unit along with its associated metadata. Each
+    step conceptually represents an individual component within a pipeline, and
+    is executed by dispatching the code unit to an execution backend.
     """
 
     def __init__(
         self,
-        name: str = "same_step_unset",
-        cache_value: str = "P0D",
-        environment_name: str = "default",
-        tags: list = [],
-        index: int = -1,
-        code: str = "",
-        parameters: list = [],
-        packages_to_install: list = []
+        name: str,
+        cache_value: str,
+        environment_name: str,
+        tags: list,
+        index: int,
+        code: str,
+        parameters: list,
+        packages_to_install: list
     ):
-        self.name = name
-        self.cache_value = cache_value
-        self.environment_name = environment_name
-        self.tags = tags
-        self.index = index
-        self.code = code
-        self.parameters = parameters
-        self.packages_to_install = packages_to_install
+        data = {
+            "name": name,
+            "cache_value": cache_value,
+            "environment_name": environment_name,
+            "tags": tags,
+            "index": index,
+            "code": code,
+            "parameters": parameters,
+            "packages_to_install": packages_to_install,
+        }
 
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
-        self.unique_step_name = self.__generate_unique_name(name)
+        super(Box, self).__init__(
+            data,
+            frozen_box=True,
+        )
 
     @staticmethod
-    def from_json_list(json_serialized_steps: str) -> list[Step]:
+    def from_json_list(json_serialized_steps):
         """Takes as input a list of JSON serialized Step objects.
         Each of them is deserialized into a Python Step object and a list of them is returned, sorted by the Step index.
         Note: If any of the deserialization operations fails, an exception will be thrown.
@@ -50,7 +50,7 @@ class Step(JSONSerializableObject):
         return steps
 
     @staticmethod
-    def to_json_array(steps_list: list[Step]):
+    def to_json_array(steps_list):
         """Takes as input a list of Step objects and produces an array of JSON serialized Steps in the same order."""
         steps_serialized = []
         for step in steps_list:
