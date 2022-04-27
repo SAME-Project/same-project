@@ -17,6 +17,14 @@ def find_notebook(path=".", recurse=False):
     return _find(path, "**/*.ipynb" if recurse else "*.ipynb")
 
 
+def find_requirements(path=".", recurse=False):
+    """
+    Finds the first requirements.txt lexicographically from the given path,
+    or None if no such file can be found.
+    """
+    return _find(path, "**/requirements.txt" if recurse else "requirements.txt")
+
+
 def _find(path, globstr):
     candidates = sorted(Path(path).glob(globstr))
     if len(candidates) == 0:

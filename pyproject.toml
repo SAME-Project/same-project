@@ -29,6 +29,7 @@ azureml-core = "^1.37.0"
 pandas = "^1.4.0"
 johnnydep = "^1.8"
 cytoolz = "^0.11.2"
+docker-py = "^1.10.6"
 
 [tool.poetry.extras]
 # AzureML seems to have binary components which don't work on Python >3.8 or

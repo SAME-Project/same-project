@@ -63,7 +63,8 @@ schema = {
         "type": "dict",
         "schema": {
             "name": {"type": "string", "required": True},
-            "path": {"type": "string", "required": True}
+            "path": {"type": "string", "required": True},
+            "requirements": {"type": "string"}
         }
     },
     "run": {
