@@ -10,7 +10,7 @@ import kfp
 
 from run_info import run_info_fn
 {% for step in list_of_steps %}
-from {{ step.unique_step_name }} import {{ step.unique_step_name }}_fn
+from {{ step.unique_name }} import {{ step.unique_name }}_fn
 {% endfor %}
 
 
@@ -23,8 +23,8 @@ run_info_comp = kfp.components.create_component_from_func(
 )
 
 {% for step in list_of_steps %}
-{{ step.unique_step_name }}_comp = create_component_from_func(
-    func={{ step.unique_step_name }}_fn,
+{{ step.unique_name }}_comp = create_component_from_func(
+    func={{ step.unique_name }}_fn,
     base_image="{{ step.image_tag }}",
     packages_to_install=[
         "dill",
@@ -114,7 +114,7 @@ def root(
 
 
 {% for step in list_of_steps %}
-    {{ step.unique_step_name }} = {{ step.unique_step_name }}_comp(
+    {{ step.unique_name }} = {{ step.unique_name }}_comp(
 {% if step.previous_step_name %}
         input_context={{ step.previous_step_name }}.outputs["output_context"],
 {% else %}
@@ -125,11 +125,11 @@ def root(
     )
 
 {% if step.previous_step_name %}
-    {{ step.unique_step_name }}.after({{ step.previous_step_name }})
+    {{ step.unique_name }}.after({{ step.previous_step_name }})
 {% endif %}
-    {{ step.unique_step_name }}.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    {{ step.unique_name }}.execution_options.caching_strategy.max_cache_staleness = "P0D"
     for k in env_vars:
-        {{ step.unique_step_name }}.add_env_variable(V1EnvVar(name=k, value=env_vars[k]))
+        {{ step.unique_name }}.add_env_variable(V1EnvVar(name=k, value=env_vars[k]))
 {% endfor %}
 
 {% endautoescape %}

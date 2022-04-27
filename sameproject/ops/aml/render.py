@@ -26,9 +26,9 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
 
     for step_name in steps:
         # Need a unique name so that libraries don't conflict in sys.modules. This is MOSTLY a test issue, but could be the case generally.
-        step_file_string = _build_step_file(env, steps[step_name], steps[step_name].unique_step_name)
-        (Path(compile_path) / steps[step_name].unique_step_name).mkdir()
-        helpers.write_file(Path(compile_path) / steps[step_name].unique_step_name / f"{steps[step_name].unique_step_name}.py", step_file_string)
+        step_file_string = _build_step_file(env, steps[step_name], steps[step_name].unique_name)
+        (Path(compile_path) / steps[step_name].unique_name).mkdir()
+        helpers.write_file(Path(compile_path) / steps[step_name].unique_name / f"{steps[step_name].unique_name}.py", step_file_string)
 
     return (compile_path, root_pipeline_name)
 
@@ -142,7 +142,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         step_to_append = {}
         step_to_append["name"] = step_content.name
-        step_to_append["unique_step_name"] = step_content.unique_step_name
+        step_to_append["unique_name"] = step_content.unique_name
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
@@ -161,7 +161,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
             step_to_append["previous_step_name"] = previous_step_name
         root_contract["list_of_steps"].append(step_to_append)
 
-        previous_step_name = step_content.unique_step_name
+        previous_step_name = step_content.unique_name
 
     # Text manipulation in jinja is pretty weak, we'll do both of these cleanings in python.
 
@@ -177,7 +177,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
     # For AML, each "step" needs to have '_step' attached (this may be historical)
     # and not necessary - look at it when we combine all these step rendering functions into one
-    root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([f"{all_steps[this_step_name].unique_step_name}_step" for this_step_name in all_steps])
+    root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([f"{all_steps[this_step_name].unique_name}_step" for this_step_name in all_steps])
 
     root_contract["compile_path"] = same_config["compile_path"]
 

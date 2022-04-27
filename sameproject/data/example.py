@@ -16,9 +16,10 @@ def _get_validator():
 
 
 class Example(Box):
-    def __init__(self, data, *args, **kwargs):
+    def __init__(self, *args, frozen_box=True, **kwargs):
+        data = Box(*args, **kwargs)
+        validator = _get_validator()
+        if not validator.validate(data):
+            raise Exception(f"Step data is invalid: {validator.errors}")
 
-        if not _get_validator().validate(data):
-            raise Exception("Example validation error.")
-
-        super(Box, self).__init__(data, *args, **kwargs)
+        super().__init__(*args, frozen_box=frozen_box, **kwargs)
