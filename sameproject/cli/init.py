@@ -17,6 +17,8 @@ def init():
         click.echo(f"\t{cfg}")
         if not click.confirm("Do you want to replace it?"):
             exit(0)
+    else:
+        cfg = Path("./same.yaml")
 
     # Ask user for notebook info:
     nb_name = click.prompt("Notebook name", type=str)
@@ -62,13 +64,12 @@ def init():
         click.echo(f"One or more of the provided parameters was invalid: {validator.errors}", err=True)
         exit(1)
 
-    pwd = Path(".").resolve() / "same.yaml"
-    click.echo(f"About to write to {pwd}:")
+    click.echo(f"About to write to {cfg.absolute()}:")
     click.echo()
     click.echo(same_config.to_yaml())
     click.echo()
     if click.confirm("Is this okay?", default=True):
-        pwd.write_text(same_config.to_yaml())
+        cfg.write_text(same_config.to_yaml())
 
 
 def _process_labels(labelstr):
