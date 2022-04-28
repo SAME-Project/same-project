@@ -41,43 +41,46 @@ def read_notebook(notebook_path) -> dict:
 
 
 def get_steps(notebook: dict, config: SameConfig) -> dict:
-    """
-    Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
-    and the value is the Step object.
-    """
-    return_steps = {}
+    """Parses the code in a notebook into a series of SAME execution steps."""
 
-    # Start with a default step (if no step tags detected, everything will be added here)
+    steps = {}
+    all_code = ""
+    code_buffer = []
     this_step_index = 0
     this_step_name = "same_step_000"
     this_step_code = ""
     this_step_cache_value = "P0D"
     this_step_environment_name = "default"
     this_step_tags = []
-    code_buffer = []
 
-    all_code = ""
+    def save_step():
+        steps[this_step_name] = Step(
+            name=this_step_name,
+            code=this_step_code,
+            index=this_step_index,
+            cache_value=this_step_cache_value,
+            environment_name=this_step_environment_name,
+            tags=this_step_tags,
+            parameters=[],
+            packages_to_install=[],
+            frozen_box=False,  # TODO: make immutable
+        )
+
+        # Inject pip requirements file if configured:
+        if "requirements" in config.notebook:
+            with open(config.notebook.requirements, "r") as file:
+                steps[this_step_name].requirements_file = file.read()
 
     for num, cell in enumerate(notebook["cells"]):
         if len(cell["metadata"]) > 0 and "tags" in cell["metadata"] and len(cell["metadata"]["tags"]) > 0:
             for tag in cell["metadata"]["tags"]:
                 if tag.startswith("same_step_"):
-                    # Don't want to create an empty step if first cell tagged:
-                    if num > 0:
+                    if num > 0:  # don't create empty step
                         this_step_code = "\n".join(code_buffer)
                         all_code += "\n" + this_step_code
-                        return_steps[this_step_name] = Step(
-                            name=this_step_name,
-                            code=this_step_code,
-                            index=this_step_index,
-                            cache_value=this_step_cache_value,
-                            environment_name=this_step_environment_name,
-                            tags=this_step_tags,
-                            parameters=[],
-                            packages_to_install=[],
-                            frozen_box=False,  # TODO: make immutable
-                        )
+                        save_step()
 
+                        code_buffer = []
                         step_tag_num = int(tag.split("same_step_")[1])
                         this_step_index = step_tag_num
                         this_step_name = f"same_step_{step_tag_num:03}"
@@ -85,7 +88,6 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
                         this_step_cache_value = "P0D"
                         this_step_environment_name = "default"
                         this_step_tags = []
-                        code_buffer = []
 
                 elif str.startswith(tag, "cache="):
                     this_step_cache_value = str.split(tag, "=")[1]
@@ -98,17 +100,7 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
 
     this_step_code = "\n".join(code_buffer)
     all_code += "\n" + this_step_code
-    return_steps[this_step_name] = Step(
-        name=this_step_name,
-        code=this_step_code,
-        index=this_step_index,
-        cache_value=this_step_cache_value,
-        environment_name=this_step_environment_name,
-        tags=this_step_tags,
-        parameters=[],
-        packages_to_install=[],
-        frozen_box=False,  # TODO: make immutable
-    )
+    save_step()
 
     magic_lines = get_magic_lines(all_code)
     if len(magic_lines) > 0:
@@ -120,10 +112,10 @@ We cannot continue because the following lines cannot be converted into standard
         )
         raise SyntaxError(f"Magic lines are not supported:\n{magic_lines_string}")
 
-    for k in return_steps:
-        return_steps[k].packages_to_install = get_installable_packages(all_code)
+    for k in steps:
+        steps[k].packages_to_install = get_installable_packages(all_code)
 
-    return return_steps
+    return steps
 
 
 def get_sorted_list_of_steps(notebook: dict, config: SameConfig) -> list:
