@@ -1,3 +1,4 @@
+from sameproject.data.config import SameConfig
 from sameproject.data.step import Step
 from pathlib import Path
 from typing import Tuple
@@ -8,7 +9,7 @@ import tempfile
 import click
 
 
-def render(target: str, steps: list, same_config: dict, compile_path: str = None) -> Tuple[Path, str]:
+def render(target: str, steps: list, config: SameConfig, compile_path: str = None) -> Tuple[Path, str]:
     target_renderers = {"kubeflow": kubeflow.render, "aml": aml.render}
     render_function = target_renderers.get(target, None)
     if render_function is None:
@@ -17,7 +18,7 @@ def render(target: str, steps: list, same_config: dict, compile_path: str = None
     if compile_path is None:
         compile_path = str(tempfile.mkdtemp())
 
-    compile_path, root_module_name = render_function(compile_path, steps, same_config)
+    compile_path, root_module_name = render_function(compile_path, steps, config)
     return (compile_path, root_module_name)
 
 

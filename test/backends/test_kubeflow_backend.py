@@ -87,6 +87,16 @@ def test_kubeflow_exploding_variables():
         next(x)  # boom - see ops/explode.py
 
 
+@pytest.mark.kubeflow
+def test_kubeflow_requirements_file():
+    """
+    Tests that requirements.txt dependencies are installed before execution.
+    """
+    compiled_path, root_file = compile_testdata("requirements_file")
+    deployment = deploy("kubeflow", compiled_path, root_file)
+    assert fetch_status(deployment) == "Succeeded"
+
+
 def extract_artifact_data(data):
     path = tempfile.mktemp()
     with Path(path).open("wb") as writer:
