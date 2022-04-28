@@ -19,7 +19,7 @@ def test_schema():
 def test_good_config():
     config = None
     with open(good_config, "r") as f:
-        config = SameConfig(f.read())
+        config = SameConfig.from_yaml(f.read())
 
     assert config is not None
     assert config.notebook.path == "sample_notebook.ipynb"
@@ -32,4 +32,4 @@ def test_good_config():
 def test_bad_configs(name, path):
     with pytest.raises(SyntaxError):
         with open(path, "r") as f:
-            SameConfig(f.read())
+            SameConfig.from_yaml(f.read())

@@ -12,7 +12,8 @@ import click
 
 
 def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
-    same_config = SameConfig(same_file.read())
+    # TODO: Make the config box immutable.
+    same_config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
     same_config = _add_secrets_to_same_config(secret_dict, same_config)
     same_config = _add_aml_values_to_same_config(aml_dict, same_config)
 

@@ -135,6 +135,6 @@ def _update_conda_env(file_path):
     # #         raise FileNotFoundError()
 
     # #     with open(same_config_file_path.absolute, "rb") as f:
-    # #         same_config = SameConfig(buffered_reader=f)
+    # #         same_config = SameConfig.from_yaml(f.read())
     # # except FileNotFoundError:
     # #     logging.fatal("No SAME file found at 'same.yaml', please create one.")
