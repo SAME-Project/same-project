@@ -9,6 +9,7 @@ schema = {
     "index": {"type": "integer", "required": True},
     "cache_value": {"type": "string", "required": True},
     "environment_name": {"type": "string", "required": True},
+    "requirements_file": {"type": "string"},
     "tags": {
         "type": "list",
         "required": True,

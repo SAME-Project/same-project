@@ -5,7 +5,6 @@ from ruamel.yaml import YAML
 from pathlib import Path
 from box import Box
 import logging
-import pprint
 
 
 # Schema for validating SAME config files.
@@ -109,3 +108,16 @@ class SameConfig(Box):
 
         # Uses Box as the child box_class so we don't recursively validate:
         super().__init__(*args, frozen_box=frozen_box, box_class=Box, **kwargs)
+
+    def resolve(self, base_path):
+        """
+        Returns a new SAME config file with the notebook and requirements paths
+        resolved against the given base path.
+        """
+        data = Box(self)
+        base_path = Path(base_path)
+        data.notebook.path = str(base_path / data.notebook.path)
+        if "requirements" in data.notebook:
+            data.notebook.requirements = str(base_path / data.notebook.requirements)
+
+        return SameConfig(data, frozen_box=self._box_config["frozen_box"])

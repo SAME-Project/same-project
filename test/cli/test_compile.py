@@ -62,10 +62,6 @@ def test_same_program_compile_e2e():
     assert result.exit_code == 0
 
 
-def test_get_notebook_path(same_config):
-    assert "sample_notebook.ipynb" in notebooks.get_notebook_path(Path(same_config_file_path).parent, same_config)
-
-
 def test_bad_notebook_path(caplog):
     bad_path_string = "BAD_PATH"
     with pytest.raises(SystemExit) as e:

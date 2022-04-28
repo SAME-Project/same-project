@@ -14,11 +14,11 @@ import click
 def compile(config_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
     # TODO: Make the config box immutable.
     config = SameConfig.from_yaml(config_file.read(), frozen_box=False)
+    config = config.resolve(Path(config_file.name).parent)
     config = _add_secrets_to_config(secret_dict, config)
     config = _add_aml_values_to_config(aml_dict, config)
 
-    notebook_path = get_notebook_path(config_file.name, config)
-    notebook = read_notebook(notebook_path)
+    notebook = read_notebook(config.notebook.path)
     all_steps = get_steps(notebook, config)
 
     return sameproject.ops.backends.render(
@@ -26,10 +26,6 @@ def compile(config_file: BufferedReader, target: str, secret_dict: dict = {}, am
         steps=all_steps,
         config=config
     )
-
-
-def get_notebook_path(config_path, config) -> str:
-    return str(Path(config_path).parent / config["notebook"]["path"])
 
 
 def read_notebook(notebook_path) -> dict:
