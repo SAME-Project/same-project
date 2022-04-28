@@ -8,7 +8,7 @@ from pathlib import Path
 import logging
 import pytest
 
-same_config_file_path = "test/testdata/generic_notebook/same.yaml"
+same_config_file_path = Path("test/testdata/generic_notebook/same.yaml")
 
 # Permutations of notebooks
 # | Code | Tag | Code | Tag | Code |
@@ -48,8 +48,8 @@ magic_strings_to_detect = [
 
 @pytest.fixture
 def same_config():
-    with open(same_config_file_path, "r") as f:
-        return SameConfig.from_yaml(f.read())
+    with same_config_file_path.open("r") as file:
+        return SameConfig.from_yaml(file.read()).resolve(same_config_file_path.parent)
 
 
 def test_same_program_compile_e2e():

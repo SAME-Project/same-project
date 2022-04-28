@@ -1,9 +1,10 @@
 from sameproject.ops import notebooks as nbproc
 from sameproject.data.config import SameConfig
+from pathlib import Path
 import pytest
 
 
-config_path = "test/testdata/generic_notebook/same.yaml"
+config_path = Path("test/testdata/generic_notebook/same.yaml")
 
 
 magic_line_testcases = [
@@ -14,8 +15,8 @@ magic_line_testcases = [
 
 @pytest.fixture
 def config():
-    with open(config_path, "r")  as file:
-        return SameConfig.from_yaml(file.read())
+    with config_path.open("r") as file:
+        return SameConfig.from_yaml(file.read()).resolve(config_path.parent)
 
 
 @pytest.mark.parametrize("name, path, expect_err", magic_line_testcases)

@@ -182,11 +182,16 @@ def _build_step_file(env: Environment, step: Step) -> str:
     with open(sameproject.ops.explode.__file__, "r") as f:
         explode_code = f.read()
 
+    requirements_file = None
+    if "requirements_file" in step:
+        requirements_file = urlsafe_b64encode(bytes(step.requirements_file, "utf-8")).decode()
+
     step_contract = {
         "name": step.name,
         "unique_name": step.unique_name,
         "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
+        "requirements_file": requirements_file,
         "memory_limit": 50 * 2**20,  # 50MB
     }
 
