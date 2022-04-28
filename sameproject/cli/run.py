@@ -1,5 +1,5 @@
+from sameproject.ops.runtime_options import runtime_options
 from sameproject.ops import notebooks as nbproc
-from .options import k8s_registry_secrets
 from io import BufferedReader
 import sameproject.ops.backends
 import sameproject.ops.helpers
@@ -28,7 +28,6 @@ import os
     default="kubeflow",
     type=click.Choice(["kubeflow", "aml"]),
 )
-@k8s_registry_secrets
 @click.option(
     "--persist-temp-files",
     "persist_temp_files",
@@ -45,6 +44,7 @@ import os
     type=bool,
     help="Do not deploy compiled pipelines.",
 )
+@runtime_options
 def run(
     same_file: BufferedReader,
     target: str,
