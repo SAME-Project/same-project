@@ -9,7 +9,8 @@ import os
 import kfp
 from kfp.v2 import dsl
 from kfp.v2.dsl import component, Output, HTML
-from google.cloud import aiplatform
+from . import deploy
+import render
 
 
 @click.group()
@@ -32,7 +33,10 @@ def main():
     show_default=True,
     required=True,
 )
-def compile_vertex(compiled_directory: str):
+def compile_kfp2(compiled_directory: str):
+    """
+    Compile the rendered files into a .yaml for direct deployment to Kubeflow.
+    """
     sys.path.append(compiled_directory)
     p = Path(compiled_directory)
     root_files = [f for f in p.glob("root_pipeline_*")]
@@ -64,69 +68,26 @@ def compile_vertex(compiled_directory: str):
 @click.option(
     "--compiled-pipeline-path",
     "compiled_pipeline_path",
-    help="The path to your compiled pipeline JSON file. It can be a local path or a Google Cloud Storage URI.",
+    help="The path to your compiled pipeline YAML file. It can be a local path or a Google Cloud Storage URI.",
     show_default=True,
     required=True,
 )
 @click.option(
-    "--project-id",
-    "project_id",
-    help="The project that you want to run the pipeline in.",
+    "--root-module-name",
+    "root_module_name",
+    help="Root module name.",
     show_default=True,
     required=True,
 )
-@click.option(
-    "--pipeline-root",
-    "pipeline_root",
-    help="The pipeline-root parameter specifies where the output of the pipeline should be stored. This pipeline saves run artifacts to the AI Platform Pipelines default Cloud Storage bucket.",
-    show_default=True,
-    required=True,
-)
-@click.option(
-    "--service-account",
-    "service_account",
-    help="Service principal to run this pipeline under.",
-    show_default=True,
-    required=True,
-)
-@click.option(
-    "--service-account-credentials-file",
-    "service_account_credentials_file",
-    help="JSON file containing credentials for the service account.",
-    show_default=True,
-    required=True,
-)
-def deploy_vertex(compiled_pipeline_path: str, project_id: str, pipeline_root: str, service_account: str, service_account_credentials_file: str):
-    from google.cloud import aiplatform
-
-    job = aiplatform.PipelineJob(
-        display_name="MY_DISPLAY_JOB",
-        template_path=compiled_pipeline_path,
-        project=project_id,
-        pipeline_root=pipeline_root,
-        credentials=service_account_credentials_file,
-    )
-
-    # job = aiplatform.PipelineJob(
-    #     display_name="MY_DISPLAY_JOB",
-    #     template_path=compiled_pipeline_path,
-    #     job_id=JOB_ID,
-    #     pipeline_root=PIPELINE_ROOT_PATH,
-    #     parameter_values=PIPELINE_PARAMETERS,
-    #     enable_caching=ENABLE_CACHING,
-    #     encryption_spec_key_name=CMEK,
-    #     labels=LABELS,
-    #     credentials=CREDENTIALS,
-    #     project=PROJECT_ID,
-    #     location=LOCATION,
-    # )
-
-    job.submit(service_account=service_account)
-    # job.submit(service_account=SERVICE_ACCOUNT, network=NETWORK)
+def deploy_kfp2(compiled_pipeline_path: Path, root_module_name: str):
+    """
+    Deploy the .yaml to Kubeflow
+    """
+    return deploy(compiled_path=compiled_pipeline_path, root_module_name=root_module_name)
 
 
-main.add_command(compile_vertex)
-main.add_command(deploy_vertex)
+main.add_command(compile_kfp2)
+main.add_command(deploy_kfp2)
 
 # https://click.palletsprojects.com/en/8.1.x/options/#values-from-environment-variables
 if __name__ == "__main__":

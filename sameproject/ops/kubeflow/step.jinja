@@ -1,11 +1,12 @@
-{% autoescape off %}from kfp.components import InputPath, OutputPath
-
+{% autoescape off %}import kfp
+from kfp.v2.dsl import component, Artifact, Input, InputPath, Output, OutputPath, Dataset, Model
+from typing import NamedTuple
 
 def {{ unique_step_name }}_fn(
     input_context_path: InputPath(str),
     output_context_path: OutputPath(str),
-    run_info="gAR9lC4=",
-    metadata_url="",
+    run_info: str = "gAR9lC4=",
+    metadata_url: str = "",
 ):
     from base64 import urlsafe_b64encode, urlsafe_b64decode
     from pathlib import Path

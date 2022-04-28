@@ -1,9 +1,10 @@
-{% autoescape off %}from kfp.components import create_component_from_func
+{% autoescape off %}import kfp.v2.components
+from kfp.v2.dsl import InputPath
 from kubernetes.client.models import V1EnvVar
 from kubernetes import client, config
 from typing import NamedTuple
 from base64 import b64encode
-import kfp.dsl as dsl
+import kfp.v2.dsl as dsl
 import kubernetes
 import json
 import kfp
@@ -14,7 +15,7 @@ from {{ step.unique_step_name }} import {{ step.unique_step_name }}_fn
 {% endfor %}
 
 
-run_info_comp = kfp.components.create_component_from_func(
+run_info_comp = kfp.v2.dsl.component(
     func=run_info_fn,
     packages_to_install=[
         "kfp",
@@ -23,27 +24,20 @@ run_info_comp = kfp.components.create_component_from_func(
 )
 
 {% for step in list_of_steps %}
-{{ step.unique_step_name }}_comp = create_component_from_func(
+{{ step.unique_step_name }}_comp = kfp.v2.dsl.component(
     func={{ step.unique_step_name }}_fn,
     base_image="{{ step.image_tag }}",
     packages_to_install=[
         "dill",
         "requests",
-        "mlflow==1.17.0",
-        "boto3==1.17.79",
         {{ step.package_string }} # TODO: make this a loop
     ],
 )
 {% endfor %}
 
-# TODO: support kubeflow-specific config like aws secrets, mlflow endpoints.
-@dsl.pipeline(name="Compilation of pipelines",)
+@kfp.dsl.pipeline(name="root_pipeline_compilation",)
 def root(
-    context='', metadata_url='',
-    AWS_ACCESS_KEY_ID: str = "minio",
-    AWS_SECRET_ACCESS_KEY: str = "minio123",
-    MLFLOW_S3_ENDPOINT_URL: str = "http://combinator-minio.mlflow.svc.cluster.local:9000",
-    MLFLOW_TRACKING_URI: str = "http://combinator-mlflow.mlflow.svc.cluster.local:5000",
+    context: str='', metadata_url: str='',
 ):
     # Generate secrets (if not already created)
     secrets_by_env = {}
@@ -103,12 +97,7 @@ def root(
     dsl.get_pipeline_conf().set_image_pull_secrets([client.V1LocalObjectReference(name=name)])
 {% endfor %}
 
-    # TODO: need a way to configure and handle env vars for backends properly
     env_vars = {
-        "AWS_ACCESS_KEY_ID": AWS_ACCESS_KEY_ID,
-        "AWS_SECRET_ACCESS_KEY": AWS_SECRET_ACCESS_KEY,
-        "MLFLOW_S3_ENDPOINT_URL": MLFLOW_S3_ENDPOINT_URL,
-        "MLFLOW_TRACKING_URI": MLFLOW_TRACKING_URI,
     }
 
     run_info = run_info_comp(run_id=kfp.dsl.RUN_ID_PLACEHOLDER)
@@ -117,9 +106,9 @@ def root(
 {% for step in list_of_steps %}
     {{ step.unique_step_name }} = {{ step.unique_step_name }}_comp(
 {% if step.previous_step_name %}
-        input_context={{ step.previous_step_name }}.outputs["output_context"],
+        input_context_path={{ step.previous_step_name }}.outputs["output_context_path"],
 {% else %}
-        input_context="",
+        input_context_path="",
 {% endif %}
         run_info=run_info.outputs["run_info"],
         metadata_url=metadata_url
