@@ -11,26 +11,25 @@ import logging
 import click
 
 
-def compile(same_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
+def compile(config_file: BufferedReader, target: str, secret_dict: dict = {}, aml_dict: dict = {}) -> Tuple[Path, str]:
     # TODO: Make the config box immutable.
-    same_config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
-    same_config = _add_secrets_to_same_config(secret_dict, same_config)
-    same_config = _add_aml_values_to_same_config(aml_dict, same_config)
+    config = SameConfig.from_yaml(config_file.read(), frozen_box=False)
+    config = _add_secrets_to_config(secret_dict, config)
+    config = _add_aml_values_to_config(aml_dict, config)
 
-    notebook_path = get_notebook_path(same_file.name, same_config)
+    notebook_path = get_notebook_path(config_file.name, config)
     notebook = read_notebook(notebook_path)
-    all_steps = get_steps(notebook)
+    all_steps = get_steps(notebook, config)
 
     return sameproject.ops.backends.render(
         target=target,
         steps=all_steps,
-        same_config=same_config
+        config=config
     )
 
 
-def get_notebook_path(same_config_path, same_config_file_contents) -> str:
-    """Returns absolute value of the pipeline path relative to current file execution"""
-    return str(Path.joinpath(Path(same_config_path).parent, same_config_file_contents["notebook"]["path"]))
+def get_notebook_path(config_path, config) -> str:
+    return str(Path(config_path).parent / config["notebook"]["path"])
 
 
 def read_notebook(notebook_path) -> dict:
@@ -45,7 +44,7 @@ def read_notebook(notebook_path) -> dict:
     return ntbk_dict
 
 
-def get_steps(notebook: dict) -> dict:
+def get_steps(notebook: dict, config: SameConfig) -> dict:
     """
     Given a notebook (in the form of a dictionary), converts it into a dictionary of Steps. The key is the Step name
     and the value is the Step object.
@@ -131,17 +130,17 @@ We cannot continue because the following lines cannot be converted into standard
     return return_steps
 
 
-def get_sorted_list_of_steps(notebook: dict) -> list:
+def get_sorted_list_of_steps(notebook: dict, config: SameConfig) -> list:
     """
     Given a notebook (as a dict), get a list of Step objects, sorted by their index in the notebook.
     """
-    steps_dict = get_steps(notebook)
+    steps_dict = get_steps(notebook, config)
     steps = list(steps_dict.values())
     steps_sorted_by_index = sorted(steps, key=lambda x: x.index)
     return steps_sorted_by_index
 
 
-def _add_secrets_to_same_config(secret_dict, same_config) -> dict:
+def _add_secrets_to_config(secret_dict, config) -> dict:
     # Start by checking for secrets (if something is hinky, no reason to go forward).
 
     # Cowardly, we're only supporting one secret_dict right now, meaning all private images need to be pulled
@@ -157,36 +156,36 @@ def _add_secrets_to_same_config(secret_dict, same_config) -> dict:
     missing_secrets_dict = {}
 
     if secret_dict.get(REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME, None) is None:
-        secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = same_config.metadata.name
+        secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = config.metadata.name
 
     # Make the secret name safe for a Secret (if the rest of the secret name is not set, don't worry about it)
     secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME] = lowerAlphaNumericOnly(
         secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME]
     )
 
-    # Below, we're going to inject these secrets into the in-memory struct of same_config, which will later render it into the compiled template.
+    # Below, we're going to inject these secrets into the in-memory struct of config, which will later render it into the compiled template.
     # This only makes sense if there are environments and one of them is private
-    if same_config.get("environments", None) is not None:
-        for name in same_config.environments:
-            if same_config.environments[name].get("private_registry", False):
+    if config.get("environments", None) is not None:
+        for name in config.environments:
+            if config.environments[name].get("private_registry", False):
                 these_missing_secrets = missing_secrets(secret_dict)
                 if len(these_missing_secrets) > 0:
                     missing_secrets_dict[name] = these_missing_secrets
                 else:
-                    same_config.environments[name]["credentials"] = {}
-                    same_config.environments[name].credentials[
+                    config.environments[name]["credentials"] = {}
+                    config.environments[name].credentials[
                         REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME
                     ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_NAME]
-                    same_config.environments[name].credentials[
+                    config.environments[name].credentials[
                         REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI
                     ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_REGISTRY_URI]
-                    same_config.environments[name].credentials[
+                    config.environments[name].credentials[
                         REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME
                     ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_USERNAME]
-                    same_config.environments[name].credentials[
+                    config.environments[name].credentials[
                         REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD
                     ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_PASSWORD]
-                    same_config.environments[name].credentials[
+                    config.environments[name].credentials[
                         REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL
                     ] = secret_dict[REQUIRED_SECRET_VALUES.IMAGE_PULL_SECRET_EMAIL]
 
@@ -202,12 +201,12 @@ def _add_secrets_to_same_config(secret_dict, same_config) -> dict:
                     click.echo(f"\t\t{v}:")
         raise ValueError("Missing secrets for declared private registry.")
 
-    return same_config
+    return config
 
 
-def _add_aml_values_to_same_config(aml_dict, same_config) -> dict:
-    same_config["aml"] = {}
+def _add_aml_values_to_config(aml_dict, config) -> dict:
+    config["aml"] = {}
     for k in aml_dict.keys():
-        same_config["aml"][k] = aml_dict[k]
+        config["aml"][k] = aml_dict[k]
 
-    return same_config
+    return config
