@@ -1,4 +1,4 @@
-from sameproject.ops.files import find_same_config, find_notebook
+from sameproject.ops.files import find_same_config, find_notebook, find_requirements
 from tempfile import mkdtemp
 from pathlib import Path
 import pytest
@@ -42,3 +42,20 @@ def test_files_find_notebook(tempdir):
     # Should find the first notebook lexicographically:
     path = str(find_notebook(tempdir / "nonempty", recurse=True))
     assert path.endswith("a/1.ipynb")
+
+
+def test_files_find_requirements(tempdir):
+    (tempdir / "empty").mkdir()
+    (tempdir / "nonempty").mkdir()
+    (tempdir / "nonempty" / "a").mkdir()
+    (tempdir / "nonempty" / "a" / "requirements.txt").touch()
+    (tempdir / "nonempty" / "b").mkdir()
+    (tempdir / "nonempty" / "b" / "requirements.txt").touch()
+
+    # Should return None when there is no requirements.txt to be found.
+    assert find_requirements(tempdir / "empty", recurse=True) is None
+    assert find_requirements(tempdir / "nonempty", recurse=False) is None
+
+    # Should find the first requirements.txt lexicographically:
+    path = str(find_requirements(tempdir / "nonempty", recurse=True))
+    assert path.endswith("a/requirements.txt")

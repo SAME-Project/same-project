@@ -52,9 +52,12 @@ def get_steps(notebook: dict) -> dict:
     return_steps = {}
 
     # Start with a default step (if no step tags detected, everything will be added here)
-    this_step = Step()
-    this_step.index = 0
-    this_step.name = "same_step_000"
+    this_step_index = 0
+    this_step_name = "same_step_000"
+    this_step_code = ""
+    this_step_cache_value = "P0D"
+    this_step_environment_name = "default"
+    this_step_tags = []
     code_buffer = []
 
     all_code = ""
@@ -63,32 +66,53 @@ def get_steps(notebook: dict) -> dict:
         if len(cell["metadata"]) > 0 and "tags" in cell["metadata"] and len(cell["metadata"]["tags"]) > 0:
             for tag in cell["metadata"]["tags"]:
                 if tag.startswith("same_step_"):
-                    # Skip over this logic if it's the zeroth cell (cleaner way to do this? probably)
+                    # Don't want to create an empty step if first cell tagged:
                     if num > 0:
-                        # New step detected. First, we'll add the existing step to the return steps
-                        this_step.code = "\n".join(code_buffer)
-                        all_code += "\n" + this_step.code
-                        return_steps[this_step.name] = this_step
+                        this_step_code = "\n".join(code_buffer)
+                        all_code += "\n" + this_step_code
+                        return_steps[this_step_name] = Step(
+                            name=this_step_name,
+                            code=this_step_code,
+                            index=this_step_index,
+                            cache_value=this_step_cache_value,
+                            environment_name=this_step_environment_name,
+                            tags=this_step_tags,
+                            parameters=[],
+                            packages_to_install=[],
+                            frozen_box=False,  # TODO: make immutable
+                        )
+
                         step_tag_num = int(tag.split("same_step_")[1])
-
+                        this_step_index = step_tag_num
+                        this_step_name = f"same_step_{step_tag_num:03}"
+                        this_step_code = ""
+                        this_step_cache_value = "P0D"
+                        this_step_environment_name = "default"
+                        this_step_tags = []
                         code_buffer = []
-                        this_step = Step()
-                        this_step.index = step_tag_num
 
-                        # left padding numbering because it's prettier
-                        this_step.name = f"same_step_{step_tag_num:03}"
                 elif str.startswith(tag, "cache="):
-                    this_step.cache_value = str.split(tag, "=")[1]
+                    this_step_cache_value = str.split(tag, "=")[1]
                 elif str.startswith(tag, "environment="):
-                    this_step.environment_name = str.split(tag, "=")[1]
+                    this_step_environment_name = str.split(tag, "=")[1]
                 else:
-                    this_step.tags.append(tag)
+                    this_step_tags.append(tag)
 
         code_buffer.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
 
-    this_step.code = "\n".join(code_buffer)
-    all_code += "\n" + this_step.code
-    return_steps[this_step.name] = this_step
+    this_step_code = "\n".join(code_buffer)
+    all_code += "\n" + this_step_code
+    return_steps[this_step_name] = Step(
+        name=this_step_name,
+        code=this_step_code,
+        index=this_step_index,
+        cache_value=this_step_cache_value,
+        environment_name=this_step_environment_name,
+        tags=this_step_tags,
+        parameters=[],
+        packages_to_install=[],
+        frozen_box=False,  # TODO: make immutable
+    )
 
     magic_lines = get_magic_lines(all_code)
     if len(magic_lines) > 0:
