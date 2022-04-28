@@ -49,13 +49,14 @@ class Step(Box):
         data = Box(*args, **kwargs)
         validator = _get_validator()
         if not validator.validate(data):
-            raise Exception(f"Step data is invalid: {validator.errors}")
+            raise SyntaxError(f"Step data is invalid: {validator.errors}")
 
         # We generate unique names for steps if they don't already have them:
         if "unique_name" not in kwargs:
             kwargs["unique_name"] = _generate_unique_variant_of(kwargs["name"])
 
-        super().__init__(*args, frozen_box=frozen_box, **kwargs)
+        # Uses Box as the child box_class so we don't recursively validate:
+        super().__init__(*args, frozen_box=frozen_box, box_class=Box, **kwargs)
 
     @staticmethod
     def from_json_list(json_steps):

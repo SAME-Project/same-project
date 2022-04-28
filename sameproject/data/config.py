@@ -81,7 +81,7 @@ schema = {
 
 
 class SameValidator(Validator):
-    """Validator for SAME config files."""
+    """Custom cerberus validation rules for SAME config files."""
 
     def _validate_must_have_default(self, constraint, field_name, values_needing_default):
         """
@@ -101,17 +101,11 @@ class SameValidator(Validator):
 class SameConfig(Box):
     """Container for SAME config file data."""
 
-    def __init__(self, yaml_string: str):
-        data = Box.from_yaml(yaml_string=yaml_string)
-
+    def __init__(self, *args, frozen_box=True, **kwargs):
+        data = Box(*args, **kwargs)
         validator = SameValidator.get_validator()
         if not validator.validate(data):
             raise SyntaxError(f"SAME config file is invalid: {validator.errors}")
 
-        super(Box, self).__init__(
-            data,
-            frozen_box=True,
-        )
-
-    def write(self, path: str):
-        Path(path).write_text(self.to_yaml())
+        # Uses Box as the child box_class so we don't recursively validate:
+        super().__init__(*args, frozen_box=frozen_box, box_class=Box, **kwargs)

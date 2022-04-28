@@ -12,7 +12,7 @@ def dataset(name, same_file="same.yaml"):
     environment. Currently tested for json, csv and ipfs datasets.
     """
     with open(same_file, "rb+") as file:
-        same_config = SameConfig(file)
+        same_config = SameConfig.from_yaml(file.read())
 
     if name not in same_config.datasets:
         raise ValueError(f"'{name}' is not a dataset in the same file at '{same_file}'.")

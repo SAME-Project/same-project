@@ -7,7 +7,8 @@ from box import Box
 
 
 schema = {
-    "example": {"type": "string", "required": True},
+    "string": {"type": "string", "required": True},
+    "dict": {"type": "dict", "required": True},
 }
 
 
@@ -20,6 +21,7 @@ class Example(Box):
         data = Box(*args, **kwargs)
         validator = _get_validator()
         if not validator.validate(data):
-            raise Exception(f"Step data is invalid: {validator.errors}")
+            raise SyntaxError(f"Example data is invalid: {validator.errors}")
 
-        super().__init__(*args, frozen_box=frozen_box, **kwargs)
+        # Uses Box as the child box_class so we don't recursively validate:
+        super().__init__(*args, frozen_box=frozen_box, box_class=Box, **kwargs)
