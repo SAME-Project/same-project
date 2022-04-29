@@ -31,16 +31,10 @@ def read_notebook(notebook_path) -> dict:
 
 def get_name(notebook: dict, default="") -> str:
     """Returns a notebook's configured name, or a default if none is found."""
-    if "metadata" in notebook:
-        md = notebook["metadata"]
+    if "metadata" not in notebook or "name" not in notebook["metadata"]:
+        return default
 
-        if "name" in md:
-            return md["name"]
-
-        if "colab" in md and "name" in md["colab"]:
-            return md["colab"]["name"]
-
-    return default
+    return notebook["metadata"]["name"]
 
 
 def get_steps(notebook: dict, config: SameConfig) -> dict:
@@ -75,9 +69,6 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
                 steps[this_step_name].requirements_file = file.read()
 
     for num, cell in enumerate(notebook["cells"]):
-        if "metadata" not in cell:  # sanity check
-            continue
-
         if len(cell["metadata"]) > 0 and "tags" in cell["metadata"] and len(cell["metadata"]["tags"]) > 0:
             for tag in cell["metadata"]["tags"]:
                 if tag.startswith("same_step_"):
@@ -102,8 +93,7 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
                 else:
                     this_step_tags.append(tag)
 
-        if cell["cell_type"] == "code":  # might be a markdown cell
-            code_buffer.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
+        code_buffer.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
 
     this_step_code = "\n".join(code_buffer)
     all_code += "\n" + this_step_code
@@ -143,9 +133,6 @@ def get_code(notebook: dict) -> str:
 
     code = []
     for cell in notebook["cells"]:
-        if cell["cell_type"] != "code":
-            continue
-
         code.append("\n".join(
             jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source
         ))

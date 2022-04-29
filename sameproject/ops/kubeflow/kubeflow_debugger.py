@@ -2,13 +2,14 @@ import sys
 import click
 import glob
 from pathlib import Path
-import kfp.v2
+from kfp.compiler import Compiler
+from kfp.v2 import compiler
 import importlib
 import os
 import kfp
-from kfp.v2 import dsl, compiler
+from kfp.v2 import dsl
 from kfp.v2.dsl import component, Output, HTML
-from . import deploy
+from sameproject.ops.kubeflow import deploy
 import render
 
 
@@ -32,7 +33,14 @@ def main():
     show_default=True,
     required=True,
 )
-def compile_kfp(compiled_directory: str):
+@click.option(
+    "--mode",
+    "mode",
+    help="Mode to compile in - kfp2 is the default",
+    show_default=True,
+    required=False,
+)
+def compile_kfp(compiled_directory: str, mode: str):
     """
     Compile the rendered files into a .yaml for direct deployment to Kubeflow.
     """
@@ -51,11 +59,15 @@ def compile_kfp(compiled_directory: str):
 
     root_module = importlib.import_module(mod)
 
-    package_json_path = p / f"{root_file.stem}.json"
+    package_yaml_path = p / f"{root_file.stem}.yaml"
 
-    print(f"Package path: {package_json_path}")
+    print(f"Package path: {package_yaml_path}")
 
-    compiler.Compiler(mode=kfp.dsl.PipelineExecutionMode.V1_LEGACY).compile(pipeline_func=root_module.root, package_path=str(package_json_path))
+    compile_mode = kfp.dsl.PipelineExecutionMode.V2_COMPATIBLE
+    if mode == "kfp1":
+        compile_mode = kfp.dsl.PipelineExecutionMode.V1_LEGACY
+
+    Compiler(mode=compile_mode).compile(pipeline_func=root_module.root, package_path=str(package_yaml_path))
 
 
 @click.command(
@@ -93,13 +105,9 @@ if __name__ == "__main__":
     main(auto_envvar_prefix="SAME")
 
 # Steps:
-# Tested on GCP
-# export PIPELINE_VERSION=1.8.1
-# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
-# kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
-# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$PIPELINE_VERSION"
 
-# export PIPELINE_VERSION=1.8.1
-# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
-# kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
-# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$PIPELINE_VERSION"
+#  KFP_ENV=platform-agnostic
+# kubectl apply -k cluster-scoped-resources/
+# kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
+# kubectl apply -k "env/${KFP_ENV}/"
+# kubectl wait pods -l application-crd-id=kubeflow-pipelines -n kubeflow --for condition=Ready --timeout=1800s
