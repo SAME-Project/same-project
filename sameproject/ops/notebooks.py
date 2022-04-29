@@ -120,3 +120,14 @@ def get_sorted_list_of_steps(notebook: dict, config: SameConfig) -> list:
     steps = list(steps_dict.values())
     steps_sorted_by_index = sorted(steps, key=lambda x: x.index)
     return steps_sorted_by_index
+
+
+def get_code(notebook: dict) -> List[str]:
+    """Combines and returns all python code in the given notebook."""
+    code = ""
+    for cell in notebook["cells"]:
+        code += "\n".join(
+            jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source
+        )
+
+    return code

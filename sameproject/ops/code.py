@@ -26,34 +26,34 @@ def get_magic_lines(code: str) -> List[str]:
     return magic_lines
 
 
+def get_imported_modules(code: str) -> List[str]:
+    """Returns a list of all imported modules in the given code."""
+    raw_imports = set()
+    for node in ast.walk(ast.parse(code)):
+        if isinstance(node, ast.Import):
+            for subnode in node.names:
+                raw_imports.add(subnode.name)
+        elif isinstance(node, ast.ImportFrom):
+            raw_imports.add(node.module)
+    raw_imports = [expr for expr in raw_imports if expr]  # remove any None
+
+    # Parse the base module for each import, i.e. "pkg.thing" -> "pkg".
+    base_modules = set()
+    for expr in raw_imports:
+        base, _, _ = expr.partition(".")
+        base_modules.add(base)
+
+    return list(base_modules)
+
+
 def get_installable_packages(code: str) -> List[str]:
     """
     Parses a block of python code for import statements that require the
     installation of a package from PyPI.
     """
-
-    # Parse fully-qualified module names from every import statement.
-    raw_imports = set()
-    try:
-        tree = ast.parse(code)
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for subnode in node.names:
-                    raw_imports.add(subnode.name)
-            elif isinstance(node, ast.ImportFrom):
-                raw_imports.add(node.module)
-    except Exception as err:
-        logging.error("Failed to parse import statements in code block.")
-        raise err
-
-    # Parse the base module for each import, i.e. "pkg.thing" -> "pkg".
-    base_imports = set()
-    for name in [n for n in raw_imports if n]:
-        base, _, _ = name.partition(".")
-        base_imports.add(base)
-
+    base_modules = set(get_imported_modules(code))
     stdlib = {x.strip() for x in stdlibs.splitlines()}
-    installable_imports = list(base_imports - stdlib)
+    installable_imports = list(base_modules - stdlib)
 
     # Sorted for determinism.
     return sorted(
