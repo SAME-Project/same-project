@@ -1,5 +1,6 @@
 from sameproject.ops.explode import ExplodingVariable
 from sameproject.ops import notebooks as nbproc
+from sameproject.data.config import SameConfig
 from sameproject.ops.backends import deploy
 from base64 import urlsafe_b64decode
 from pathlib import Path
@@ -126,7 +127,11 @@ def get_artifact_for_step(artifacts, step_num):
 
 def compile_testdata(name):
     path = Path(__file__).parent / f"./testdata/kubeflow/{name}.yaml"
-    return nbproc.compile(path.open("rb"), "kubeflow")
+    with open(path, "r") as file:
+        config = SameConfig.from_yaml(file.read())
+        config = config.resolve(path.parent)
+
+    return nbproc.compile(config, "kubeflow")
 
 
 def fetch_status(deployment, timeout=300):

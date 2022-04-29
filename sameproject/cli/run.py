@@ -1,10 +1,10 @@
 from sameproject.ops.runtime_options import runtime_options, get_option_value
-from sameproject.ops import notebooks as nbproc
+from sameproject.data.config import SameConfig
 from io import BufferedReader
-import sameproject.ops.backends
-import sameproject.ops.helpers
+from pathlib import Path
+import sameproject.ops.notebooks as notebooks
+import sameproject.ops.backends as backends
 import click
-import os
 
 
 @click.command(
@@ -52,44 +52,14 @@ def run(
     persist_temp_files: bool = False,
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
-
-    secret_dict = sameproject.ops.helpers.create_secret_dict(
-        get_option_value("image_pull_secret_name"),
-        get_option_value("image_pull_secret_registry_uri"),
-        get_option_value("image_pull_secret_username"),
-        get_option_value("image_pull_secret_password"),
-        get_option_value("image_pull_secret_email"),
-    )
-
-    aml_required_values = [
-        "aml_compute_name",
-        "aml_sp_password_value",
-        "aml_sp_tenant_id",
-        "aml_sp_app_id",
-        "workspace_subscription_id",
-        "workspace_resource_group",
-        "workspace_name",
-    ]
-
-    aml_dict = {}
-    if target == "aml":
-        missing_values = []
-        for aml_var in aml_required_values:
-            val = get_option_value(aml_var)
-            if val is not None:
-                aml_dict[aml_var] = val
-            else:
-                missing_values.append(aml_var)
-        if len(missing_values) > 0:
-            missing_values_string = ", ".join(missing_values)
-            click.echo(
-                f"You selected AML as a target, but are missing the following environment variables: {missing_values_string}"
-            )
-            raise ValueError(f"Missing values: {missing_values_string}")
+    # TODO: Make SAME config object immutable (frozen_box=True).
+    config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
+    config = config.resolve(Path(same_file.name).parent)
+    config = config.inject_runtime_options()
 
     click.echo(f"File is: {same_file.name}")
-    compile_dir, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
+    artifact_path, root_module = notebooks.compile(config, target)
     if persist_temp_files:
-        click.echo(f"Compile artifacts persisted at: {compile_dir}")
+        click.echo(f"Compile artifacts persisted at: {artifact_path}")
     if not no_deploy:
-        sameproject.ops.backends.deploy(target, compile_dir, root_module_name, persist_temp_files)
+        backends.deploy(target, artifact_path, root_module, persist_temp_files)
