@@ -95,44 +95,9 @@ if __name__ == "__main__":
 
 # Steps:
 
-# - Create Service Principal to run - https://cloud.google.com/vertex-ai/docs/pipelines/configure-project#service-account
-# -
-#   - gcloud iam service-accounts create vertex-runner-sp \
-# --description="Service principal for running vertex and creating pipelines/metadata" \
-# --display-name="VERTEX_RUNNER_SP" \
-# --project=scorpio-216915
+#  KFP_ENV=platform-agnostic
+# kubectl apply -k cluster-scoped-resources/
+# kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
+# kubectl apply -k "env/${KFP_ENV}/"
+# kubectl wait pods -l application-crd-id=kubeflow-pipelines -n kubeflow --for condition=Ready --timeout=1800s
 
-# gcloud projects add-iam-policy-binding $PROJECT_ID \
-#     --member="serviceAccount:$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com" \
-#     --role="roles/aiplatform.user"
-
-# gcloud iam service-accounts add-iam-policy-binding \
-#     $SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com \
-#     --member="user:$USER_EMAIL" \
-#     --role="roles/iam.serviceAccountUser"
-# - Create a cloud bucket
-# gsutil mb -p PROJECT_ID -l BUCKET_LOCATION gs://BUCKET_NAME
-# - Enable APIs -
-
-# export PROJECT_ID="scorpio-216915"
-# export SERVICE_ACCOUNT_ID="vertex-runner-sp"
-# export USER_EMAIL="aronchick@busted.dev"
-# export BUCKET_NAME="same_test_bucket"
-# export FILE_NAME="vertex_sp_credentials"
-
-#     gcloud projects add-iam-policy-binding $PROJECT_ID \
-#         --member="serviceAccount:$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com" \
-#         --role="roles/aiplatform.user"
-
-#     gcloud iam service-accounts add-iam-policy-binding \
-#         $SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com \
-#         --member="user:$USER_EMAIL" \
-#         --role="roles/iam.serviceAccountUser"
-
-#     gsutil iam ch \
-#     serviceAccount:$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com:roles/storage.objectCreator,objectViewer \
-#     gs://$BUCKET_NAME
-
-# Download the service account credentials
-# https://cloud.google.com/docs/authentication/getting-started#auth-cloud-implicit-python
-# gcloud iam service-accounts keys create $FILE_NAME.json --iam-account=$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com
