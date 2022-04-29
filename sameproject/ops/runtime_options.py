@@ -16,6 +16,19 @@ def runtime_options(fn):
     )
 
 
+def runtime_schema():
+    """Returns a cerberus schema for validating runtime options."""
+    schema = {
+        "type": "dict",
+        "schema": {},
+    }
+
+    for opt in list_options():
+        schema["schema"][opt] = {"type": "string"}  # TODO: other types?
+
+    return schema
+
+
 def list_options():
     """Returns the list of registered options."""
     return _registry.keys()
@@ -36,10 +49,11 @@ def get_option_decorator(name):
 
     return click.option(
         _registry[name].flag,
-        callback=_registry[name].callback,
-        envvar=_registry[name].env,
         help=_registry[name].desc,
-        expose_value=False,  # don't affect the click method's signature
+        envvar=_registry[name].env,
+        callback=_registry[name].callback,
+        expose_value=False,  # don't affect click method signatures
+        required=False,  # TODO: support required runtime options?
         is_eager=True,  # handle runtime options before other options
     )
 

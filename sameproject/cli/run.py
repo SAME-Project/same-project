@@ -1,4 +1,4 @@
-from sameproject.ops.runtime_options import runtime_options
+from sameproject.ops.runtime_options import runtime_options, get_option_value
 from sameproject.ops import notebooks as nbproc
 from io import BufferedReader
 import sameproject.ops.backends
@@ -46,41 +46,36 @@ import os
 )
 @runtime_options
 def run(
-    same_file: BufferedReader,
     target: str,
-    image_pull_secret_name: str,
-    image_pull_secret_registry_uri: str,
-    image_pull_secret_username: str,
-    image_pull_secret_password: str,
-    image_pull_secret_email: str,
-    persist_temp_files: bool = False,
+    same_file: BufferedReader,
     no_deploy: bool = False,
+    persist_temp_files: bool = False,
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
 
     secret_dict = sameproject.ops.helpers.create_secret_dict(
-        image_pull_secret_name,
-        image_pull_secret_registry_uri,
-        image_pull_secret_username,
-        image_pull_secret_password,
-        image_pull_secret_email,
+        get_option_value("image_pull_secret_name"),
+        get_option_value("image_pull_secret_registry_uri"),
+        get_option_value("image_pull_secret_username"),
+        get_option_value("image_pull_secret_password"),
+        get_option_value("image_pull_secret_email"),
     )
 
     aml_required_values = [
-        "AML_COMPUTE_NAME",
-        "AML_SP_PASSWORD_VALUE",
-        "AML_SP_TENANT_ID",
-        "AML_SP_APP_ID",
-        "WORKSPACE_SUBSCRIPTION_ID",
-        "WORKSPACE_RESOURCE_GROUP",
-        "WORKSPACE_NAME",
+        "aml_compute_name",
+        "aml_sp_password_value",
+        "aml_sp_tenant_id",
+        "aml_sp_app_id",
+        "workspace_subscription_id",
+        "workspace_resource_group",
+        "workspace_name",
     ]
 
     aml_dict = {}
     if target == "aml":
         missing_values = []
         for aml_var in aml_required_values:
-            val = os.environ.get(aml_var, None)
+            val = get_option_value(aml_var)
             if val is not None:
                 aml_dict[aml_var] = val
             else:
