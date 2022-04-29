@@ -97,7 +97,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         if root_contract["list_of_environments"][name]["private_registry"]:
 
-            if "credentials" in same_config.environments[name]:
+            if "runtime_options" in same_config:
                 # Someone COULD set this to be a 'private_registry' but did not set credentials. This may be ok!
                 # They could have already mounted the secret in the cluster, so we should let it go ahead.
                 # However, because jinja doesn't like it when we parse through a struct without anything being set (even empty)
@@ -107,11 +107,11 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
                 # It COULD autopopulate the entire dict, but not sure because if it's empty, then do all the fields
                 # get created?
                 these_credentials = {}
-                these_credentials["image_pull_secret_name"] = same_config.environments[name].credentials.get("image_pull_secret_name", "")
-                these_credentials["image_pull_secret_registry_uri"] = same_config.environments[name].credentials.get("image_pull_secret_registry_uri", "")
-                these_credentials["image_pull_secret_username"] = same_config.environments[name].credentials.get("image_pull_secret_username", "")
-                these_credentials["image_pull_secret_password"] = same_config.environments[name].credentials.get("image_pull_secret_password", "")
-                these_credentials["image_pull_secret_email"] = same_config.environments[name].credentials.get("image_pull_secret_email", "")
+                these_credentials["image_pull_secret_name"] = same_config.runtime_options.get("image_pull_secret_name", "")
+                these_credentials["image_pull_secret_registry_uri"] = same_config.runtime_options.get("image_pull_secret_registry_uri", "")
+                these_credentials["image_pull_secret_username"] = same_config.runtime_options.get("image_pull_secret_username", "")
+                these_credentials["image_pull_secret_password"] = same_config.runtime_options.get("image_pull_secret_password", "")
+                these_credentials["image_pull_secret_email"] = same_config.runtime_options.get("image_pull_secret_email", "")
                 root_contract["secrets_to_create_as_dict"][name] = these_credentials
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.

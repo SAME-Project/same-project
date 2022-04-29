@@ -1,3 +1,4 @@
+from sameproject.ops.runtime_options import list_options, get_option_value, runtime_schema
 from ruamel.yaml.parser import ParserError
 from cerberus import Validator
 from io import BufferedReader
@@ -76,6 +77,11 @@ schema = {
             },
         },
     },
+
+    # Injected by SAME automatically based on environment variables and
+    # command-line flags. This also lets users specify runtime options in
+    # their SAME config file if they like:
+    "runtime_options": runtime_schema(),
 }
 
 
@@ -119,5 +125,20 @@ class SameConfig(Box):
         data.notebook.path = str(base_path / data.notebook.path)
         if "requirements" in data.notebook:
             data.notebook.requirements = str(base_path / data.notebook.requirements)
+
+        return SameConfig(data, frozen_box=self._box_config["frozen_box"])
+
+    def inject_runtime_options(self):
+        """
+        Returns a new SAME config file with all present runtime options merged
+        into the 'runtime_options' field.
+        """
+        data = Box(self)
+        if "runtime_options" not in data:
+            data.runtime_options = {}
+
+        for opt in list_options():
+            if get_option_value(opt) is not None:
+                data.runtime_options[opt] = get_option_value(opt)
 
         return SameConfig(data, frozen_box=self._box_config["frozen_box"])

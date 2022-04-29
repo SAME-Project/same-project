@@ -1,10 +1,10 @@
-from sameproject.ops import notebooks as nbproc
-from .options import k8s_registry_secrets
+from sameproject.ops.runtime_options import runtime_options, get_option_value
+from sameproject.data.config import SameConfig
 from io import BufferedReader
-import sameproject.ops.backends
-import sameproject.ops.helpers
+from pathlib import Path
+import sameproject.ops.notebooks as notebooks
+import sameproject.ops.backends as backends
 import click
-import os
 
 
 @click.command(
@@ -28,7 +28,6 @@ import os
     default="kubeflow",
     type=click.Choice(["kubeflow", "aml"]),
 )
-@k8s_registry_secrets
 @click.option(
     "--persist-temp-files",
     "persist_temp_files",
@@ -45,56 +44,22 @@ import os
     type=bool,
     help="Do not deploy compiled pipelines.",
 )
+@runtime_options
 def run(
-    same_file: BufferedReader,
     target: str,
-    image_pull_secret_name: str,
-    image_pull_secret_registry_uri: str,
-    image_pull_secret_username: str,
-    image_pull_secret_password: str,
-    image_pull_secret_email: str,
-    persist_temp_files: bool = False,
+    same_file: BufferedReader,
     no_deploy: bool = False,
+    persist_temp_files: bool = False,
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
-
-    secret_dict = sameproject.ops.helpers.create_secret_dict(
-        image_pull_secret_name,
-        image_pull_secret_registry_uri,
-        image_pull_secret_username,
-        image_pull_secret_password,
-        image_pull_secret_email,
-    )
-
-    aml_required_values = [
-        "AML_COMPUTE_NAME",
-        "AML_SP_PASSWORD_VALUE",
-        "AML_SP_TENANT_ID",
-        "AML_SP_APP_ID",
-        "WORKSPACE_SUBSCRIPTION_ID",
-        "WORKSPACE_RESOURCE_GROUP",
-        "WORKSPACE_NAME",
-    ]
-
-    aml_dict = {}
-    if target == "aml":
-        missing_values = []
-        for aml_var in aml_required_values:
-            val = os.environ.get(aml_var, None)
-            if val is not None:
-                aml_dict[aml_var] = val
-            else:
-                missing_values.append(aml_var)
-        if len(missing_values) > 0:
-            missing_values_string = ", ".join(missing_values)
-            click.echo(
-                f"You selected AML as a target, but are missing the following environment variables: {missing_values_string}"
-            )
-            raise ValueError(f"Missing values: {missing_values_string}")
+    # TODO: Make SAME config object immutable (frozen_box=True).
+    config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
+    config = config.resolve(Path(same_file.name).parent)
+    config = config.inject_runtime_options()
 
     click.echo(f"File is: {same_file.name}")
-    compile_dir, root_module_name = nbproc.compile(same_file, target, secret_dict, aml_dict)
+    artifact_path, root_module = notebooks.compile(config, target)
     if persist_temp_files:
-        click.echo(f"Compile artifacts persisted at: {compile_dir}")
+        click.echo(f"Compile artifacts persisted at: {artifact_path}")
     if not no_deploy:
-        sameproject.ops.backends.deploy(target, compile_dir, root_module_name, persist_temp_files)
+        backends.deploy(target, artifact_path, root_module, persist_temp_files)
