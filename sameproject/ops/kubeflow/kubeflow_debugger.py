@@ -39,7 +39,7 @@ def compile_kfp2(compiled_directory: str):
     """
     sys.path.append(compiled_directory)
     p = Path(compiled_directory)
-    root_files = [f for f in p.glob("root_pipeline_*")]
+    root_files = [f for f in p.glob("root_pipeline_*.py")]
     if len(root_files) < 1:
         raise ValueError(f"No root files found in {compiled_directory}")
     elif len(root_files) > 1:
@@ -100,4 +100,3 @@ if __name__ == "__main__":
 # kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
 # kubectl apply -k "env/${KFP_ENV}/"
 # kubectl wait pods -l application-crd-id=kubeflow-pipelines -n kubeflow --for condition=Ready --timeout=1800s
-

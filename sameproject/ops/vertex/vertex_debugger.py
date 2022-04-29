@@ -32,10 +32,10 @@ def main():
     show_default=True,
     required=True,
 )
-def compile_vertex(compiled_directory: str):
+def compile_vertex(compiled_directory: os.strerror):
     sys.path.append(compiled_directory)
     p = Path(compiled_directory)
-    root_files = [f for f in p.glob("root_pipeline_*")]
+    root_files = [f for f in p.glob("root_pipeline_*.py")]
     if len(root_files) < 1:
         raise ValueError(f"No root files found in {compiled_directory}")
     elif len(root_files) > 1:
@@ -48,11 +48,14 @@ def compile_vertex(compiled_directory: str):
 
     root_module = importlib.import_module(mod)
 
-    package_yaml_path = p / f"{root_file.stem}.yaml"
+    file_suffix = ".yaml"
 
-    print(f"Package path: {package_yaml_path}")
+    package_path = p / f"{root_file.stem}{file_suffix}"
 
-    Compiler(mode=kfp.dsl.PipelineExecutionMode.V2_COMPATIBLE).compile(pipeline_func=root_module.root, package_path=str(package_yaml_path))
+    print(f"Package path: {package_path}")
+
+    # Compiler(mode=kfp.dsl.PipelineExecutionMode.V2_COMPATIBLE).compile(pipeline_func=root_module.root, package_path=str(package_path))
+    Compiler(mode=kfp.dsl.PipelineExecutionMode.V1_LEGACY).compile(pipeline_func=root_module.root, package_path=str(package_path))
 
 
 @click.command(
@@ -158,6 +161,7 @@ if __name__ == "__main__":
 # export USER_EMAIL="aronchick@busted.dev"
 # export BUCKET_NAME="same_test_bucket"
 # export FILE_NAME="vertex_sp_credentials"
+# export GOOGLE_APPLICATION_CREDENTIALS="$HOME/vertex_sp_credentials.json"
 
 #     gcloud projects add-iam-policy-binding $PROJECT_ID \
 #         --member="serviceAccount:$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com" \
@@ -176,3 +180,9 @@ if __name__ == "__main__":
 # https://cloud.google.com/docs/authentication/getting-started#auth-cloud-implicit-python
 # gcloud iam service-accounts keys create $FILE_NAME.json --iam-account=$SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com
 
+# export PROJECT_ID="scorpio-216915"
+# export SERVICE_ACCOUNT_ID="vertex-runner-sp"
+# export USER_EMAIL="aronchick@busted.dev"
+# export BUCKET_NAME="same_test_bucket"
+# export FILE_NAME="vertex_sp_credentials"
+# export GOOGLE_APPLICATION_CREDENTIALS="$HOME/vertex_sp_credentials.json"
