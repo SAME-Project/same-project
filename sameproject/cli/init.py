@@ -1,4 +1,5 @@
-from sameproject.ops.files import find_same_config, find_notebook
+from sameproject.ops.files import find_same_config, find_notebook, find_requirements
+from sameproject.ops.notebooks import read_notebook, get_name
 from sameproject.data.config import SameValidator
 from pathlib import Path
 from box import Box
@@ -20,29 +21,39 @@ def init():
     else:
         cfg = Path("./same.yaml")
 
-    # Ask user for notebook info:
-    nb_name = click.prompt("Notebook name", type=str)
+    # Notebook data:
     nb_path = click.prompt("Notebook path", default=find_notebook(recurse=True), type=Path)
     if not nb_path.exists():
         click.echo(f"No such file found: {nb_path}", err=True)
         exit(1)
 
-    # Ask user for metadata:
-    pipe_name = click.prompt("Pipeline name", type=str)
-    pipe_labels = _process_labels(click.prompt("Pipeline labels", type=str))
+    nb_name = get_name(read_notebook(nb_path))
+    if nb_name == "":
+        nb_name = "notebook"
+    nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
-    # Ask user for runtime info:
-    run_name = click.prompt("Default run name", type=str)
-
-    # Ask user for environment info:
+    # Docker image data:
     image = click.prompt("Default docker image", default="library/python:3.9-slim-buster", type=str)
+
+    # Requirements.txt data:
+    req = find_requirements(recurse=False)
+    if req is None:
+        if click.confirm("No requirements.txt found in current directory - would you like to create one?", default=True):
+            req = Path("requirements.txt")
+            with req.open("w") as file:
+                file.write(f"# Dependencies for {nb_path}:\n")
+            click.echo(f"Wrote to {req.resolve()}.")
+    else:
+        req = click.prompt("Requirements.txt", default=req, type=Path)
+        if req == "":
+            req = None  # TODO: handle optional with click
 
     # Construct, validate and save the SAME config file!
     same_config = Box({
         "apiVersion": _get_api_version(),
         "metadata": {
-            "name": pipe_name,
-            "labels": pipe_labels,
+            "name": f"{nb_name} pipeline",
+            "labels": [],
             "version": "0.0.0",
         },
         "environments": {
@@ -55,9 +66,13 @@ def init():
             "path": str(nb_path),
         },
         "run": {
-            "name": run_name,
+            "name": f"{nb_name} run",
         },
     })
+
+    # Add requirements if the user has configured one:
+    if req is not None:
+        same_config.notebook.requirements = str(req)
 
     validator = SameValidator.get_validator()
     if not validator.validate(same_config):
@@ -70,10 +85,6 @@ def init():
     click.echo()
     if click.confirm("Is this okay?", default=True):
         cfg.write_text(same_config.to_yaml())
-
-
-def _process_labels(labelstr):
-    return list(map(lambda x: x.strip(), labelstr.split(",")))
 
 
 def _get_api_version():
