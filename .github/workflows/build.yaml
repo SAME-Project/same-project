@@ -68,6 +68,7 @@ jobs:
           set -o pipefail
           mkdir -p artifacts/tests 
           poetry run pytest \
+            --kubeflow \
             --junitxml=artifacts/tests/results.xml \
             --cov=./backends \
             --cov=./cli \
