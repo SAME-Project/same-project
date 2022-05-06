@@ -10,6 +10,7 @@ import os
 
 from sameproject.data.step import Step
 from sameproject.ops import helpers
+import sameproject.ops.explode
 
 
 kubeflow_run_info_template = "run_info.jinja"
@@ -27,7 +28,7 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
         step_file_string = _build_step_file(env, steps[step_name])
-        helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_step_name }.py", step_file_string)
+        helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_name }.py", step_file_string)
 
     root_file_string = _build_root_file(env, steps, same_config)
 
@@ -96,7 +97,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         if root_contract["list_of_environments"][name]["private_registry"]:
 
-            if "credentials" in same_config.environments[name]:
+            if "runtime_options" in same_config:
                 # Someone COULD set this to be a 'private_registry' but did not set credentials. This may be ok!
                 # They could have already mounted the secret in the cluster, so we should let it go ahead.
                 # However, because jinja doesn't like it when we parse through a struct without anything being set (even empty)
@@ -106,11 +107,11 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
                 # It COULD autopopulate the entire dict, but not sure because if it's empty, then do all the fields
                 # get created?
                 these_credentials = {}
-                these_credentials["image_pull_secret_name"] = same_config.environments[name].credentials.get("image_pull_secret_name", "")
-                these_credentials["image_pull_secret_registry_uri"] = same_config.environments[name].credentials.get("image_pull_secret_registry_uri", "")
-                these_credentials["image_pull_secret_username"] = same_config.environments[name].credentials.get("image_pull_secret_username", "")
-                these_credentials["image_pull_secret_password"] = same_config.environments[name].credentials.get("image_pull_secret_password", "")
-                these_credentials["image_pull_secret_email"] = same_config.environments[name].credentials.get("image_pull_secret_email", "")
+                these_credentials["image_pull_secret_name"] = same_config.runtime_options.get("image_pull_secret_name", "")
+                these_credentials["image_pull_secret_registry_uri"] = same_config.runtime_options.get("image_pull_secret_registry_uri", "")
+                these_credentials["image_pull_secret_username"] = same_config.runtime_options.get("image_pull_secret_username", "")
+                these_credentials["image_pull_secret_password"] = same_config.runtime_options.get("image_pull_secret_password", "")
+                these_credentials["image_pull_secret_email"] = same_config.runtime_options.get("image_pull_secret_email", "")
                 root_contract["secrets_to_create_as_dict"][name] = these_credentials
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.
@@ -140,7 +141,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         step_to_append = {}
         step_to_append["name"] = step_content.name
-        step_to_append["unique_step_name"] = step_content.unique_step_name
+        step_to_append["unique_name"] = step_content.unique_name
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
@@ -159,7 +160,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
             step_to_append["previous_step_name"] = previous_step_name
         root_contract["list_of_steps"].append(step_to_append)
 
-        previous_step_name = step_content.unique_step_name
+        previous_step_name = step_content.unique_name
 
     # Text manipulation in jinja is pretty weak, we'll do both of these cleanings in python.
 
@@ -178,10 +179,20 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
 
 def _build_step_file(env: Environment, step: Step) -> str:
+    with open(sameproject.ops.explode.__file__, "r") as f:
+        explode_code = f.read()
+
+    requirements_file = None
+    if "requirements_file" in step:
+        requirements_file = urlsafe_b64encode(bytes(step.requirements_file, "utf-8")).decode()
+
     step_contract = {
         "name": step.name,
-        "unique_step_name": step.unique_step_name,
-        "inner_code": urlsafe_b64encode(dill.dumps(step.code)).decode()
+        "unique_name": step.unique_name,
+        "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
+        "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
+        "requirements_file": requirements_file,
+        "memory_limit": 50 * 2**20,  # 50MB
     }
 
     return env.get_template(kubeflow_step_template).render(step_contract)

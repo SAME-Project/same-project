@@ -1,3 +1,4 @@
+from sameproject.data.config import SameConfig
 from sameproject.data.step import Step
 from pathlib import Path
 from typing import Tuple

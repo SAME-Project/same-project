@@ -1,4 +1,6 @@
+from sameproject.ops.explode import ExplodingVariable
 from sameproject.ops import notebooks as nbproc
+from sameproject.data.config import SameConfig
 from sameproject.ops.backends import deploy
 from base64 import urlsafe_b64decode
 from pathlib import Path
@@ -9,6 +11,7 @@ import dill
 import json
 import time
 import kfp
+import sys
 import io
 
 
@@ -62,6 +65,39 @@ def test_kubeflow_multistep():
     assert get_artifact_attr(artifacts, 2, "y") == "1"
 
 
+@pytest.mark.kubeflow
+def test_kubeflow_exploding_variables():
+    """
+    Tests that unserialisable variables are replaced with exploding ones.
+    """
+    compiled_path, root_file = compile_testdata("exploding_variables")
+    deployment = deploy("kubeflow", compiled_path, root_file)
+    assert fetch_status(deployment) == "Succeeded"
+
+    # Fetch variables.
+    artifacts = fetch_output_contexts(deployment)
+
+    # Check that the generator 'x' was replaced with an exploding variable:
+    x = get_artifact_attr(artifacts, 0, "x")
+    with pytest.raises(Exception):
+        next(x)  # boom - see ops/explode.py
+
+    # Check that the large 'y' was replaced with an exploding variable:
+    x = get_artifact_attr(artifacts, 0, "y")
+    with pytest.raises(Exception):
+        next(x)  # boom - see ops/explode.py
+
+
+@pytest.mark.kubeflow
+def test_kubeflow_requirements_file():
+    """
+    Tests that requirements.txt dependencies are installed before execution.
+    """
+    compiled_path, root_file = compile_testdata("requirements_file")
+    deployment = deploy("kubeflow", compiled_path, root_file)
+    assert fetch_status(deployment) == "Succeeded"
+
+
 def extract_artifact_data(data):
     path = tempfile.mktemp()
     with Path(path).open("wb") as writer:
@@ -72,9 +108,11 @@ def extract_artifact_data(data):
 
 
 def get_artifact_attr(artifacts, step_num, attr):
+    # Monkey-patch of the main module to support loading exploding vars:
+    sys.modules["__main__"].__dict__["ExplodingVariable"] = ExplodingVariable
+
     # Dill seems to load modules into the global module cache, so if we load
     # every artifact module up front they clobber each other.
-    # TODO: no longer true, do this when loading artifacts
     artifact_data = get_artifact_for_step(artifacts, step_num)
     module = dill.loads(artifact_data)
     return getattr(module, attr)
@@ -89,7 +127,11 @@ def get_artifact_for_step(artifacts, step_num):
 
 def compile_testdata(name):
     path = Path(__file__).parent / f"./testdata/kubeflow/{name}.yaml"
-    return nbproc.compile(path.open("rb"), "kubeflow")
+    with open(path, "r") as file:
+        config = SameConfig.from_yaml(file.read())
+        config = config.resolve(path.parent)
+
+    return nbproc.compile(config, "kubeflow")
 
 
 def fetch_status(deployment, timeout=300):

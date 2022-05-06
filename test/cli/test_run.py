@@ -17,8 +17,8 @@ same_config_file_path = "test/testdata/generic_notebook/same.yaml"
 
 @pytest.fixture
 def same_config():
-    with open(same_config_file_path, "rb") as f:
-        return SameConfig(buffered_reader=f)
+    with open(same_config_file_path, "r") as f:
+        return SameConfig.from_yaml(f.read())
 
 
 @pytest.fixture(autouse=True)

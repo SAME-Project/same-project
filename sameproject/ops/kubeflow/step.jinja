@@ -2,7 +2,7 @@
 from kfp.v2.dsl import component, Artifact, Input, InputPath, Output, OutputPath, Dataset, Model
 from typing import NamedTuple
 
-def {{ unique_step_name }}_fn(
+def {{ unique_name }}_fn(
     input_context_path: InputPath(str),
     output_context_path: OutputPath(str),
     run_info: str = "gAR9lC4=",
@@ -52,26 +52,49 @@ def {{ unique_step_name }}_fn(
 
     # User code for step, which we run in its own execution frame.
     user_code = f"""
+from base64 import urlsafe_b64decode
+from pympler import asizeof
+from tempfile import mktemp
 import dill
+import os
+
+{% if requirements_file %}
+# Install dependencies from requirements file.
+_req_file = mktemp()
+with open(_req_file, "w") as _file:
+    _file.write(urlsafe_b64decode("{{ requirements_file }}").decode())
+os.system("pip install -r " + _req_file)
+{% endif %}
+
+# Load the exploding variables module:
+{urlsafe_b64decode("{{ explode_code }}").decode()}
 
 # Load session context into global namespace:
 if { len(input_context) } > 0:
     dill.load_session("{ input_context_path }")
 
-{dill.loads(urlsafe_b64decode("{{ inner_code }}"))}
+# Run the user's notebook code:
+{urlsafe_b64decode("{{ user_code }}").decode()}
 
-# Remove anything from the global namespace that cannot be serialised.
-# TODO: this will include things like pandas dataframes, needs sdk support?
-_bad_keys = []
+# Various types of serialisation failures we'd like to inform the user of:
+def _cannot_pickle_msg(k):
+    return "Variable '" + k +"' was defined in previous steps, but could not be serialised as it was not supported by 'dill'."
+
+def _too_large_msg(k, mem):
+    return "Variable '" + k + "' was defined in previous steps, but could not be serialised as it used too much memory (" + str(mem) + "B)."
+
+# Replace unserialisable variables with exploding variables so that the user
+# knows why they cannot use them in future steps:
 _all_keys = list(globals().keys())
-for k in _all_keys:
-    try:
-        dill.dumps(globals()[k])
-    except TypeError:
-        _bad_keys.append(k)
+for _k in _all_keys:
+    if not dill.pickles(globals()[_k], safe=True):
+        globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
+        continue
 
-for k in _bad_keys:
-    del globals()[k]
+    _mem = asizeof.asizeof(globals()[_k])
+    if _mem >= {{ memory_limit }}:
+        globals()[_k] = ExplodingVariable(Exception(_too_large_msg(_k, _mem)))
+        continue
 
 # Save new session context to disk for the next component:
 dill.dump_session("{output_context_path}")

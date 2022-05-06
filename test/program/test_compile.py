@@ -1,5 +1,10 @@
-import pytest
 from sameproject.ops import notebooks as nbproc
+from sameproject.data.config import SameConfig
+from pathlib import Path
+import pytest
+
+
+config_path = Path("test/testdata/generic_notebook/same.yaml")
 
 
 magic_line_testcases = [
@@ -8,8 +13,14 @@ magic_line_testcases = [
 ]
 
 
+@pytest.fixture
+def config():
+    with config_path.open("r") as file:
+        return SameConfig.from_yaml(file.read()).resolve(config_path.parent)
+
+
 @pytest.mark.parametrize("name, path, expect_err", magic_line_testcases)
-def test_magic_line_parsing(name, path, expect_err):
+def test_magic_line_parsing(name, path, expect_err, config):
     """
     Tests magic line parsing in notebooks, with edge-cases like
     multiline strings containing what appear to be multiline strings.
@@ -18,6 +29,6 @@ def test_magic_line_parsing(name, path, expect_err):
 
     if expect_err:
         with pytest.raises(SyntaxError):
-            assert nbproc.get_steps(notebook_dict)
+            assert nbproc.get_steps(notebook_dict, config)
     else:
-        assert nbproc.get_steps(notebook_dict)
+        assert nbproc.get_steps(notebook_dict, config)

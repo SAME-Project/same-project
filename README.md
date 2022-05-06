@@ -35,3 +35,4 @@ poetry publish --build
 ```
 
 The version number is defined in `pyproject.toml`.
+

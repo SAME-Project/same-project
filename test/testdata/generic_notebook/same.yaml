@@ -11,6 +11,7 @@ environments:
 notebook:
   name: "Sample Complicated Notebook"
   path: sample_notebook.ipynb
+  requirements: requirements.txt
 run:
   name: "Sample Complicated Notebook - Run"
   sha: 24a95219b3fce8402561d6b713bb435d6d5d51f2132d3c32703df8562db5b718

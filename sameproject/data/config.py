@@ -1,17 +1,15 @@
-from cerberus import Validator
-from box import Box
-from pathlib import Path
-from ruamel.yaml import YAML
+from sameproject.ops.runtime_options import list_options, get_option_value, runtime_schema
 from ruamel.yaml.parser import ParserError
-import logging
-import pprint
-
+from cerberus import Validator
 from io import BufferedReader
+from ruamel.yaml import YAML
+from pathlib import Path
+from box import Box
+import logging
 
+
+# Schema for validating SAME config files.
 schema = {
-    # TODO: remove this attribute and the related hacks below
-    "path": {"type": "string"},
-
     "apiVersion": {"type": "string", "required": True},
     "metadata": {
         "type": "dict",
@@ -33,6 +31,8 @@ schema = {
                 "environments": {
                     "type": "dict",
                     "must_have_default": True,
+                    "keysrules": {"type": "string"},  # TODO: env name regex
+                    "valuesrules": {"type": "string"},  # TODO: URI regex
                 },
             },
         },
@@ -63,27 +63,37 @@ schema = {
         "type": "dict",
         "schema": {
             "name": {"type": "string", "required": True},
-            "path": {"type": "string", "required": True}
+            "path": {"type": "string", "required": True},
+            "requirements": {"type": "string"}
         }
     },
     "run": {
         "type": "dict",
         "schema": {
             "name": {"type": "string", "required": True},
-            "sha": {"type": "string", "required": True},
+            "sha": {"type": "string"},
             "parameters": {
                 "type": "dict",
             },
         },
     },
+
+    # Injected by SAME automatically based on environment variables and
+    # command-line flags. This also lets users specify runtime options in
+    # their SAME config file if they like:
+    "runtime_options": runtime_schema(),
 }
 
 
 class SameValidator(Validator):
+    """Custom cerberus validation rules for SAME config files."""
+
     def _validate_must_have_default(self, constraint, field_name, values_needing_default):
-        """Test to ensure that a list of keys has at least one entry that matches 'default'
+        """
+        Constrains 'dict' types to have at least one field called 'default'.
+
         The rule's arguments are validated against this schema:
-        {'type': 'boolean'}
+          { 'type': 'boolean' }
         """
         if constraint and (values_needing_default is None or values_needing_default.get("default", None) is None):
             self._error(field_name, f"{field_name} does not contain a 'default' entry.")
@@ -94,56 +104,41 @@ class SameValidator(Validator):
 
 
 class SameConfig(Box):
-    """Class for SAME Config Object. Currently, just subclasses Box, but building in now as I expect we'll need custom processing here."""
+    """Container for SAME config file data."""
 
-    def __init__(self, buffered_reader: BufferedReader = None, content: str = ""):
-        # NB: The default path value has to be set on self, not as a class
-        # variable, otherwise the __setattr__ hack below doesn't work.
-        self.path = ""
-        if buffered_reader is not None and content != "":
-            raise ValueError("SameConfig accepts either a buffered reader or content value, but not both.")
-        elif buffered_reader is not None:
-            self.path = buffered_reader.name
-            same_config_content = "".join(map(bytes.decode, buffered_reader.readlines()))
-        elif content == "":
-            raise ValueError("Content is empty.")
-        else:
-            same_config_content = content
+    def __init__(self, *args, frozen_box=True, **kwargs):
+        data = Box(*args, **kwargs)
+        validator = SameValidator.get_validator()
+        if not validator.validate(data):
+            raise SyntaxError(f"SAME config file is invalid: {validator.errors}")
 
-        yaml = YAML(typ="safe")
-        try:
-            same_config_dict = yaml.load(same_config_content)
-        except ParserError as e:
-            logging.fatal(f"Content does not appear to be well-formed yaml. Error: {str(e)}")
+        # Uses Box as the child box_class so we don't recursively validate:
+        super().__init__(*args, frozen_box=frozen_box, box_class=Box, **kwargs)
 
-        if same_config_dict is None:
-            raise ValueError(f"SAME file at '{self.path}' is empty.")
+    def resolve(self, base_path):
+        """
+        Returns a new SAME config file with the notebook and requirements paths
+        resolved against the given base path.
+        """
+        data = Box(self)
+        base_path = Path(base_path)
+        data.notebook.path = str(base_path / data.notebook.path)
+        if "requirements" in data.notebook:
+            data.notebook.requirements = str(base_path / data.notebook.requirements)
 
-        v = SameValidator.get_validator()
-        if not v.validate(same_config_dict):
-            raise SyntaxError(f"SAME file at '{self.path}' is invalid: {v.errors}; {pprint.pformat(same_config_dict)}")
+        return SameConfig(data, frozen_box=self._box_config["frozen_box"])
 
-        temp_box = Box(same_config_dict)
-        self.update(temp_box)
+    def inject_runtime_options(self):
+        """
+        Returns a new SAME config file with all present runtime options merged
+        into the 'runtime_options' field.
+        """
+        data = Box(self)
+        if "runtime_options" not in data:
+            data.runtime_options = {}
 
-    def __setattr__(self, name, value):
-        if name == "path":
-            if not Path(value).exists():
-                raise FileNotFoundError(value)
+        for opt in list_options():
+            if get_option_value(opt) is not None:
+                data.runtime_options[opt] = get_option_value(opt)
 
-        super(SameConfig, self).__setattr__(name, value)
-
-    def write(self, path=""):
-        same_config_yaml = self.to_yaml()
-        v = SameValidator.get_validator()
-        if not v.validate(same_config_yaml):
-            raise SyntaxError("SAME Config object is invalid. \n %s" % "\n".join(v.errors))
-
-        if path == "":
-            if self.path == "":
-                raise ValueError("Need to specify location to write same file.")
-        else:
-            logging.info(f"Overwriting location of SAME config file ({self.path} -> {path})")
-            self.path = path
-
-        Path(self.path).write_text(same_config_yaml)
+        return SameConfig(data, frozen_box=self._box_config["frozen_box"])
