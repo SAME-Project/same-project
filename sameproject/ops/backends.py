@@ -10,16 +10,16 @@ import tempfile
 import click
 
 
-def render(target: str, steps: list, same_config: dict, compile_path: str = None) -> Tuple[Path, str]:
+def render(same_run_config: dict, execution_target: str, steps: list, compile_path: str = None) -> Tuple[Path, str]:
     target_renderers = {"kubeflow": kubeflow.render, "aml": aml.render, "vertex": vertex.render}
-    render_function = target_renderers.get(target, None)
+    render_function = target_renderers.get(execution_target, None)
     if render_function is None:
-        raise ValueError(f"Unknown backend: {target}")
+        raise ValueError(f"Unknown backend: {execution_target}")
 
     if compile_path is None:
         compile_path = str(tempfile.mkdtemp())
 
-    compile_path, root_module_name = render_function(compile_path, steps, same_config)
+    compile_path, root_module_name = render_function(compile_path, steps, same_run_config)
     return (compile_path, root_module_name)
 
 

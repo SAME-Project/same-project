@@ -58,7 +58,7 @@ def test_same_program_compile_e2e():
 
     same_file_path_as_string = str(same_file_path.absolute())
     runner = CliRunner()
-    result = runner.invoke(run, ["-f", same_file_path_as_string, "-t", "kubeflow", "-t", "kubeflow", "--persist-temp-files", "--no-deploy"])
+    result = runner.invoke(run, ["-f", same_file_path_as_string, "-t", "kubeflow", "--persist-temp-files", "--no-deploy"])
     assert result.exit_code == 0
 
 

@@ -53,12 +53,12 @@ def run(
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
     # TODO: Make SAME config object immutable (frozen_box=True).
-    config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
-    config = config.resolve(Path(same_file.name).parent)
-    config = config.inject_runtime_options()
+    same_run_config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
+    same_run_config = same_run_config.resolve(Path(same_file.name).parent)
+    same_run_config = same_run_config.inject_runtime_options()
 
     click.echo(f"File is: {same_file.name}")
-    artifact_path, root_module = notebooks.compile(config, target)
+    artifact_path, root_module = notebooks.compile(same_run_config=same_run_config, execution_target=target)
     if persist_temp_files:
         click.echo(f"Compile artifacts persisted at: {artifact_path}")
     if not no_deploy:

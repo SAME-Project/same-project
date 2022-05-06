@@ -10,15 +10,11 @@ import logging
 import click
 
 
-def compile(config: SameConfig, target: str) -> Tuple[Path, str]:
-    notebook = read_notebook(config.notebook.path)
-    all_steps = get_steps(notebook, config)
+def compile(same_run_config: SameConfig, execution_target: str) -> Tuple[Path, str]:
+    notebook = read_notebook(same_run_config.notebook.path)
+    all_steps = get_steps(notebook, same_run_config)
 
-    return backends.render(
-        target=target,
-        steps=all_steps,
-        config=config
-    )
+    return backends.render(execution_target=execution_target, steps=all_steps, same_run_config=same_run_config)
 
 
 def read_notebook(notebook_path) -> dict:
@@ -134,8 +130,6 @@ def get_code(notebook: dict) -> List[str]:
     """Combines and returns all python code in the given notebook."""
     code = ""
     for cell in notebook["cells"]:
-        code += "\n".join(
-            jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source
-        )
+        code += "\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source)
 
     return code
