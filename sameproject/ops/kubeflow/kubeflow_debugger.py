@@ -94,16 +94,13 @@ if __name__ == "__main__":
     main(auto_envvar_prefix="SAME")
 
 # Steps:
-#  KFP_ENV=platform-agnostic
-# kubectl apply -k cluster-scoped-resources/
-# kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
-# kubectl apply -k "env/${KFP_ENV}/"
-# kubectl wait pods -l application-crd-id=kubeflow-pipelines -n kubeflow --for condition=Ready --timeout=1800s
+# Tested on GCP
+# export PIPELINE_VERSION=1.8.1
+# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
+# kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
+# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$PIPELINE_VERSION"
 
-
-
-# KFP_ENV=platform-agnostic
-# kubectl apply -k cluster-scoped-resources/
-# kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
-# kubectl apply -k "env/${KFP_ENV}/"
-# kubectl wait pods -l application-crd-id=kubeflow-pipelines -n kubeflow --for condition=Ready --timeout=1800s
+# export PIPELINE_VERSION=1.8.1
+# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
+# kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
+# kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$PIPELINE_VERSION"
