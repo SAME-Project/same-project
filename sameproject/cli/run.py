@@ -26,7 +26,7 @@ import click
     "-t",
     "--target",
     default="kubeflow",
-    type=click.Choice(["kubeflow", "aml", "vertex"]),
+    type=click.Choice(["kubeflow", "aml", "vertex", "kubeflowv1"]),
 )
 @click.option(
     "--persist-temp-files",

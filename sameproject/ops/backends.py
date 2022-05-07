@@ -3,6 +3,7 @@ from sameproject.data.step import Step
 from pathlib import Path
 from typing import Tuple
 import sameproject.ops.kubeflow as kubeflow
+import sameproject.ops.kubeflowv1 as kubeflowv1
 import sameproject.ops.aml as aml
 import sameproject.ops.vertex as vertex
 import sameproject.ops.helpers
@@ -11,7 +12,7 @@ import click
 
 
 def render(same_run_config: dict, execution_target: str, steps: list, compile_path: str = None) -> Tuple[Path, str]:
-    target_renderers = {"kubeflow": kubeflow.render, "aml": aml.render, "vertex": vertex.render}
+    target_renderers = {"kubeflow": kubeflow.render, "aml": aml.render, "vertex": vertex.render, "kubeflowv1": kubeflowv1.render}
     render_function = target_renderers.get(execution_target, None)
     if render_function is None:
         raise ValueError(f"Unknown backend: {execution_target}")
@@ -24,7 +25,7 @@ def render(same_run_config: dict, execution_target: str, steps: list, compile_pa
 
 
 def deploy(target: str, root_file_absolute_path: str, root_module_name: str, persist_temp_files: bool = False):
-    target_deployers = {"kubeflow": kubeflow.deploy, "aml": aml.deploy, "vertex": vertex.deploy}
+    target_deployers = {"kubeflow": kubeflow.deploy, "aml": aml.deploy, "vertex": vertex.deploy, "kubeflowv1": kubeflowv1.deploy}
     deploy_function = target_deployers.get(target, None)
     if deploy_function is None:
         raise ValueError(f"Unknown backend: {target}")
