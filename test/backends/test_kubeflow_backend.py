@@ -2,7 +2,7 @@ from sameproject.ops.explode import ExplodingVariable
 from sameproject.ops import notebooks as nbproc
 from sameproject.data.config import SameConfig
 from sameproject.ops.backends import deploy
-from base64 import urlsafe_b64decode
+from base64 import urlsafe_b64decode, urlsafe_b64encode
 from pathlib import Path
 import tempfile
 import tarfile
@@ -96,6 +96,22 @@ def test_kubeflow_requirements_file():
     compiled_path, root_file = compile_testdata("requirements_file")
     deployment = deploy("kubeflow", compiled_path, root_file)
     assert fetch_status(deployment) == "Succeeded"
+
+
+@pytest.mark.kubeflow
+def test_kubeflow_serialised_modules():
+    """
+    Tests that modules imported in one step are accessible in another step.
+    """
+    compiled_path, root_file = compile_testdata("serialised_modules")
+    deployment = deploy("kubeflow", compiled_path, root_file)
+    assert fetch_status(deployment) == "Succeeded"
+
+    expected_value = urlsafe_b64encode("test".encode())
+    artifacts = fetch_output_contexts(deployment)
+    assert get_artifact_attr(artifacts, 1, "x") == expected_value
+    assert get_artifact_attr(artifacts, 1, "y") == expected_value
+    assert get_artifact_attr(artifacts, 1, "z") == expected_value
 
 
 def extract_artifact_data(data):
