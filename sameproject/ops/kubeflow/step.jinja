@@ -87,14 +87,17 @@ def _too_large_msg(k, mem):
 # knows why they cannot use them in future steps:
 _all_keys = list(globals().keys())
 for _k in _all_keys:
-    if not dill.pickles(globals()[_k], safe=True):
-        globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
-        continue
-
     _mem = asizeof.asizeof(globals()[_k])
     if _mem >= {{ memory_limit }}:
         globals()[_k] = ExplodingVariable(Exception(_too_large_msg(_k, _mem)))
         continue
+
+    if not dill.pickles(globals()[_k], safe=True):
+        try:
+            dill.dumps(globals()[_k])
+        except TypeError:
+            globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
+            continue
 
 # Save new session context to disk for the next component:
 dill.dump_session("{output_context_path}")
