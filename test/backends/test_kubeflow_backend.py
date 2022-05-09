@@ -146,6 +146,7 @@ def compile_testdata(name):
     with open(path, "r") as file:
         config = SameConfig.from_yaml(file.read())
         config = config.resolve(path.parent)
+        config = config.inject_runtime_options()
 
     return nbproc.compile(config, "kubeflow")
 
