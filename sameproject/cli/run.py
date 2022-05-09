@@ -44,6 +44,14 @@ import click
     type=bool,
     help="Do not deploy compiled pipelines.",
 )
+@click.option(
+    "--random-change",
+    "random_change",
+    default=False,
+    is_flag=True,
+    type=bool,
+    help="Random python change to get tests to run.",
+)
 @runtime_options
 def run(
     target: str,
