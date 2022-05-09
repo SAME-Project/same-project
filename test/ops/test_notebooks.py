@@ -1,4 +1,5 @@
-from sameproject.ops.notebooks import read_notebook, get_steps
+from sameproject.ops.notebooks import read_notebook, get_steps, get_code
+from sameproject.ops.code import get_imported_modules
 from sameproject.data.config import SameConfig
 from pathlib import Path
 import pytest
@@ -35,3 +36,11 @@ def test_notebooks_inject_requirements(config, notebook, requirements):
     for name in steps:
         assert "requirements_file" in steps[name]
         assert steps[name].requirements_file == requirements
+
+
+def test_notebooks_get_code(notebook):
+    code = get_code(notebook)
+
+    # Code should not break when parsed:
+    modules = get_imported_modules(code)
+    assert len(modules) > 0

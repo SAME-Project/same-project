@@ -128,8 +128,10 @@ def get_sorted_list_of_steps(notebook: dict, config: SameConfig) -> list:
 
 def get_code(notebook: dict) -> List[str]:
     """Combines and returns all python code in the given notebook."""
-    code = ""
+    code = []
     for cell in notebook["cells"]:
-        code += "\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source)
+        code.append("\n".join(
+            jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source
+        ))
 
-    return code
+    return "\n".join(code)
