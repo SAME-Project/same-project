@@ -27,7 +27,7 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
 
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
-        step_file_string = _build_step_file(env, steps[step_name])
+        step_file_string = _build_step_file(env, steps[step_name], same_config)
         helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_name }.py", step_file_string)
 
     root_file_string = _build_root_file(env, steps, same_config)
@@ -178,7 +178,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     return template.render(root_contract)
 
 
-def _build_step_file(env: Environment, step: Step) -> str:
+def _build_step_file(env: Environment, step: Step, same_config) -> str:
     with open(sameproject.ops.explode.__file__, "r") as f:
         explode_code = f.read()
 
@@ -186,13 +186,18 @@ def _build_step_file(env: Environment, step: Step) -> str:
     if "requirements_file" in step:
         requirements_file = urlsafe_b64encode(bytes(step.requirements_file, "utf-8")).decode()
 
+    memory_limit = same_config.runtime_options.get(
+        "serialisation_memory_limit",
+        250 * 1024 * 1024,  # 250MB
+    )
+
     step_contract = {
         "name": step.name,
         "unique_name": step.unique_name,
         "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
         "requirements_file": requirements_file,
-        "memory_limit": 250 * 2**20,  # 250MB
+        "memory_limit": memory_limit,
     }
 
     return env.get_template(kubeflow_step_template).render(step_contract)
