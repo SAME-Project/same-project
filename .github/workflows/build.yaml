@@ -23,11 +23,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.10"
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
-      - name: Install Packages
+      - name: Install packages
         run: |
           poetry install --no-root
       - name: Lint Python Files
@@ -48,22 +48,25 @@ jobs:
         shell: bash
         env:
           AZURE_SECRET_BLOB: ${{secrets.AZURE_SECRET_BLOB}}
-      - name: Set up Python
+      - name: Set up python
         uses: actions/setup-python@v2
         with:
           python-version: "3.10"
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
-      - name: Install Packages
+      - name: Install packages
         run: |
           poetry install --no-root
-      - name: Set up Kubeconfig from Github Secret
+      - name: Authenticate to gcloud kubeflow cluster
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBEFLOW_TEST_CLUSTER_KUBECONFIG }}" > $HOME/.kube/config
-      - name: Run Tests
+          echo "${{ secrets.KUBEFLOW_V181_GCP_CONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBEFLOW_V181_GCP_KEY }}" > $HOME/.kube/key
+          echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/.kube/key" >> $GITHUB_ENV
+      - name: Run tests
         run: |
           set -o pipefail
           mkdir -p artifacts/tests 
@@ -80,17 +83,17 @@ jobs:
             --cov-report=xml:artifacts/tests/coverage.xml \
             --cov-report=html:artifacts/tests/coverage.html \
             | tee artifacts/tests/output.txt
-      - name: Upload Test Results
+      - name: Upload test results
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: test-results
           path: artifacts/tests
-      - name: Report Test Results
+      - name: Report test results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
           files: ./artifacts/tests/results.xml
-      - name: Report Coverage
+      - name: Report coverage
         uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: ./artifacts/tests/output.txt
