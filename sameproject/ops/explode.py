@@ -4,6 +4,10 @@ import dill
 class BaseExplodingVariable:
     """Base class for ExplodingVariable."""
 
+    def __is_exploding_variable__(self):
+        """Allows detecting exploding variables without triggering them."""
+        return True
+
     def __setattr__(self, *args):
         raise self.err
 

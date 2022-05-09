@@ -24,7 +24,12 @@ def runtime_schema():
     }
 
     for opt in list_options():
-        schema["schema"][opt] = {"type": "string"}  # TODO: other types?
+        schema["schema"][opt] = {
+            "type": _get_cerberus_type(
+                _registry[opt].name,
+                _registry[opt].type
+            )
+        }
 
     return schema
 
@@ -49,6 +54,7 @@ def get_option_decorator(name):
 
     return click.option(
         _registry[name].flag,
+        type=_registry[name].type,
         help=_registry[name].desc,
         envvar=_registry[name].env,
         callback=_registry[name].callback,
@@ -64,7 +70,7 @@ def _compose_decorators(fn, decorators):
     return fn
 
 
-def _register_option(name: str, desc: str, flag=None, env=None):
+def _register_option(name: str, desc: str, type=str, flag=None, env=None):
     """
     Registers an option with the given internal name, command-line flag and
     environment variable.
@@ -80,10 +86,28 @@ def _register_option(name: str, desc: str, flag=None, env=None):
         "desc": desc,
         "flag": flag,
         "env": env,
+        "type": type,
         "value": None,
         "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
     })
 
+
+def _get_cerberus_type(name, type):
+    if type == str:
+        return "string"
+
+    if type == int:
+        return "integer"
+
+    raise TypeError(f"Runtime option '{name}' has unsupported type '{type}'.")
+
+
+# General SAME configuration:
+_register_option(
+    "serialisation_memory_limit",
+    "Maximum size in bytes allowed for variables being serialised between steps.",
+    type=int,
+)
 
 # Options for Kubeflow backend:
 _register_option(

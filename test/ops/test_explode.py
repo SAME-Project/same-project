@@ -12,6 +12,15 @@ def exploder():
     return ExplodingVariable(ExplodingException())
 
 
+def test_explode_can_detect(exploder):
+    assert exploder.__is_exploding_variable__()
+
+    # Should still be possible after serialisation.
+    pickled_exploder = dill.dumps(exploder)
+    exploder = dill.loads(pickled_exploder)
+    assert exploder.__is_exploding_variable__()
+
+
 def test_explode_can_pickle(exploder):
     pickled_exploder = dill.dumps(exploder)
     exploder = dill.loads(pickled_exploder)
