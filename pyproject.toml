@@ -30,6 +30,7 @@ johnnydep = "^1.8"
 cytoolz = "^0.11.2"
 Pympler = "^1.0.1"
 docker = "^5.0.3"
+pytest-xdist = "^2.5.0"
 
 [tool.poetry.extras]
 # AzureML seems to have binary components which don't work on Python >3.8 or
