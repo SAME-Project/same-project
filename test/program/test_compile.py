@@ -4,12 +4,12 @@ from pathlib import Path
 import pytest
 
 
-config_path = Path("test/testdata/generic_notebook/same.yaml")
+config_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
 
 
 magic_line_testcases = [
-    ("bad_python_lines", "test/testdata/notebook_edge_cases/bad_python_lines.ipynb", True),
-    ("multiline_strings", "test/testdata/notebook_edge_cases/multiline_strings.ipynb", False),
+    ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", True),
+    ("multiline_strings", "test/ops/testdata/edgecase_notebooks/multiline_strings.ipynb", False),
 ]
 
 

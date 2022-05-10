@@ -8,7 +8,7 @@ from pathlib import Path
 import logging
 import pytest
 
-same_config_file_path = Path("test/testdata/generic_notebook/same.yaml")
+same_config_file_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
 
 # Permutations of notebooks
 # | Code | Tag | Code | Tag | Code |
@@ -25,17 +25,17 @@ same_config_file_path = Path("test/testdata/generic_notebook/same.yaml")
 # | X    | X   | X    | X   | X    |
 # Test Name, Notebook Path, number of steps, number of total cells
 test_notebooks = [
-    ("Code", "test/testdata/sample_notebooks/code.ipynb", 1, 3),
-    ("Code Tag", "test/testdata/sample_notebooks/code_tag.ipynb", 2, 2),
-    ("Code Tag Code", "test/testdata/sample_notebooks/code_tag_code.ipynb", 2, 2),
-    ("Tag", "test/testdata/sample_notebooks/tag.ipynb", 2, 2),
-    ("Tag Code", "test/testdata/sample_notebooks/tag_code.ipynb", 1, 1),
-    ("Tag Code Tag", "test/testdata/sample_notebooks/tag_code_tag.ipynb", 2, 2),
-    ("Tag Code Tag Code", "test/testdata/sample_notebooks/tag_code_tag_code.ipynb", 2, 2),
-    ("Tag Tag", "test/testdata/sample_notebooks/tag_tag.ipynb", 2, 2),
-    ("Tag Tag Code", "test/testdata/sample_notebooks/tag_tag_code.ipynb", 2, 2),
-    ("Code Tag Code Tag Code", "test/testdata/sample_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
-    ("Code Code Tag Code Code Tag Code Code", "test/testdata/sample_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
+    ("Code", "test/ops/testdata/tagged_notebooks/code.ipynb", 1, 3),
+    ("Code Tag", "test/ops/testdata/tagged_notebooks/code_tag.ipynb", 2, 2),
+    ("Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code.ipynb", 2, 2),
+    ("Tag", "test/ops/testdata/tagged_notebooks/tag.ipynb", 2, 2),
+    ("Tag Code", "test/ops/testdata/tagged_notebooks/tag_code.ipynb", 1, 1),
+    ("Tag Code Tag", "test/ops/testdata/tagged_notebooks/tag_code_tag.ipynb", 2, 2),
+    ("Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/tag_code_tag_code.ipynb", 2, 2),
+    ("Tag Tag", "test/ops/testdata/tagged_notebooks/tag_tag.ipynb", 2, 2),
+    ("Tag Tag Code", "test/ops/testdata/tagged_notebooks/tag_tag_code.ipynb", 2, 2),
+    ("Code Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
+    ("Code Code Tag Code Code Tag Code Code", "test/ops/testdata/tagged_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
 ]
 
 # Test Name, String to detect
@@ -86,7 +86,7 @@ def test_parse_notebook(same_config, test_name, notebook_path, number_of_steps, 
 
 @pytest.mark.parametrize("test_name, error_string", magic_strings_to_detect, ids=[p[0] for p in magic_strings_to_detect])
 def test_detect_bad_python_strings(same_config, caplog, test_name, error_string):
-    notebook_path = "test/testdata/notebook_edge_cases/bad_python_lines.ipynb"
+    notebook_path = "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb"
     notebook_dict = notebooks.read_notebook(notebook_path)
     with pytest.raises(SyntaxError) as e:
         with caplog.at_level(logging.INFO):
@@ -96,7 +96,7 @@ def test_detect_bad_python_strings(same_config, caplog, test_name, error_string)
 
 
 def test_e2e_full_notebook(same_config):
-    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
+    notebook_path = "test/ops/testdata/same_notebooks/generic/sample_notebook.ipynb"
     number_of_steps = 3
     number_of_total_cells = 13
     test_name = "E2E 'sample_notebook'"
@@ -118,43 +118,3 @@ def test_e2e_full_notebook(same_config):
     # Check to make sure the 'IPython' package has been correctly mapped to 'ipython' (lower case)
     assert "ipython" in steps["same_step_000"].packages_to_install
     assert "IPython" not in steps["same_step_000"].packages_to_install
-
-
-# Yeeeesh - this is pretty fragile. But it does work - should probably clean up the string generation & checking better.
-@pytest.mark.skip("Too fragile - need to rewrite this once templates are refactored")
-def test_kubeflow_secrets(mocker, tmpdir, same_config):
-    mocker.patch.object(Path, "write_text")
-
-    # No Secrets
-    with open(same_config_file_path, "rb") as f:
-        notebooks.compile(f, "kubeflow")
-
-    # Root file is the 4rd call zero indexed (there should be a cleaner way to do this - super fragile)
-    root_file_content = Path.write_text.call_args_list[3][0][0]
-
-    # Skips over secret area properly
-    assert "# Generate secrets (if not already created)\n\n\n\t'''kfp.dsl.RUN_ID_PLACEHOOLDER" in root_file_content
-
-    # One Secret
-    secret_dict = {
-        "image_pull_secret_name": "IMAGE_PULL_SECRET_NAME",
-        "image_pull_secret_registry_uri": "IMAGE_PULL_SECRET_REGISTRY_URI",
-        "image_pull_secret_username": "IMAGE_PULL_SECRET_USERNAME",
-        "image_pull_secret_password": "IMAGE_PULL_SECRET_PASSWORD",
-        "image_pull_secret_email": "IMAGE_PULL_SECRET_EMAIL",
-    }
-
-    multienv_same_file = "test/testdata/multienv_notebook/same.yaml"
-    with open(multienv_same_file, "rb") as f:
-        notebooks.compile(f, "kubeflow", secret_dict)
-
-    # Root file is the 7th call zero indexed (there should be a cleaner way to do this - super fragile)
-    root_file_content = Path.write_text.call_args_list[6][0][0]
-
-    assert "IMAGE_PULL_SECRET_PASSWORD" in root_file_content
-
-    assert 'cred_payload["auths"]["IMAGE_PULL_SECRET_REGISTRY_URI"]' in root_file_content
-
-    # TODO: Unit test for secrets being created
-    # Two+ secrets
-    # Partially complete secrets

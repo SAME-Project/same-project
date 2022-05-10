@@ -9,9 +9,9 @@ def _relpath(path):
     return Path(__file__).parent / path
 
 
-config_path = _relpath("../testdata/generic_notebook/same.yaml")
-notebook_path = _relpath("../testdata/generic_notebook/sample_notebook.ipynb")
-requirements_path = _relpath("../testdata/generic_notebook/requirements.txt")
+config_path = _relpath("testdata/same_notebooks/generic/same.yaml")
+notebook_path = _relpath("testdata/same_notebooks/generic/sample_notebook.ipynb")
+requirements_path = _relpath("testdata/same_notebooks/generic/requirements.txt")
 
 
 @pytest.fixture
