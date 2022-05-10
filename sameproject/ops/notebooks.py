@@ -126,8 +126,11 @@ def get_sorted_list_of_steps(notebook: dict, config: SameConfig) -> list:
     return steps_sorted_by_index
 
 
-def get_code(notebook: dict) -> List[str]:
+def get_code(notebook: dict) -> str:
     """Combines and returns all python code in the given notebook."""
+    if "cells" not in notebook:
+        return ""
+
     code = []
     for cell in notebook["cells"]:
         code.append("\n".join(

@@ -87,7 +87,7 @@ def _verify(config: SameConfig, env: str, modules: List[str]) -> bool:
         )
 
         if res.exit_code != 0:
-            raise Exception(f"'pip install' returned non-zero exit code '{res.exit_code}' when installing requirements")
+            raise Exception(f"'pip install' returned non-zero exit code '{res.exit_code}' when installing requirements:\n{res.output.decode('utf-8')}")
 
     # Check the user's module imports to see which ones succeed:
     click.echo("\t* checking notebook imports to see whether they resolve...")
