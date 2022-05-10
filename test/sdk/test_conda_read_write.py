@@ -9,16 +9,16 @@ import pytest
 import os
 
 
-conda_env_file_path = "test/testdata/sample_conda_files/complicated_conda.yaml"
+conda_env_file_path = "test/ops/testdata/conda_configs/complicated_conda.yaml"
 
 # Test name, Conda File Path, Valid, Error Phrase
 sample_conda_file_paths = [
-    ("Good - Simple Conda File", "test/testdata/sample_conda_files/simple_conda.yaml", True, ""),
-    ("Good - Complicated Conda File", "test/testdata/sample_conda_files/complicated_conda.yaml", True, ""),
-    ("Bad - Unknown field", "test/testdata/sample_conda_files/bad_unknown_conda.yaml", False, "unknown field"),
+    ("Good - Simple Conda File", "test/ops/testdata/conda_configs/simple_conda.yaml", True, ""),
+    ("Good - Complicated Conda File", "test/ops/testdata/conda_configs/complicated_conda.yaml", True, ""),
+    ("Bad - Unknown field", "test/ops/testdata/conda_configs/bad_unknown_conda.yaml", False, "unknown field"),
     (
         "Bad - Empty File",
-        "test/testdata/sample_conda_files/bad_empty_conda.yaml",
+        "test/ops/testdata/conda_configs/bad_empty_conda.yaml",
         False,
         "...",
     ),
