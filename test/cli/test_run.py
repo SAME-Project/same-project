@@ -88,7 +88,7 @@ def test_live_test_aml(mocker, tmpdir, same_config):
 
 @pytest.mark.kubeflow
 def test_kubeflow_same_program_run_with_secrets_e2e():
-    multi_env_same_config_file_path = "test/testdata/multienv_notebook/same.yaml"
+    multi_env_same_config_file_path = "test/ops/testdata/same_notebooks/multienv/same.yaml"
     same_file_path = Path(multi_env_same_config_file_path)
     assert same_file_path.exists()
 
