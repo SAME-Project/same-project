@@ -5,13 +5,23 @@ from pathlib import Path
 import pytest
 
 
-def _relpath(path):
-    return Path(__file__).parent / path
+config_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
+notebook_path = Path("test/ops/testdata/same_notebooks/generic/sample_notebook.ipynb")
+requirements_path = Path("test/ops/testdata/same_notebooks/generic/requirements.txt")
 
-
-config_path = _relpath("testdata/same_notebooks/generic/same.yaml")
-notebook_path = _relpath("testdata/same_notebooks/generic/sample_notebook.ipynb")
-requirements_path = _relpath("testdata/same_notebooks/generic/requirements.txt")
+tagged_notebooks = [
+    ("Code", "test/ops/testdata/tagged_notebooks/code.ipynb", 1, 3),
+    ("Code Tag", "test/ops/testdata/tagged_notebooks/code_tag.ipynb", 2, 2),
+    ("Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code.ipynb", 2, 2),
+    ("Tag", "test/ops/testdata/tagged_notebooks/tag.ipynb", 2, 2),
+    ("Tag Code", "test/ops/testdata/tagged_notebooks/tag_code.ipynb", 1, 1),
+    ("Tag Code Tag", "test/ops/testdata/tagged_notebooks/tag_code_tag.ipynb", 2, 2),
+    ("Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/tag_code_tag_code.ipynb", 2, 2),
+    ("Tag Tag", "test/ops/testdata/tagged_notebooks/tag_tag.ipynb", 2, 2),
+    ("Tag Tag Code", "test/ops/testdata/tagged_notebooks/tag_tag_code.ipynb", 2, 2),
+    ("Code Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
+    ("Code Code Tag Code Code Tag Code Code", "test/ops/testdata/tagged_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
+]
 
 
 @pytest.fixture
@@ -44,3 +54,23 @@ def test_notebooks_get_code(notebook):
     # Code should not break when parsed:
     modules = get_imported_modules(code)
     assert len(modules) > 0
+
+
+@pytest.mark.parametrize(
+    "test_name, notebook_path, number_of_steps, number_of_cells",
+    tagged_notebooks,
+    ids=[p[0] for p in tagged_notebooks]
+)
+def test_notebooks_read_notebook(
+    config,
+    test_name,
+    notebook_path,
+    number_of_steps,
+    number_of_cells
+):
+    notebook_dict = read_notebook(notebook_path)
+    assert notebook_dict.get("cells", None) is not None
+    assert len(notebook_dict["cells"]) == number_of_cells
+
+    steps = get_steps(notebook_dict, config)
+    assert len(steps) == number_of_steps

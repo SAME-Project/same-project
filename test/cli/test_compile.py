@@ -10,33 +10,6 @@ import pytest
 
 same_config_file_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
 
-# Permutations of notebooks
-# | Code | Tag | Code | Tag | Code |
-# |------|-----|------|-----|------|
-# | X    | 0   | 0    | 0   | 0    |
-# | X    | X   | 0    | 0   | 0    |
-# | X    | X   | X    | 0   | 0    |
-# | 0    | X   | 0    | 0   | 0    |
-# | 0    | X   | X    | 0   | 0    |
-# | 0    | X   | X    | X   | 0    |
-# | 0    | X   | X    | X   | X    |
-# | 0    | X   | 0    | X   | 0    |
-# | 0    | X   | 0    | X   | X    |
-# | X    | X   | X    | X   | X    |
-# Test Name, Notebook Path, number of steps, number of total cells
-test_notebooks = [
-    ("Code", "test/ops/testdata/tagged_notebooks/code.ipynb", 1, 3),
-    ("Code Tag", "test/ops/testdata/tagged_notebooks/code_tag.ipynb", 2, 2),
-    ("Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code.ipynb", 2, 2),
-    ("Tag", "test/ops/testdata/tagged_notebooks/tag.ipynb", 2, 2),
-    ("Tag Code", "test/ops/testdata/tagged_notebooks/tag_code.ipynb", 1, 1),
-    ("Tag Code Tag", "test/ops/testdata/tagged_notebooks/tag_code_tag.ipynb", 2, 2),
-    ("Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/tag_code_tag_code.ipynb", 2, 2),
-    ("Tag Tag", "test/ops/testdata/tagged_notebooks/tag_tag.ipynb", 2, 2),
-    ("Tag Tag Code", "test/ops/testdata/tagged_notebooks/tag_tag_code.ipynb", 2, 2),
-    ("Code Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
-    ("Code Code Tag Code Code Tag Code Code", "test/ops/testdata/tagged_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
-]
 
 # Test Name, String to detect
 magic_strings_to_detect = [
@@ -70,18 +43,6 @@ def test_bad_notebook_path(caplog):
             assert bad_path_string in caplog.text
     assert e.type == SystemExit
     assert e.value.code == 1
-
-
-@pytest.mark.parametrize("test_name, notebook_path, number_of_steps, number_of_total_cells", test_notebooks, ids=[p[0] for p in test_notebooks])
-def test_parse_notebook(same_config, test_name, notebook_path, number_of_steps, number_of_total_cells):
-    notebook_dict = notebooks.read_notebook(notebook_path)
-    assert notebook_dict.get("cells", None) is not None
-    assert (
-        len(notebook_dict["cells"]) == number_of_total_cells
-    ), f"{test_name} did not get number of expected cells - expected: {number_of_total_cells}, actual: {len(notebook_dict['cells'])}"
-
-    steps = notebooks.get_steps(notebook_dict, same_config)
-    assert len(steps) == number_of_steps, f"{test_name} did not get number of expected steps - expected: {number_of_steps}, actual: {len(steps)}"
 
 
 @pytest.mark.parametrize("test_name, error_string", magic_strings_to_detect, ids=[p[0] for p in magic_strings_to_detect])
