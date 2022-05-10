@@ -48,6 +48,7 @@ def init():
             if click.confirm("Would you like SAME to fill in the requirements.txt for you?", default=True):
                 modules = get_imported_modules(get_code(nb_dict))
                 pkg_info = get_package_info(modules)
+
                 if len(pkg_info) > 0:
                     writing_reqs = True
                     click.echo("Found the following requirements for the notebook:")

@@ -1,5 +1,8 @@
+from pipreqs.pipreqs import get_all_imports
 from sameproject.mapping import mapping
 from sameproject.stdlib import stdlibs
+from tempfile import mkdtemp
+from pathlib import Path
 from typing import List
 import traceback
 import jupytext
@@ -27,23 +30,12 @@ def get_magic_lines(code: str) -> List[str]:
 
 
 def get_imported_modules(code: str) -> List[str]:
-    """Returns a list of all imported modules in the given code."""
-    raw_imports = set()
-    for node in ast.walk(ast.parse(code)):
-        if isinstance(node, ast.Import):
-            for subnode in node.names:
-                raw_imports.add(subnode.name)
-        elif isinstance(node, ast.ImportFrom):
-            raw_imports.add(node.module)
-    raw_imports = [expr for expr in raw_imports if expr]  # remove any None
+    """Returns a list of all non-standard imports in the given code."""
+    code_dir = Path(mkdtemp())
+    with (code_dir / "code.py").open("w") as writer:
+        writer.write(code)
 
-    # Parse the base module for each import, i.e. "pkg.thing" -> "pkg".
-    base_modules = set()
-    for expr in raw_imports:
-        base, _, _ = expr.partition(".")
-        base_modules.add(base)
-
-    return list(base_modules)
+    return get_all_imports(code_dir)
 
 
 def get_installable_packages(code: str) -> List[str]:
