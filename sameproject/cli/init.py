@@ -1,5 +1,7 @@
 from sameproject.ops.files import find_same_config, find_notebook, find_requirements
-from sameproject.ops.notebooks import read_notebook, get_name
+from sameproject.ops.requirements import get_package_info, render_package_info
+from sameproject.ops.notebooks import get_code, read_notebook, get_name
+from sameproject.ops.code import get_imported_modules
 from sameproject.data.config import SameValidator
 from pathlib import Path
 from box import Box
@@ -27,7 +29,8 @@ def init():
         click.echo(f"No such file found: {nb_path}", err=True)
         exit(1)
 
-    nb_name = get_name(read_notebook(nb_path))
+    nb_dict = read_notebook(nb_path)
+    nb_name = get_name(nb_dict)
     if nb_name == "":
         nb_name = "notebook"
     nb_name = click.prompt("Notebook name", default=nb_name, type=str)
@@ -39,10 +42,30 @@ def init():
     req = find_requirements(recurse=False)
     if req is None:
         if click.confirm("No requirements.txt found in current directory - would you like to create one?", default=True):
+            req_contents = f"# Dependencies for {nb_path.resolve()}:\n"
+
+            writing_reqs = False
+            if click.confirm("Would you like SAME to fill in the requirements.txt for you?", default=True):
+                modules = get_imported_modules(get_code(nb_dict))
+                pkg_info = get_package_info(modules)
+
+                if len(pkg_info) > 0:
+                    writing_reqs = True
+                    click.echo("Found the following requirements for the notebook:")
+                    for pkg in pkg_info:
+                        click.echo(f"\t{pkg_info[pkg].name}=={pkg_info[pkg].version}")
+                else:
+                    click.echo("No requirements found for the notebook.")
+                req_contents += render_package_info(pkg_info) + "\n"
+
             req = Path("requirements.txt")
             with req.open("w") as file:
-                file.write(f"# Dependencies for {nb_path}:\n")
-            click.echo(f"Wrote to {req.resolve()}.")
+                file.write(req_contents)
+
+            if writing_reqs:
+                click.echo(f"Wrote requirements to {req.resolve()}.")
+            else:
+                click.echo(f"Wrote empty requirements file to {req.resolve()}.")
     else:
         req = click.prompt("Requirements.txt", default=req, type=Path)
         if req == "":
@@ -82,9 +105,11 @@ def init():
     click.echo(f"About to write to {cfg.absolute()}:")
     click.echo()
     click.echo(same_config.to_yaml())
-    click.echo()
     if click.confirm("Is this okay?", default=True):
         cfg.write_text(same_config.to_yaml())
+        click.echo(f"Wrote config file to {cfg.absolute()}.")
+        click.echo()
+        click.echo("You can now run 'same verify' to check that everything is configured correctly.")
 
 
 def _get_api_version():
