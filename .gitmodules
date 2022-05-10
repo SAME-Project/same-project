@@ -4,3 +4,9 @@
 [submodule "sameproject/sdk/vendor/conda"]
 	path = sameproject/sdk/vendor/conda
 	url = git@github.com:conda/conda.git
+[submodule "sameproject/vendor/pipreqs"]
+	path = sameproject/vendor/pipreqs
+	url = https://github.com/bndr/pipreqs.git
+[submodule "sameproject/vendor/conda"]
+	path = sameproject/vendor/conda
+	url = https://github.com/conda/conda.git

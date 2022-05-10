@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys
 
-conda_path = Path(__file__).parent / "vendor/conda"
+conda_path = Path(__file__).parent.parent / "vendor/conda"
 sys.path.insert(0, str(conda_path))
 
 del sys
