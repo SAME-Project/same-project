@@ -151,7 +151,7 @@ def compile_testdata(name):
     return nbproc.compile(config, "kubeflow")
 
 
-def fetch_status(deployment, timeout=300):
+def fetch_status(deployment, timeout=600):
     client = kfp.Client()
     run_id = deployment.run_info.id
 
