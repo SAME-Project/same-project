@@ -142,7 +142,7 @@ def get_artifact_for_step(artifacts, step_num):
 
 
 def compile_testdata(name):
-    path = Path(__file__).parent / f"./testdata/kubeflow/{name}.yaml"
+    path = Path(__file__).parent / f"testdata/{name}/{name}.yaml"
     with open(path, "r") as file:
         config = SameConfig.from_yaml(file.read())
         config = config.resolve(path.parent)
@@ -151,7 +151,7 @@ def compile_testdata(name):
     return nbproc.compile(config, "kubeflow")
 
 
-def fetch_status(deployment, timeout=300):
+def fetch_status(deployment, timeout=600):
     client = kfp.Client()
     run_id = deployment.run_info.id
 
