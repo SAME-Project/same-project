@@ -53,7 +53,7 @@ def _get_decorator(entries: List[dict]) -> Callable:
         entry.validation_fn,
     ) for entry in entries]
 
-    return pytest.mark.parametrize(params, data, ids)
+    return pytest.mark.parametrize(params, data, ids=ids)
 
 
 def _register_notebook(
@@ -65,7 +65,7 @@ def _register_notebook(
 ):
     """Registers a notebook with the given name, path and callback function."""
     if not config_path.exists():
-        raise Exception(f"Attempted to register testdata '{name}' with a non-existent notebook: {config_path}")
+        raise Exception(f"Attempted to register testdata '{name}' with a non-existent config: {config_path}")
 
     with config_path.open("r") as file:
         config = SameConfig.from_yaml(file.read())
@@ -95,3 +95,32 @@ def _register_notebook(
         "requirements": req,
         "validation_fn": validation_fn,
     })
+
+
+# Tagged notebooks for testing different combinations of tags and code in the
+# notebook parsing code in 'sameproject/ops/notebooks.py'. The validation
+# function checks that the correct number of steps and cells are parsed.
+_tagged = [
+    ("code", 1, 3),
+    ("code_tag", 2, 2),
+    ("code_tag_code", 2, 2),
+    ("tag", 2, 2),
+    ("tag_code", 1, 1),
+    ("tag_code_tag", 2, 2),
+    ("tag_code_tag_code", 2, 2),
+    ("tag_tag", 2, 2),
+    ("tag_tag_code", 2, 2),
+    ("code_tag_code_tag_code", 3, 3),
+    ("code_code_tag_code_code_tag_code_code", 3, 6),
+]
+for name, steps, cells in _tagged:
+    def validation_fn(steps, cells):  # for capturing steps/cells in closure
+        return lambda res: res["steps"] == steps and res["cells"] == cells
+
+    _register_notebook(
+        f"tagged_{name}",
+        f"Tests tag/code combination '{name}'.",
+        "tagged",
+        Path(__file__).parent / f"tagged/{name}.yaml",
+        validation_fn(steps, cells),
+    )

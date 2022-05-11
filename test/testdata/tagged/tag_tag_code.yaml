@@ -1,0 +1,13 @@
+apiVersion: 0.1.16
+environments:
+  default:
+    image_tag: library/python:3.9-slim-buster
+metadata:
+  labels: []
+  name: notebook pipeline
+  version: 0.0.0
+notebook:
+  name: notebook
+  path: tag_tag_code.ipynb
+run:
+  name: notebook run

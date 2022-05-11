@@ -21,7 +21,7 @@ the testdata suite - see below.
 To add a notebook to the test suite, create a folder for it in the relevant
 child directory, i.e. `pytorch` if it's a pytorch notebook. Add the notebook
 to the directory, create a SAME config file and `requirements.txt` for it and
-register the notebook in `testdata.py`:
+register the notebook in `__init__.py`:
 
 ```python
 _register_notebook(
