@@ -79,7 +79,7 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
                 steps[this_step_name].requirements_file = file.read()
 
     for num, cell in enumerate(notebook["cells"]):
-        if cell["cell_type"] != "code":
+        if "metadata" not in cell:  # sanity check
             continue
 
         if len(cell["metadata"]) > 0 and "tags" in cell["metadata"] and len(cell["metadata"]["tags"]) > 0:
@@ -106,7 +106,8 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
                 else:
                     this_step_tags.append(tag)
 
-        code_buffer.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
+        if cell["cell_type"] == "code":  # might be a markdown cell
+            code_buffer.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
 
     this_step_code = "\n".join(code_buffer)
     all_code += "\n" + this_step_code
