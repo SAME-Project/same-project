@@ -1,0 +1,2 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/pytorch/neural_network_from_scratch/neural_network_from_scratch.ipynb:
+torch==1.11.0
