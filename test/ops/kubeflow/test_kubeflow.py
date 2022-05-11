@@ -142,7 +142,7 @@ def get_artifact_for_step(artifacts, step_num):
 
 
 def compile_testdata(name):
-    path = Path(__file__).parent / f"testdata/{name}/{name}.yaml"
+    path = Path(__file__).parent.parent / f"testdata/feature_notebooks/{name}/{name}.yaml"
     with open(path, "r") as file:
         config = SameConfig.from_yaml(file.read())
         config = config.resolve(path.parent)

@@ -1,0 +1,14 @@
+apiVersion: 0.1.16
+environments:
+  default:
+    image_tag: library/python:3.9-slim-buster
+metadata:
+  labels: []
+  name: first_neural_network pipeline
+  version: 0.0.0
+notebook:
+  name: first_neural_network
+  path: first_neural_network.ipynb
+  requirements: requirements.txt
+run:
+  name: first_neural_network run
