@@ -1,0 +1,7 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/tensorflow/named_entity_recognition_transformers/named_entity_recognition_transformers.ipynb:
+datasets==2.2.0
+matplotlib==3.5.2
+numpy==1.22.3
+pandas==1.4.2
+seaborn==0.11.2
+tensorflow==2.8.0
