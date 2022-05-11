@@ -1,11 +1,9 @@
 from sameproject.ops.notebooks import read_notebook
 from sameproject.data.config import SameConfig
 from typing import Optional, Callable, List
-from base64 import urlsafe_b64encode
 from pathlib import Path
 from box import Box
 import pytest
-import json
 
 # Registry of fully-configured notebooks, same configs and requirements.txt
 # files. Tests can request notebooks as pytest fixtures by name or group,
@@ -14,31 +12,27 @@ import json
 _registry = {}
 
 
-def notebook(*args) -> Callable:
+def get_by_name(name: str) -> Callable:
     """
     Returns a pytest decorator for the given name - see _get_decorator().
     """
-    entries = []
-    for name in args:
-        if name not in _registry:
-            raise Exception("Attempted to fetch non-existent testdata '{name}'.")
+    if name not in _registry:
+        raise Exception("Attempted to fetch non-existent testdata '{name}'.")
 
-        entries.append(_registry[name])
-
-    return _get_decorator(entries)
+    return _get_decorator([_registry[name]])
 
 
-def notebooks(*args) -> Callable:
+def get_by_group(group: str) -> Callable:
     """
     Returns a pytest decorator for the given group - see _get_decorator().
     """
     entries = []
     for entry in _registry.values():
-        if entry.group in args:
+        if entry.group == group:
             entries.append(entry)
 
     if len(entries) == 0:
-        raise Exception("Attempted to fetch non-existent testdata groups '{args}'.")
+        raise Exception("Attempted to fetch non-existent testdata group '{group}'.")
 
     return _get_decorator(entries)
 
@@ -67,7 +61,7 @@ def _register_notebook(
     desc: str,
     group: str,
     config_path: Path,
-    validation_fn: Optional[Callable[[], bool]] = None,
+    validation_fn: Optional[Callable[dict, bool]] = None,
 ):
     """Registers a notebook with the given name, path and callback function."""
     if not config_path.exists():
@@ -130,204 +124,3 @@ for name, steps, cells in _tagged:
         Path(__file__).parent / f"tagged/{name}.yaml",
         validation_fn(steps, cells),
     )
-
-
-# Notebooks that stress-test various weak points in SAME and pin down features
-# that every backend should support. This is stuff like making sure variables
-# defined in one step are accessible from another step, making sure exploding
-# variables are supported, making sure requirements are installed etc. The
-# validation functions should be run against the output context of the last
-# step in the notebook execution.
-def _validate_features_serialised_modules(res):
-    e = urlsafe_b64encode("test".encode())
-    return res["x"] == e and res["y"] == e and res["z"] == e
-
-
-def _validate_features_exploding_variables(res):
-    with pytest.raises(Exception):
-        next(res["x"])
-    with pytest.raises(Exception):
-        next(res["y"])
-    return True
-
-
-def _validate_features_datasets(res):
-    data = json.loads(res["x"])
-    return "names" in data and data["names"]["0"] == "david"
-
-
-_register_notebook(
-    "features_function_references",
-    "Checks that functions can reference each other in notebooks.",
-    "features",
-    Path(__file__).parent / "features/function_references/same.yaml",
-    lambda res: res["x"] == 1,
-)
-_register_notebook(
-    "features_imported_functions",
-    "Checks that imports work both globally and in function scope.",
-    "features",
-    Path(__file__).parent / "features/imported_functions/same.yaml",
-    lambda res: json.loads(res["x"])["x"] == 0,
-)
-_register_notebook(
-    "features_singlestep",
-    "Checks that single-step notebooks are supported.",
-    "features",
-    Path(__file__).parent / "features/singlestep/same.yaml",
-    lambda res: res["y"] == "1",
-)
-_register_notebook(
-    "features_multistep",
-    "Checks that multistep notebooks are supported.",
-    "features",
-    Path(__file__).parent / "features/multistep/same.yaml",
-    lambda res: res["y"] == "1",
-)
-_register_notebook(
-    "features_requirements_file",
-    "Checks that requirements.txt files are supported.",
-    "features",
-    Path(__file__).parent / "features/requirements_file/same.yaml",
-)
-_register_notebook(
-    "features_serialised_modules",
-    "Checks that imported modules can be accessed across steps.",
-    "features",
-    Path(__file__).parent / "features/serialised_modules/same.yaml",
-    _validate_features_serialised_modules,
-)
-_register_notebook(
-    "features_exploding_variables",
-    "Checks that exploding variables are supported for unserialisable variables.",
-    "features",
-    Path(__file__).parent / "features/exploding_variables/same.yaml",
-    _validate_features_exploding_variables,
-)
-_register_notebook(
-    "features_datasets",
-    "Checks that 'sdk.dataset(...)' integration is working correctly.",
-    "features",
-    Path(__file__).parent / "features/datasets/same.yaml",
-    _validate_features_datasets,
-)
-
-
-# A selection of pytorch notebooks found in the wild.
-_register_notebook(
-    "pytorch_first_neural_network",
-    "Trains a simple MNIST classifier using a linear perceptron.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/first_neural_network/same.yaml",
-)
-_register_notebook(
-    "pytorch_neural_network_from_scratch",
-    "Trains a basic one-layer neural network as an introduction to pytorch.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/neural_network_from_scratch/same.yaml",
-)
-_register_notebook(
-    "pytorch_a_gentle_introduction_to_pytorch",
-    "A basic introduction to deep learning with pytorch.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/a_gentle_introduction_to_pytorch/same.yaml",
-)
-_register_notebook(
-    "pytorch_bag_of_words",
-    "Implements a bag-of-words text classifier.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/bag_of_words/same.yaml",
-)
-_register_notebook(
-    "pytorch_concise_logistic_regression",
-    "Trains an image classifier using concise logistic regression.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/concise_logistic_regression/same.yaml",
-)
-_register_notebook(
-    "pytorch_continuous_bag_of_words",
-    "Implements a continuous bag-of-words text classifier.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/continuous_bag_of_words/same.yaml",
-)
-_register_notebook(
-    "pytorch_deep_continuous_bag_of_words",
-    "Implements a continuous bag-of-words text classifier using deep neural networks.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/deep_continuous_bag_of_words/same.yaml",
-)
-_register_notebook(
-    "pytorch_introduction_to_gnns_with_pytorch_geometric",
-    "A guide to using graph neural networks in pytorch.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/introduction_to_gnns_with_pytorch_geometric/same.yaml",
-)
-_register_notebook(
-    "pytorch_pytorch_hello_world",
-    "A baby-steps introduction to deep learning in pytorch.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/pytorch_hello_world/same.yaml",
-)
-_register_notebook(
-    "pytorch_pytorch_logistic_regression",
-    "Implements a logistic regression model from scratch for image classification.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/pytorch_logistic_regression/same.yaml",
-)
-_register_notebook(
-    "pytorch_roberta_fine_tuning_emotion_classification",
-    "Fine-tunes a language model to classify the emotional content of text.",
-    "pytorch",
-    Path(__file__).parent / "pytorch/roberta_fine_tuning_emotion_classification/same.yaml",
-)
-
-
-# A selection of tensorflow notebooks found in the wild.
-_register_notebook(
-    "tensorflow_siamese_network",
-    "Trains a Siamese network for classifying images.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/siamese_network/same.yaml",
-)
-_register_notebook(
-    "tensorflow_named_entity_recognition_transformers",
-    "Trains a transformer network for identifying named entities in text.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/named_entity_recognition_transformers/same.yaml",
-)
-_register_notebook(
-    "tensorflow_attention_is_all_you_need",
-    "Implements a small transformer model for manipulating human-readable dates.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/attention_is_all_you_need/same.yaml",
-)
-_register_notebook(
-    "tensorflow_feature_tokenizer_transformer",
-    "Trains a Feature Tokenizer Transformer network from scratch.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/feature_tokenizer_transformer/same.yaml",
-)
-_register_notebook(
-    "tensorflow_object_detection_selective_search",
-    "Trains an object detector from a base image classification model.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/object_detection_selective_search/same.yaml",
-)
-_register_notebook(
-    "tensorflow_object_detection_sliding_window",
-    "Another approach to detecting objects based on an image classification model.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/object_detection_sliding_window/same.yaml",
-)
-_register_notebook(
-    "tensorflow_text_classification_attentional_positional_embeddings",
-    "Trains a text classification model using a transformer network.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/text_classification_attentional_positional_embeddings/same.yaml",
-)
-_register_notebook(
-    "tensorflow_variational_auto_encoder",
-    "An introduction to variational autoencoders for generative modelling of MNIST.",
-    "tensorflow",
-    Path(__file__).parent / "tensorflow/variational_auto_encoder/same.yaml",
-)

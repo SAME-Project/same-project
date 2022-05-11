@@ -2,13 +2,9 @@ from sameproject.ops.notebooks import read_notebook, get_steps, get_code
 from sameproject.ops.code import get_imported_modules
 from sameproject.data.config import SameConfig
 from pathlib import Path
-<<<<<<< HEAD
 import test.testdata
 import logging
-||||||| parent of e679c3e (Clean up test suite. (#138))
-=======
 import logging
->>>>>>> e679c3e (Clean up test suite. (#138))
 import pytest
 
 
@@ -16,17 +12,6 @@ config_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
 notebook_path = Path("test/ops/testdata/same_notebooks/generic/sample_notebook.ipynb")
 requirements_path = Path("test/ops/testdata/same_notebooks/generic/requirements.txt")
 
-<<<<<<< HEAD
-magic_line_testcases = [
-    ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", False),
-    ("multiline_strings", "test/ops/testdata/edgecase_notebooks/multiline_strings.ipynb", False),
-]
-||||||| parent of e679c3e (Clean up test suite. (#138))
-
-config_path = _relpath("../testdata/generic_notebook/same.yaml")
-notebook_path = _relpath("../testdata/generic_notebook/sample_notebook.ipynb")
-requirements_path = _relpath("../testdata/generic_notebook/requirements.txt")
-=======
 tagged_notebooks = [
     ("Code", "test/ops/testdata/tagged_notebooks/code.ipynb", 1, 3),
     ("Code Tag", "test/ops/testdata/tagged_notebooks/code_tag.ipynb", 2, 2),
@@ -45,7 +30,6 @@ magic_line_testcases = [
     ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", True),
     ("multiline_strings", "test/ops/testdata/edgecase_notebooks/multiline_strings.ipynb", False),
 ]
->>>>>>> e679c3e (Clean up test suite. (#138))
 
 
 @pytest.fixture
@@ -80,33 +64,29 @@ def test_notebooks_get_code(notebook):
     assert len(modules) > 0
 
 
-def test_notebooks_read_notebook_bad_path():
+def test_read_notebooks_nonexistent():
     with pytest.raises(SystemExit):
         read_notebook("BAD_PATH")
 
 
-@pytest.mark.parametrize(
-    "test_name, notebook_path, number_of_steps, number_of_cells",
-    tagged_notebooks,
-    ids=[p[0] for p in tagged_notebooks]
-)
-def test_notebooks_read_notebook_good(
+@test.testdata.get_by_group("tagged")
+def test_read_notebooks_tagged(
     config,
-    test_name,
-    notebook_path,
-    number_of_steps,
-    number_of_cells
+    notebook,
+    requirements,
+    validation_fn,
 ):
-    notebook_dict = read_notebook(notebook_path)
-    assert notebook_dict.get("cells", None) is not None
-    assert len(notebook_dict["cells"]) == number_of_cells
+    assert "cells" in notebook
+    steps = get_steps(notebook, config)
 
-    steps = get_steps(notebook_dict, config)
-    assert len(steps) == number_of_steps
+    assert validation_fn({
+        "cells": len(notebook["cells"]),
+        "steps": len(steps),
+    })
 
 
 @pytest.mark.parametrize("name, path, expect_err", magic_line_testcases)
-def test_notebooks_read_notebook_magic_line(name, path, expect_err, config):
+def test_read_notebooks_magic_lines(name, path, expect_err, config):
     """
     Tests magic line parsing in notebooks, with edge-cases like
     multiline strings containing what appear to be multiline strings.

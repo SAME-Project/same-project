@@ -11,8 +11,9 @@ backends.
 
 Each of the child folders contains a number of notebooks and as well as a
 number of folders. The notebooks are candidates for being added to the suite,
-but have not yet been given a SAME config and `requirements.txt` file. The child
-folders contain fully-configured notebooks that have both.
+but have not yet been given a SAME config and `requirements.txt` file. The 
+folders contain fully-configured notebooks that have been registered with
+the testdata suite - see below.
 
 
 ## Process
@@ -20,7 +21,19 @@ folders contain fully-configured notebooks that have both.
 To add a notebook to the test suite, create a folder for it in the relevant
 child directory, i.e. `pytorch` if it's a pytorch notebook. Add the notebook
 to the directory, create a SAME config file and `requirements.txt` for it and
-register the notebook in: (TODO write a registry)
+register the notebook in `__init__.py`:
+
+```python
+_register_notebook(
+  "notebook_name",
+  "notebook_desc",
+  "test_group",
+  Path("notebook/same.yaml"),
+  
+  # Validation function that returns True if the notebook executed correctly.
+  lambda res: res["x"] == 1,
+)
+```
 
 Try to ensure that the notebook:
 * has more than one configured SAME step
