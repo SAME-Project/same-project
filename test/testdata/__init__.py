@@ -124,3 +124,31 @@ for name, steps, cells in _tagged:
         Path(__file__).parent / f"tagged/{name}.yaml",
         validation_fn(steps, cells),
     )
+
+# A selection of pytorch notebooks found in the wild.
+_register_notebook(
+    "pytorch_first_neural_network",
+    "Trains a simple MNIST classifier using a linear perceptron.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/first_neural_network/same.yaml",
+)
+_register_notebook(
+    "pytorch_neural_network_from_scratch",
+    "Trains a basic one-layer neural network as an introduction to pytorch.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/neural_network_from_scratch/same.yaml",
+)
+
+# A selection of tensorflow notebooks found in the wild.
+_register_notebook(
+    "tensorflow_siamese_network",
+    "Trains a Siamese network for classifying images.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/siamese_network/same.yaml",
+)
+_register_notebook(
+    "tensorflow_named_entity_recognition_transformers",
+    "Trains a transformer network for identifying named entities in text.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/named_entity_recognition_transformers/same.yaml",
+)

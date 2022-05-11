@@ -1,0 +1,14 @@
+apiVersion: 0.1.16
+environments:
+  default:
+    image_tag: library/python:3.9-slim-buster
+metadata:
+  labels: []
+  name: neural_network_from_scratch pipeline
+  version: 0.0.0
+notebook:
+  name: neural_network_from_scratch
+  path: neural_network_from_scratch.ipynb
+  requirements: requirements.txt
+run:
+  name: neural_network_from_scratch run
