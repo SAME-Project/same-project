@@ -37,7 +37,8 @@ _register_notebook(
 
 Try to ensure that the notebook:
 * has more than one configured SAME step
-* has been pared down to reduce memory and cpu requirements
+* has had all outputs cleared to avoid a messy notebook file
+* has been pared down if possible to reduce cpu and memory requirements
 
 The commands `same init` and `same verify` are useful for configuring a new
 notebook, as they automatically generate and check the config/requirements 
