@@ -8,16 +8,6 @@ additional_flags = [
         "default": False,
         "help": "run kubeflow backend tests, requires kubeflow installation",
     }],
-    ["functions", {
-        "action": "store_true",
-        "default": False,
-        "help": "run functions backend tests, requires azure authentication",
-    }],
-    ["external", {
-        "action": "store_true",
-        "default": False,
-        "help": "include pytorch, tensorflow and sklearn notebooks in backend tests",
-    }],
 ]
 
 
