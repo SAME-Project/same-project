@@ -69,7 +69,7 @@ def test_read_notebooks_nonexistent():
         read_notebook("BAD_PATH")
 
 
-@test.testdata.get_by_group("tagged")
+@test.testdata.notebooks("tagged")
 def test_read_notebooks_tagged(
     config,
     notebook,

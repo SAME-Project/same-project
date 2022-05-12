@@ -17,7 +17,7 @@ import io
 
 
 @pytest.mark.kubeflow
-@test.testdata.get_by_group("features")
+@test.testdata.notebooks("features")
 def test_kubeflow_features(config, notebook, requirements, validation_fn):
     compiled_path, root_file = compile(config, "kubeflow")
     deployment = deploy("kubeflow", compiled_path, root_file)
@@ -29,6 +29,15 @@ def test_kubeflow_features(config, notebook, requirements, validation_fn):
         artifacts = _fetch_output_contexts(deployment)
         ctx = _get_artifact_context(artifacts, len(steps) - 1)
         assert validation_fn(ctx)
+
+
+@pytest.mark.kubeflow
+@pytest.mark.external
+@test.testdata.notebooks("pytorch", "tensorflow", "sklearn")
+def test_kubeflow_external(config, notebook, requirements, validation_fn):
+    compiled_path, root_file = compile(config, "kubeflow")
+    deployment = deploy("kubeflow", compiled_path, root_file)
+    assert _fetch_status(deployment) == "Succeeded"
 
 
 def _extract_artifact_data(data):
