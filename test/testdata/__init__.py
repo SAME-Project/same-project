@@ -14,7 +14,7 @@ import json
 _registry = {}
 
 
-def get_by_name(name: str) -> Callable:
+def notebook(name: str) -> Callable:
     """
     Returns a pytest decorator for the given name - see _get_decorator().
     """
@@ -24,13 +24,13 @@ def get_by_name(name: str) -> Callable:
     return _get_decorator([_registry[name]])
 
 
-def get_by_group(group: str) -> Callable:
+def notebooks(*args) -> Callable:
     """
     Returns a pytest decorator for the given group - see _get_decorator().
     """
     entries = []
     for entry in _registry.values():
-        if entry.group == group:
+        if entry.group in args:
             entries.append(entry)
 
     if len(entries) == 0:

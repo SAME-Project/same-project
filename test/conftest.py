@@ -8,6 +8,11 @@ additional_flags = [
         "default": False,
         "help": "run kubeflow backend tests, requires kubeflow installation",
     }],
+    ["external", {
+        "action": "store_true",
+        "default": False,
+        "help": "include pytorch, tensorflow and sklearn notebooks in backend tests",
+    }],
 ]
 
 
