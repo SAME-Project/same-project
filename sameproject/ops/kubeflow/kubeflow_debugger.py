@@ -2,12 +2,11 @@ import sys
 import click
 import glob
 from pathlib import Path
-from kfp.compiler import Compiler
-from kfp.v2 import compiler
+import kfp.v2
 import importlib
 import os
 import kfp
-from kfp.v2 import dsl
+from kfp.v2 import dsl, compiler
 from kfp.v2.dsl import component, Output, HTML
 from . import deploy
 import render
@@ -52,11 +51,11 @@ def compile_kfp(compiled_directory: str):
 
     root_module = importlib.import_module(mod)
 
-    package_yaml_path = p / f"{root_file.stem}.yaml"
+    package_json_path = p / f"{root_file.stem}.json"
 
-    print(f"Package path: {package_yaml_path}")
+    print(f"Package path: {package_json_path}")
 
-    Compiler(mode=kfp.dsl.PipelineExecutionMode.V1_LEGACY).compile(pipeline_func=root_module.root, package_path=str(package_yaml_path))
+    compiler.Compiler(mode=kfp.dsl.PipelineExecutionMode.V1_LEGACY).compile(pipeline_func=root_module.root, package_path=str(package_json_path))
 
 
 @click.command(

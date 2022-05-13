@@ -107,6 +107,12 @@ _register_option(
     "Email address for private docker registry for private image pulls.",
 )
 
+# Vertex
+_register_option(
+    "gs_bucket_name",
+    "Bucket name to use on Vertex for writing artifacts."
+)
+
 # Options for AML backend:
 # TODO: write help lines for each of these options
 _register_option("aml_compute_name", "")

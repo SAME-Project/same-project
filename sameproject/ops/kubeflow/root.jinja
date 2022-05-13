@@ -24,8 +24,8 @@ run_info_comp = kfp.v2.dsl.component(
 )
 
 {% for step in list_of_steps %}
-{{ step.unique_step_name }}_comp = kfp.v2.dsl.component(
-    func={{ step.unique_step_name }}_fn,
+{{ step.unique_name }}_comp = kfp.v2.dsl.component(
+    func={{ step.unique_name}}_fn,
     base_image="{{ step.image_tag }}",
     packages_to_install=[
         "dill",

@@ -24,10 +24,13 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     print(f"Template dir {templateDir}")
     env = Environment(trim_blocks=True, loader=templateLoader)
 
+    if "gs_bucket_name" not in same_config["runtime_options"]:
+        raise ValueError("Need to set the environment variable BUCKET_NAME for the gs:// bucket that will be used for the Pipeline Run.")
+
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
         step_file_string = _build_step_file(env, steps[step_name])
-        helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_step_name }.py", step_file_string)
+        helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_name }.py", step_file_string)
 
     root_file_string = _build_root_file(env, steps, same_config)
 
@@ -60,6 +63,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
         "experiment_name_safe": "",
         "list_of_environments": {},
         "image_pull_secrets": {},
+        "bucket_name": "",
     }
 
     params_to_merge = []
@@ -140,7 +144,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
         step_to_append = {}
         step_to_append["name"] = step_content.name
-        step_to_append["unique_step_name"] = step_content.unique_step_name
+        step_to_append["unique_name"] = step_content.unique_name
         step_to_append["package_string"] = root_contract["comma_delim_list_of_packages_as_string"]
         step_to_append["cache_value"] = step_content.cache_value
         step_to_append["previous_step"] = previous_step_name
@@ -159,7 +163,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
             step_to_append["previous_step_name"] = previous_step_name
         root_contract["list_of_steps"].append(step_to_append)
 
-        previous_step_name = step_content.unique_step_name
+        previous_step_name = step_content.unique_name
 
     # Text manipulation in jinja is pretty weak, we'll do both of these cleanings in python.
 
@@ -178,10 +182,6 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
 
 def _build_step_file(env: Environment, step: Step) -> str:
-    step_contract = {
-        "name": step.name,
-        "unique_step_name": step.unique_step_name,
-        "inner_code": urlsafe_b64encode(dill.dumps(step.code)).decode()
-    }
+    step_contract = {"name": step.name, "unique_name": step.unique_name, "inner_code": urlsafe_b64encode(dill.dumps(step.code)).decode()}
 
     return env.get_template(vertex_step_template).render(step_contract)
