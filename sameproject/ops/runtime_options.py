@@ -28,27 +28,12 @@ def runtime_schema() -> dict:
     schema = {"type": "dict", "schema": {}, "allow_unknown": True}
 
     for opt in list_options():
-<<<<<<< HEAD
-        opt_schema = _registry[opt].schema
-        if opt_schema is None:
-            opt_schema = {
-                "nullable": True,
-                "type": _get_cerberus_type(
-                    _registry[opt].name,
-                    _registry[opt].type
-                )
-            }
-        schema["schema"][opt] = opt_schema
-||||||| parent of 4c14558 (Fix exploding variables serialisation bug.)
-        schema["schema"][opt] = {"type": "string"}  # TODO: other types?
-=======
         schema["schema"][opt] = {
             "type": _get_cerberus_type(
                 _registry[opt].name,
                 _registry[opt].type
             )
         }
->>>>>>> 4c14558 (Fix exploding variables serialisation bug.)
 
     return schema
 
@@ -88,13 +73,7 @@ class UserFriendlyMessagesErrorHandler(errors.BasicErrorHandler):
     messages[errors.NOT_NULLABLE.code] = "Value of variable is missing or empty."
 
 
-<<<<<<< HEAD
-def validate_options(backend: str):
-||||||| parent of 4c14558 (Fix exploding variables serialisation bug.)
-def _register_option(name: str, desc: str, flag=None, env=None):
-=======
 def _register_option(name: str, desc: str, type=str, flag=None, env=None):
->>>>>>> 4c14558 (Fix exploding variables serialisation bug.)
     """
     Raises if the runtime options are set incorrectly for the given backend.
     Doing it with 'validator' functions allows us to have options that are
@@ -163,34 +142,6 @@ def register_option(
     if env is None:
         env = name.upper()
 
-<<<<<<< HEAD
-    value = None
-    if env in os.environ:
-        value = type(os.environ[env])
-
-    _registry[name] = Box(
-        {
-            "name": name,
-            "desc": desc,
-            "flag": flag,
-            "env": env,
-            "type": type,
-            "value": value,
-            "schema": schema,
-            "validator": validator,
-            "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
-        }
-    )
-||||||| parent of 4c14558 (Fix exploding variables serialisation bug.)
-    _registry[name] = Box({
-        "name": name,
-        "desc": desc,
-        "flag": flag,
-        "env": env,
-        "value": None,
-        "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
-    })
-=======
     _registry[name] = Box({
         "name": name,
         "desc": desc,
@@ -200,56 +151,8 @@ def register_option(
         "value": None,
         "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
     })
->>>>>>> 4c14558 (Fix exploding variables serialisation bug.)
 
 
-<<<<<<< HEAD
-def _get_cerberus_type(name: str, type: Any) -> str:
-    if type == str:
-        return "string"
-
-    if type == int:
-        return "integer"
-
-    if type == bool:
-        return "boolean"
-
-    raise TypeError(f"Runtime option '{name}' has unsupported type '{type}'.")
-
-
-def _compose_decorators(fn: Callable, decorators: List[Callable]) -> Callable:
-    for decorator in decorators:
-        fn = decorator(fn)
-    return fn
-
-
-# General SAME configuration:
-register_option(
-    "serialisation_memory_limit",
-    "Maximum size in bytes allowed for variables being serialised between steps.",
-    type=int,
-||||||| parent of 4c14558 (Fix exploding variables serialisation bug.)
-# Options for Kubeflow backend:
-_register_option(
-    "image_pull_secret_name",
-    "The name of the kubernetes secret to create for docker secrets.",
-)
-_register_option(
-    "image_pull_secret_registry_uri",
-    "URI of private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_username",
-    "Username for private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_password",
-    "Password for private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_email",
-    "Email address for private docker registry for private image pulls.",
-=======
 def _get_cerberus_type(name, type):
     if type == str:
         return "string"
@@ -287,7 +190,6 @@ _register_option(
 _register_option(
     "image_pull_secret_email",
     "Email address for private docker registry for private image pulls.",
->>>>>>> 4c14558 (Fix exploding variables serialisation bug.)
 )
 
 register_option(
