@@ -36,7 +36,7 @@ def init():
     nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
     # Docker image data:
-    image = click.prompt("Default docker image'", default="combinatorml/jupyterlab-tensorflow-opencv:0.9", type=str)
+    image = click.prompt("Default docker image", default="combinatorml/jupyterlab-tensorflow-opencv:0.9", type=str)
 
     # Requirements.txt data:
     req = find_requirements(recurse=False)
