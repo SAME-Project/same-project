@@ -188,7 +188,7 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
 
     memory_limit = same_config.runtime_options.get(
         "serialisation_memory_limit",
-        250 * 1024 * 1024,  # 250MB
+        512 * 1024 * 1024,  # 512MB
     )
 
     step_contract = {
