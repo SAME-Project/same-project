@@ -28,7 +28,7 @@ def find_requirements(path=".", recurse=False):
 def _find(path, globstr, filter=None):
     candidates = sorted(
         p for p in Path(path).glob(globstr)
-        if filter is not None and filter not in p.as_posix().split("/")
+        if filter is None or filter not in p.as_posix().split("/")
     )
     if len(candidates) == 0:
         return None
