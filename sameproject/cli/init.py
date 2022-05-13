@@ -30,9 +30,9 @@ def init():
         exit(1)
 
     nb_dict = read_notebook(nb_path)
-    nb_name = get_name(nb_dict)
-    if nb_name == "":
-        nb_name = "notebook"
+    nb_name = str(nb_path).replace(".ipynb", "")
+    # if nb_name == "":
+    #     nb_name = "notebook"
     nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
     # Docker image data:
@@ -104,7 +104,11 @@ def init():
         cfg.write_text(same_config.to_yaml())
         click.echo(f"Wrote config file to {cfg.absolute()}.")
         click.echo()
-        click.echo("You can now run 'same verify' to check that everything is configured correctly.")
+        click.echo("""You can now run 'same verify' to check that everything is configured correctly
+(requires docker locally), or you can run 'same run' to deploy the pipeline to a
+configured backend (e.g. Kubeflow Pipelines in a Kubernetes cluster file pointed
+to by ~/.kube/config or set in the KUBECONFIG environment variable).
+""")
 
 
 def _get_api_version():
