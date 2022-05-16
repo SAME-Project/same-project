@@ -33,20 +33,6 @@ def read_notebook(notebook_path) -> dict:
     return ntbk_dict
 
 
-def get_name(notebook: dict, default="") -> str:
-    """Returns a notebook's configured name, or a default if none is found."""
-    if "metadata" in notebook:
-        md = notebook["metadata"]
-
-        if "name" in md:
-            return md["name"]
-
-        if "colab" in md and "name" in md["colab"]:
-            return md["colab"]["name"]
-
-    return default
-
-
 def get_steps(notebook: dict, config: SameConfig) -> dict:
     """Parses the code in a notebook into a series of SAME execution steps."""
 

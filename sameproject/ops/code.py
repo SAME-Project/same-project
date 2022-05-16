@@ -29,6 +29,22 @@ def get_magic_lines(code: str) -> List[str]:
     return magic_lines
 
 
+def remove_magic_lines(code: str) -> str:
+    """Removes all magic lines from the given python source code."""
+    res = []
+
+    # Parse out all non-magic lines in the cell:
+    parser = jupytext.magics.StringParser("python")
+    for i, line in enumerate(code.split("\n")):
+        is_magic = not parser.is_quoted() and jupytext.magics.is_magic(line, "python")
+
+        parser.read_line(line)
+        if not is_magic:
+            res.append(line)
+
+    return "\n".join(res)
+
+
 def get_imported_modules(code: str) -> List[str]:
     """Returns a list of all non-standard imports in the given code."""
     code_dir = Path(mkdtemp())

@@ -1,7 +1,7 @@
 from sameproject.ops.files import find_same_config, find_notebook, find_requirements
 from sameproject.ops.requirements import get_package_info, render_package_info
-from sameproject.ops.notebooks import get_code, read_notebook, get_name
-from sameproject.ops.code import get_imported_modules
+from sameproject.ops.notebooks import get_code, read_notebook
+from sameproject.ops.code import get_imported_modules, remove_magic_lines
 from sameproject.data.config import SameValidator
 from pathlib import Path
 from box import Box
@@ -46,7 +46,8 @@ def init():
 
             writing_reqs = False
             if click.confirm("Would you like SAME to fill in the requirements.txt for you?", default=True):
-                modules = get_imported_modules(get_code(nb_dict))
+                code = remove_magic_lines(get_code(nb_dict))
+                modules = get_imported_modules(code)
                 pkg_info = get_package_info(modules)
 
                 if len(pkg_info) > 0:

@@ -1,5 +1,5 @@
 from sameproject.ops.notebooks import read_notebook, get_code
-from sameproject.ops.code import get_imported_modules
+from sameproject.ops.code import get_imported_modules, remove_magic_lines
 from sameproject.data.config import SameConfig
 from io import BufferedReader
 from tempfile import mkdtemp
@@ -35,7 +35,8 @@ def verify(same_file: BufferedReader):
         config = config.resolve(Path(same_file.name).parent)
 
         notebook = read_notebook(config.notebook.path)
-        modules = get_imported_modules(get_code(notebook))
+        code = remove_magic_lines(get_code(notebook))
+        modules = get_imported_modules(code)
 
     except Exception as err:
         click.echo(f"Error during 'same verify' initialisation: {err}", err=True)

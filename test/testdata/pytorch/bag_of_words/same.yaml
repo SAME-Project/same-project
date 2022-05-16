@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: bag_of_words pipeline
+  version: 0.0.0
+notebook:
+  name: bag_of_words
+  path: bag_of_words.ipynb
+  requirements: requirements.txt
+run:
+  name: bag_of_words run
