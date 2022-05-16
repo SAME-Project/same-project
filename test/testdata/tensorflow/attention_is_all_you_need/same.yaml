@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: attention_is_all_you_need pipeline
+  version: 0.0.0
+notebook:
+  name: attention_is_all_you_need
+  path: attention_is_all_you_need.ipynb
+  requirements: requirements.txt
+run:
+  name: attention_is_all_you_need run

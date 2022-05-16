@@ -46,7 +46,8 @@ def init():
 
             writing_reqs = False
             if click.confirm("Would you like SAME to fill in the requirements.txt for you?", default=True):
-                modules = get_imported_modules(get_code(nb_dict))
+                code = remove_magic_lines(get_code(nb_dict))
+                modules = get_imported_modules(code)
                 pkg_info = get_package_info(modules)
 
                 if len(pkg_info) > 0:

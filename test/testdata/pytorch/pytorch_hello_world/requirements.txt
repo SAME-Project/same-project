@@ -1,0 +1,2 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/pytorch/pytorch_hello_world/pytorch_hello_world.ipynb:
+torch==1.11.0
