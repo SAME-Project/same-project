@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: deep_continuous_bag_of_words pipeline
+  version: 0.0.0
+notebook:
+  name: deep_continuous_bag_of_words
+  path: deep_continuous_bag_of_words.ipynb
+  requirements: requirements.txt
+run:
+  name: deep_continuous_bag_of_words run

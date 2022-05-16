@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: pytorch_logistic_regression pipeline
+  version: 0.0.0
+notebook:
+  name: pytorch_logistic_regression
+  path: pytorch_logistic_regression.ipynb
+  requirements: requirements.txt
+run:
+  name: pytorch_logistic_regression run

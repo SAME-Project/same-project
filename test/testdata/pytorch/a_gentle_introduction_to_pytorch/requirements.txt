@@ -1,0 +1,5 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/pytorch/a_gentle_introduction_to_pytorch/a_gentle_introduction_to_pytorch.ipynb:
+matplotlib==3.5.2
+numpy==1.22.3
+torch==1.11.0
+torchvision==0.12.0

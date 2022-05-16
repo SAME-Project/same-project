@@ -1,4 +1,4 @@
-from sameproject.ops.code import get_magic_lines, get_installable_packages
+from sameproject.ops.code import get_magic_lines, remove_magic_lines, get_installable_packages
 from sameproject.data.config import SameConfig
 from sameproject.data import Step
 from typing import Tuple, List
@@ -31,20 +31,6 @@ def read_notebook(notebook_path) -> dict:
         exit(1)
 
     return ntbk_dict
-
-
-def get_name(notebook: dict, default="") -> str:
-    """Returns a notebook's configured name, or a default if none is found."""
-    if "metadata" in notebook:
-        md = notebook["metadata"]
-
-        if "name" in md:
-            return md["name"]
-
-        if "colab" in md and "name" in md["colab"]:
-            return md["colab"]["name"]
-
-    return default
 
 
 def get_steps(notebook: dict, config: SameConfig) -> dict:
@@ -116,12 +102,10 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
     magic_lines = get_magic_lines(all_code)
     if len(magic_lines) > 0:
         magic_lines_string = "\n".join(magic_lines)
-        logging.fatal(
-            f"""
-We cannot continue because the following lines cannot be converted into standard python code. Please correct them:
-{ magic_lines_string }"""
-        )
-        raise SyntaxError(f"Magic lines are not supported:\n{magic_lines_string}")
+        logging.warning(f"""Notebook contains magic lines, which will be ignored:\n{magic_lines_string}""")
+
+        # Remove magic lines from code so that we can continue:
+        all_code = remove_magic_lines(all_code)
 
     for k in steps:
         steps[k].packages_to_install = get_installable_packages(all_code)

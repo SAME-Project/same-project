@@ -1,0 +1,8 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/pytorch/roberta_fine_tuning_emotion_classification/roberta_fine_tuning_emotion_classification.ipynb:
+pandas==1.4.2
+pytorch_lightning==1.6.3
+scikit_learn==1.1.0
+tokenizers==0.12.1
+torch==1.11.0
+torch_lr_finder==0.2.1
+transformers==4.19.1

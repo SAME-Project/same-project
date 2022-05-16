@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: introduction_to_gnns_with_pytorch_geometric pipeline
+  version: 0.0.0
+notebook:
+  name: introduction_to_gnns_with_pytorch_geometric
+  path: introduction_to_gnns_with_pytorch_geometric.ipynb
+  requirements: requirements.txt
+run:
+  name: introduction_to_gnns_with_pytorch_geometric run
