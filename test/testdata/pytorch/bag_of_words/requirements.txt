@@ -1,0 +1,2 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/pytorch/bag_of_words/bag_of_words.ipynb:
+torch==1.11.0

@@ -203,6 +203,60 @@ _register_notebook(
     "pytorch",
     Path(__file__).parent / "pytorch/neural_network_from_scratch/same.yaml",
 )
+_register_notebook(
+    "pytorch_a_gentle_introduction_to_pytorch",
+    "A basic introduction to deep learning with pytorch.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/a_gentle_introduction_to_pytorch/same.yaml",
+)
+_register_notebook(
+    "pytorch_bag_of_words",
+    "Implements a bag-of-words text classifier.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/bag_of_words/same.yaml",
+)
+_register_notebook(
+    "pytorch_concise_logistic_regression",
+    "Trains an image classifier using concise logistic regression.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/concise_logistic_regression/same.yaml",
+)
+_register_notebook(
+    "pytorch_continuous_bag_of_words",
+    "Implements a continuous bag-of-words text classifier.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/continuous_bag_of_words/same.yaml",
+)
+_register_notebook(
+    "pytorch_deep_continuous_bag_of_words",
+    "Implements a continuous bag-of-words text classifier using deep neural networks.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/deep_continuous_bag_of_words/same.yaml",
+)
+_register_notebook(
+    "pytorch_introduction_to_gnns_with_pytorch_geometric",
+    "A guide to using graph neural networks in pytorch.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/introduction_to_gnns_with_pytorch_geometric/same.yaml",
+)
+_register_notebook(
+    "pytorch_pytorch_hello_world",
+    "A baby-steps introduction to deep learning in pytorch.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/pytorch_hello_world/same.yaml",
+)
+_register_notebook(
+    "pytorch_pytorch_logistic_regression",
+    "Implements a logistic regression model from scratch for image classification.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/pytorch_logistic_regression/same.yaml",
+)
+_register_notebook(
+    "pytorch_roberta_fine_tuning_emotion_classification",
+    "Fine-tunes a language model to classify the emotional content of text.",
+    "pytorch",
+    Path(__file__).parent / "pytorch/roberta_fine_tuning_emotion_classification/same.yaml",
+)
 
 
 # A selection of tensorflow notebooks found in the wild.
@@ -217,4 +271,40 @@ _register_notebook(
     "Trains a transformer network for identifying named entities in text.",
     "tensorflow",
     Path(__file__).parent / "tensorflow/named_entity_recognition_transformers/same.yaml",
+)
+_register_notebook(
+    "tensorflow_attention_is_all_you_need",
+    "Implements a small transformer model for manipulating human-readable dates.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/attention_is_all_you_need/same.yaml",
+)
+_register_notebook(
+    "tensorflow_feature_tokenizer_transformer",
+    "Trains a Feature Tokenizer Transformer network from scratch.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/feature_tokenizer_transformer/same.yaml",
+)
+_register_notebook(
+    "tensorflow_object_detection_selective_search",
+    "Trains an object detector from a base image classification model.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/object_detection_selective_search/same.yaml",
+)
+_register_notebook(
+    "tensorflow_object_detection_sliding_window",
+    "Another approach to detecting objects based on an image classification model.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/object_detection_sliding_window/same.yaml",
+)
+_register_notebook(
+    "tensorflow_text_classification_attentional_positional_embeddings",
+    "Trains a text classification model using a transformer network.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/text_classification_attentional_positional_embeddings/same.yaml",
+)
+_register_notebook(
+    "tensorflow_variational_auto_encoder",
+    "An introduction to variational autoencoders for generative modelling of MNIST.",
+    "tensorflow",
+    Path(__file__).parent / "tensorflow/variational_auto_encoder/same.yaml",
 )

@@ -1,0 +1,8 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/tensorflow/feature_tokenizer_transformer/feature_tokenizer_transformer.ipynb:
+joblib==1.1.0
+matplotlib==3.5.2
+numpy==1.22.3
+pandas==1.4.2
+scikit_learn==1.1.0
+tensorflow==2.8.0
+tensorflow_addons==0.16.1

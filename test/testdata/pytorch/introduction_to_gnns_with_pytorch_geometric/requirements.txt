@@ -1,0 +1,4 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/pytorch/introduction_to_gnns_with_pytorch_geometric/introduction_to_gnns_with_pytorch_geometric.ipynb:
+matplotlib==3.5.2
+torch==1.11.0
+torch_geometric==2.0.4

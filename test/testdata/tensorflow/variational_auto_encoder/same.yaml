@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: variational_auto_encoder pipeline
+  version: 0.0.0
+notebook:
+  name: variational_auto_encoder
+  path: variational_auto_encoder.ipynb
+  requirements: requirements.txt
+run:
+  name: variational_auto_encoder run

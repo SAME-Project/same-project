@@ -1,0 +1,7 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/tensorflow/variational_auto_encoder/variational_auto_encoder.ipynb:
+ipython==8.3.0
+matplotlib==3.5.2
+numpy==1.22.3
+pandas==1.4.2
+tensorflow==2.8.0
+tqdm==4.64.0

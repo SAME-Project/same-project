@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: text_classification_attentional_positional_embeddings pipeline
+  version: 0.0.0
+notebook:
+  name: text_classification_attentional_positional_embeddings
+  path: text_classification_attentional_positional_embeddings.ipynb
+  requirements: requirements.txt
+run:
+  name: text_classification_attentional_positional_embeddings run

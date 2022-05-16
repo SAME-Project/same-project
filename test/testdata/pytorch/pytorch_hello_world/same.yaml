@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: pytorch_hello_world pipeline
+  version: 0.0.0
+notebook:
+  name: pytorch_hello_world
+  path: pytorch_hello_world.ipynb
+  requirements: requirements.txt
+run:
+  name: pytorch_hello_world run

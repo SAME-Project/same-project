@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: object_detection_selective_search pipeline
+  version: 0.0.0
+notebook:
+  name: object_detection_selective_search
+  path: object_detection_selective_search.ipynb
+  requirements: requirements.txt
+run:
+  name: object_detection_selective_search run

@@ -1,0 +1,10 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/tensorflow/attention_is_all_you_need/attention_is_all_you_need.ipynb:
+Babel==2.10.1
+Faker==13.11.1
+matplotlib==3.5.2
+numpy==1.22.3
+pandas==1.4.2
+scikit_learn==1.1.0
+seaborn==0.11.2
+tensorflow==2.8.0
+tqdm==4.64.0
