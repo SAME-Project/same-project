@@ -1,12 +1,18 @@
 import pytest
 
 
+# For defining flags that can enable or disable tests based on a pytest mark.
 additional_flags = [
     ["kubeflow", {
         "action": "store_true",
         "default": False,
         "help": "run kubeflow backend tests, requires kubeflow installation",
-    }]
+    }],
+    ["external", {
+        "action": "store_true",
+        "default": False,
+        "help": "include pytorch, tensorflow and sklearn notebooks in backend tests",
+    }],
 ]
 
 

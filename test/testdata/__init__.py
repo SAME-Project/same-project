@@ -1,9 +1,11 @@
 from sameproject.ops.notebooks import read_notebook
 from sameproject.data.config import SameConfig
 from typing import Optional, Callable, List
+from base64 import urlsafe_b64encode
 from pathlib import Path
 from box import Box
 import pytest
+import json
 
 # Registry of fully-configured notebooks, same configs and requirements.txt
 # files. Tests can request notebooks as pytest fixtures by name or group,
@@ -12,7 +14,7 @@ import pytest
 _registry = {}
 
 
-def get_by_name(name: str) -> Callable:
+def notebook(name: str) -> Callable:
     """
     Returns a pytest decorator for the given name - see _get_decorator().
     """
@@ -22,13 +24,13 @@ def get_by_name(name: str) -> Callable:
     return _get_decorator([_registry[name]])
 
 
-def get_by_group(group: str) -> Callable:
+def notebooks(*args) -> Callable:
     """
     Returns a pytest decorator for the given group - see _get_decorator().
     """
     entries = []
     for entry in _registry.values():
-        if entry.group == group:
+        if entry.group in args:
             entries.append(entry)
 
     if len(entries) == 0:
@@ -125,6 +127,69 @@ for name, steps, cells in _tagged:
         validation_fn(steps, cells),
     )
 
+
+# Notebooks that stress-test various weak points in SAME and pin down features
+# that every backend should support. This is stuff like making sure variables
+# defined in one step are accessible from another step, making sure exploding
+# variables are supported, making sure requirements are installed etc. The
+# validation functions should be run against the output context of the last
+# step in the notebook execution.
+def _validate_features_serialised_modules(res):
+    e = urlsafe_b64encode("test".encode())
+    return res["x"] == e and res["y"] == e and res["z"] == e
+
+
+def _validate_features_exploding_variables(res):
+    with pytest.raises(Exception):
+        next(res["x"])
+    with pytest.raises(Exception):
+        next(res["y"])
+    return True
+
+
+_register_notebook(
+    "features_function_references",
+    "Checks that functions can reference each other in notebooks.",
+    "features",
+    Path(__file__).parent / "features/function_references/same.yaml",
+    lambda res: res["x"] == 1,
+)
+_register_notebook(
+    "features_imported_functions",
+    "Checks that imports work both globally and in function scope.",
+    "features",
+    Path(__file__).parent / "features/imported_functions/same.yaml",
+    lambda res: json.loads(res["x"])["x"] == 0,
+)
+_register_notebook(
+    "features_multistep",
+    "Checks that multistep notebooks are supported.",
+    "features",
+    Path(__file__).parent / "features/multistep/same.yaml",
+    lambda res: res["y"] == "1",
+)
+_register_notebook(
+    "features_requirements_file",
+    "Checks that requirements.txt files are supported.",
+    "features",
+    Path(__file__).parent / "features/requirements_file/same.yaml",
+)
+_register_notebook(
+    "features_serialised_modules",
+    "Checks that imported modules can be accessed across steps.",
+    "features",
+    Path(__file__).parent / "features/serialised_modules/same.yaml",
+    _validate_features_serialised_modules,
+)
+_register_notebook(
+    "features_exploding_variables",
+    "Checks that exploding variables are supported for unserialisable variables.",
+    "features",
+    Path(__file__).parent / "features/exploding_variables/same.yaml",
+    _validate_features_exploding_variables,
+)
+
+
 # A selection of pytorch notebooks found in the wild.
 _register_notebook(
     "pytorch_first_neural_network",
@@ -138,6 +203,7 @@ _register_notebook(
     "pytorch",
     Path(__file__).parent / "pytorch/neural_network_from_scratch/same.yaml",
 )
+
 
 # A selection of tensorflow notebooks found in the wild.
 _register_notebook(
