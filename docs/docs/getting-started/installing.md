@@ -29,8 +29,8 @@ Validate successful installation by running `same version`. Output should look s
 same version
 ```
 
-```
-0.2.2
+```shell
+0.2.0
 ```
 
 ## Connecting to a Workflow Engine
