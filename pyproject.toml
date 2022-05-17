@@ -37,25 +37,26 @@ azureml = [
     "azure-mgmt-applicationinsights",
     "azure-mgmt-web",
 ]
-dev = [
-"PyJWT",
-"pip-tools",
-"pytest",
-"pytest-cov",
-"flake8",
-"ipython",
-"mock",
-"pytest-virtualenv",
-"johnnydep",
-"build",
-"pip",
-"ipykernel",
-"pytest-mock",
-"setuptools",
-"wheel",
-"python-dotenv",
-"pytest-xdist",
-"black"]
+
+[tool.poetry.dev-dependencies]
+pip-tools = "^6.2.0"
+pytest = "^6.2.5"
+pytest-cov = "^2.12.1"
+black = {version = "^21.8b0", allow-prereleases = true}
+flake8 = "^3.9.2"
+ipython = "^7.27.0"
+mock = "^4.0.3"
+pytest-virtualenv = "^1.7.0"
+johnnydep = "^1.8"
+build = "^0.6.1"
+pip = "^21.2.4"
+ipykernel = "^6.4.1"
+pytest-mock = "^3.6.1"
+setuptools = "^58.0.4"
+wheel = "^0.37.0"
+python-dotenv = "^0.19.0"
+pytest-xdist = "^2.5.0"
+
 
 [tool.black]
 line-length = 119
