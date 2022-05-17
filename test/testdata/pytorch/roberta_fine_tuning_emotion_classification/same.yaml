@@ -1,7 +1,7 @@
 apiVersion: sameproject.ml/v1alpha1
 environments:
   default:
-    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+    image_tag: library/python:3.9-slim-buster
 metadata:
   labels: []
   name: roberta_fine_tuning_emotion_classification pipeline

@@ -45,7 +45,7 @@ def get_steps(notebook: dict, config: SameConfig) -> dict:
     def save_step():
         steps[this_step_name] = Step(
             name=this_step_name,
-            code=this_step_code,
+            code=remove_magic_lines(this_step_code),
             index=this_step_index,
             cache_value=this_step_cache_value,
             environment_name=this_step_environment_name,
