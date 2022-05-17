@@ -5,6 +5,7 @@ from sameproject.data.config import SameConfig
 from sameproject.ops.backends import deploy
 from pathlib import Path
 import test.testdata
+import kubernetes
 import tempfile
 import tarfile
 import pytest
@@ -21,14 +22,20 @@ import io
 def test_kubeflow_features(config, notebook, requirements, validation_fn):
     compiled_path, root_file = compile(config, "kubeflow")
     deployment = deploy("kubeflow", compiled_path, root_file)
-    assert _fetch_status(deployment) == "Succeeded"
+    steps = get_steps(notebook, config)
+    status = _fetch_status(deployment)
+    artifacts, logs = _fetch_node_data(deployment)
+
+    last_log = _get_for_step(logs, 0)
+    for i in range(1, len(steps)):
+        if _get_for_step(logs, i) is not None:
+            last_log = _get_for_step(logs, i)
+    assert status == "Succeeded", f"Kubeflow run failed:\n{last_log}"
 
     # Validate the output context of the last step in the notebook:
     if validation_fn is not None:
-        steps = get_steps(notebook, config)
-        artifacts = _fetch_output_contexts(deployment)
-        ctx = _get_artifact_context(artifacts, len(steps) - 1)
-        assert validation_fn(ctx)
+        last_ctx = _get_artifact_context(artifacts, len(steps) - 1)
+        assert validation_fn(last_ctx)
 
 
 @pytest.mark.kubeflow
@@ -37,7 +44,15 @@ def test_kubeflow_features(config, notebook, requirements, validation_fn):
 def test_kubeflow_external(config, notebook, requirements, validation_fn):
     compiled_path, root_file = compile(config, "kubeflow")
     deployment = deploy("kubeflow", compiled_path, root_file)
-    assert _fetch_status(deployment) == "Succeeded"
+    steps = get_steps(notebook, config)
+    status = _fetch_status(deployment)
+    artifacts, logs = _fetch_node_data(deployment)
+
+    last_log = _get_for_step(logs, 0)
+    for i in range(1, len(steps)):
+        if _get_for_step(logs, i) is not None:
+            last_log = _get_for_step(logs, i)
+    assert status == "Succeeded", f"Kubeflow run failed:\n{last_log}"
 
 
 def _extract_artifact_data(data):
@@ -55,17 +70,17 @@ def _get_artifact_context(artifacts, step_num):
 
     # Dill seems to load modules into the global module cache, so if we load
     # every artifact module up front they clobber each other.
-    artifact_data = _get_artifact_for_step(artifacts, step_num)
+    artifact_data = _get_for_step(artifacts, step_num)
     module = dill.loads(artifact_data)
 
     # Convert module to a dictionary so validation can use subscripts:
     return dict(map(lambda k: (k, getattr(module, k)), dir(module)))
 
 
-def _get_artifact_for_step(artifacts, step_num):
-    for k in artifacts:
+def _get_for_step(dict, step_num):
+    for k in dict:
         if k.startswith(f"same-step-{step_num:03}"):
-            return artifacts[k]
+            return dict[k]
     return None
 
 
@@ -80,14 +95,19 @@ def _fetch_status(deployment, timeout=600):
         pytest.fail(f"Failed to fetch kubeflow status for run {deployment.run_info.id} after waiting for {timeout}s.")
 
 
-def _fetch_output_contexts(deployment):
+def _fetch_node_data(deployment):
     client = kfp.Client()
     run_id = deployment.run_info.id
     run = client.get_run(run_id)
     manifest = json.loads(run.pipeline_runtime.workflow_manifest)
 
+    logs = {}
     artifacts = {}
     for node_id in manifest["status"]["nodes"]:
+        if manifest["status"]["nodes"][node_id]["type"] == "Pod":
+            display_name = manifest["status"]["nodes"][node_id]["displayName"]
+            logs[display_name] = _fetch_logs(node_id)
+
         outputs = manifest["status"]["nodes"][node_id].get("outputs", None)
         if outputs is not None:
             for artifact_data in outputs["artifacts"]:
@@ -98,4 +118,15 @@ def _fetch_output_contexts(deployment):
                 artifact = client.runs.read_artifact(run_id, node_id, name)
                 artifacts[name] = _extract_artifact_data(artifact.data)
 
-    return artifacts
+    return artifacts, logs
+
+
+def _fetch_logs(node_id):
+    kubernetes.config.load_kube_config()
+    client = kubernetes.client.CoreV1Api()
+
+    return client.read_namespaced_pod_log(
+        name=node_id,  # pod name matches node id in kubeflow
+        namespace="kubeflow",  # only supports default namespace for now
+        container="main",
+    )

@@ -2025,6 +2025,18 @@ pytest = "*"
 tests = ["six"]
 
 [[package]]
+name = "pytest-forked"
+version = "1.4.0"
+description = "run tests in isolated forked subprocesses"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+py = "*"
+pytest = ">=3.10"
+
+[[package]]
 name = "pytest-mock"
 version = "3.7.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -2074,6 +2086,24 @@ virtualenv = "*"
 
 [package.extras]
 tests = ["mock"]
+
+[[package]]
+name = "pytest-xdist"
+version = "2.5.0"
+description = "pytest xdist plugin for distributed testing and loop-on-failing modes"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+execnet = ">=1.1"
+pytest = ">=6.2.0"
+pytest-forked = "*"
+
+[package.extras]
+psutil = ["psutil (>=3.0)"]
+setproctitle = ["setproctitle"]
+testing = ["filelock"]
 
 [[package]]
 name = "python-box"
@@ -2569,7 +2599,7 @@ azureml = ["azureml-core"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "07d44c1f1fac9d9af48dee99fb91ce6641dae225b899bbb10b776dd57916928d"
+content-hash = "8af855e1ea6b46ebf8db24ffcc6ca003f9962f63b4242a1cc4c1260907ea36cd"
 
 [metadata.files]
 absl-py = [
@@ -3581,6 +3611,10 @@ pytest-fixture-config = [
     {file = "pytest_fixture_config-1.7.0-py2.py3-none-any.whl", hash = "sha256:a0e35e239e70fa12614bbe9ca51d3238fbeb89519deb80cd365b487665a666b0"},
     {file = "pytest_fixture_config-1.7.0-py3.6.egg", hash = "sha256:1413e5e2c6572a3d7709de7ad69dc35004393d777a7883c8431b6f78a2e28fd0"},
 ]
+pytest-forked = [
+    {file = "pytest-forked-1.4.0.tar.gz", hash = "sha256:8b67587c8f98cbbadfdd804539ed5455b6ed03802203485dd2f53c1422d7440e"},
+    {file = "pytest_forked-1.4.0-py3-none-any.whl", hash = "sha256:bbbb6717efc886b9d64537b41fb1497cfaf3c9601276be8da2cccfea5a3c8ad8"},
+]
 pytest-mock = [
     {file = "pytest-mock-3.7.0.tar.gz", hash = "sha256:5112bd92cc9f186ee96e1a92efc84969ea494939c3aead39c50f421c4cc69534"},
     {file = "pytest_mock-3.7.0-py3-none-any.whl", hash = "sha256:6cff27cec936bf81dc5ee87f07132b807bcda51106b5ec4b90a04331cba76231"},
@@ -3596,6 +3630,10 @@ pytest-virtualenv = [
     {file = "pytest_virtualenv-1.7.0-py2.7.egg", hash = "sha256:d350c739956df963914729d14790bde1c6ba4fa9fcf2b78eb77151925f68c7a9"},
     {file = "pytest_virtualenv-1.7.0-py2.py3-none-any.whl", hash = "sha256:fee44d423701d6ab550b202aa8e45ccda77bfe8e72c4318a8f43e6af553ad502"},
     {file = "pytest_virtualenv-1.7.0-py3.6.egg", hash = "sha256:8113bc38845754849fc2411bf6ca9eb91d98685246b0c71c2fbd17e747ec0055"},
+]
+pytest-xdist = [
+    {file = "pytest-xdist-2.5.0.tar.gz", hash = "sha256:4580deca3ff04ddb2ac53eba39d76cb5dd5edeac050cb6fbc768b0dd712b4edf"},
+    {file = "pytest_xdist-2.5.0-py3-none-any.whl", hash = "sha256:6fe5c74fec98906deb8f2d2b616b5c782022744978e7bd4695d39c8f42d0ce65"},
 ]
 python-box = [
     {file = "python-box-5.4.1.tar.gz", hash = "sha256:b68e0f8abc86f3deda751b3390f64df64a0989459de51ba4db949662a7b4d8ac"},
@@ -3985,7 +4023,6 @@ widgetsnbextension = [
 ]
 wimpy = [
     {file = "wimpy-0.6-py2.py3-none-any.whl", hash = "sha256:86aec5008c4bb88a4e81c262dcbe00df1acd4d1cc293b35237b630149c5f6ef7"},
-    {file = "wimpy-0.6.tar.gz", hash = "sha256:5d82b60648861e81cab0a1868ae6396f678d7eeb077efbd7c91524de340844b3"},
 ]
 wrapt = [
     {file = "wrapt-1.14.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:1b376b3f4896e7930f1f772ac4b064ac12598d1c38d04907e696cc4d794b43d3"},

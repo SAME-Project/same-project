@@ -14,14 +14,18 @@ import json
 _registry = {}
 
 
-def notebook(name: str) -> Callable:
+def notebook(*args) -> Callable:
     """
     Returns a pytest decorator for the given name - see _get_decorator().
     """
-    if name not in _registry:
-        raise Exception("Attempted to fetch non-existent testdata '{name}'.")
+    entries = []
+    for name in args:
+        if name not in _registry:
+            raise Exception("Attempted to fetch non-existent testdata '{name}'.")
 
-    return _get_decorator([_registry[name]])
+        entries.append(_registry[name])
+
+    return _get_decorator(entries)
 
 
 def notebooks(*args) -> Callable:
@@ -34,7 +38,7 @@ def notebooks(*args) -> Callable:
             entries.append(entry)
 
     if len(entries) == 0:
-        raise Exception("Attempted to fetch non-existent testdata group '{group}'.")
+        raise Exception("Attempted to fetch non-existent testdata groups '{args}'.")
 
     return _get_decorator(entries)
 
