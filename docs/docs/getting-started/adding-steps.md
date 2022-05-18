@@ -32,7 +32,7 @@ Second, go to the cell you want to split steps with, and add a tag of the follow
 
 ## Execute the Steps
 
-Now, when you execute `same program run` the cells will automatically be grouped together into steps, and executed serially. No additional work is necessary for the end user.
+Now, when you execute `same run` the cells will automatically be grouped together into steps, and executed serially. No additional work is necessary for the end user.
 
 <img width="830" alt="multi-step-execution" src="/images/multi-step-pipeline.png">
 
