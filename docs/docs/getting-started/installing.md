@@ -44,7 +44,7 @@ Use a test drive Kubernetes cluster with Kubeflow Pipelines preinstalled.
 This test drive cluster will expire 1 hour after starting it.
 You can run `testctl get` again to get a new one at any time.
 
-1. Register for a [Testfaster account](https://testfaster.ci/).
+1. Register for a [Testfaster account](https://testfaster.ci/access_token).
 
 2. Copy and run the `testctl` install instructions at [Access Token](https://testfaster.ci/access_token).
    **Make sure to include the `testctl login` command**.
