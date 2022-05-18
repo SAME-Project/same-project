@@ -8,25 +8,16 @@ weight: 10
 
 ## Installing SAME
 
-### Test drive
-
-If you want to try SAME without a Kubernetes cluster with Kubeflow installed, click the following Combinator.ml link, open the Kubeflow UI, then run through the rest of the Tutorial in the "SSH" tab, following the Ubuntu instructions.
-
-<a href="https://testfaster.ci/launch?embedded=true&amp;repo=https://github.com/combinator-ml/terraform-k8s-stack-kubeflow-mlflow&amp;file=examples/testfaster/.testfaster.yml" target="\_blank">:computer: Launch Test Drive :computer:</a>
-
-
 ### System Requirements
 
-- Python >=3.8, <3.11, with pip
-  - Ubuntu/Debian: `sudo apt update && sudo apt install -y python3-pip`
+- Python >=3.8
+- Docker (optional, used by `same verify` command)
 
-### Install SAME using pip
+### Install [`sameproject` from PyPI](https://pypi.org/project/sameproject/)
 
-Before installing the pip package, using a [virtual environment](https://docs.python.org/3/tutorial/venv.html) is highly recommended to isolate package installation from the system. (You can skip this step in the test drive, since the test drive VM is already isolated.)
+For example, with `pip`
 
-SAME project is available through [PyPI](https://pypi.org/project/sameproject/):
-
-```shell
+```bash
 pip3 install sameproject
 ```
 
@@ -34,42 +25,66 @@ pip3 install sameproject
 
 Validate successful installation by running `same version`. Output should look similar to below
 
-```shell
+```bash
 same version
 ```
 
-```shell
-0.2.0
+```
+0.2.1
 ```
 
-## Connecting to a Workflow engine
+## Connecting to a Workflow Engine
 
-To run SAME, you will need a workflow engine to connect to. We support a variety of workflow engines, but recommend that, for now, you connect to one that is dedicated to SAME exclusively.
+To run SAME, you will need a workflow engine to connect to.
+We support Kubeflow Pipelines.
 
-_If you are using the [Combinator.ml test drive](#test-drive), you can skip this section as Kubernetes and Kubeflow is already configured in your test drive VM._
+### Option A: Test Drive
 
-### Prerequisites
+Use a test drive Kubernetes cluster with Kubeflow Pipelines preinstalled.
+This test drive cluster will expire 1 hour after starting it.
+You can run `testctl get` again to get a new one at any time.
 
-- Kubernetes cluster running locally or in a cloud environment
-- [`kubectl`](https://kubernetes.io/docs/tasks/tools/#kubectl) installed
+1. Register for a [Testfaster account](https://testfaster.ci/).
 
-### Install Kubeflow
+2. Copy and run the `testctl` install instructions at [Access Token](https://testfaster.ci/access_token).
+   **Make sure to include the `testctl login` command**.
 
-1. Verify that correct Kubernetes cluster has been configured with the desired `kubectl` context set as the default.
-   ```shell
-   kubectl config current-context
+3. Clone the Kubeflow Combinator repo and get a cluster:
+   ```bash
+   git clone https://github.com/combinator-ml/terraform-k8s-kubeflow
+   cd terraform-k8s-kubeflow
+   cd examples/testfaster
    ```
-2. Set `KUBECONFIG` environment variable. While SAME can operate without setting the environment variable, some tools
-   may expect this to be set.
-   ```shell
-   export KUBECONFIG="~/.kube/config"
+   ```bash
+   testctl get
    ```
-   If you use a non-`bash` shell, you may need to spell this command to set an environment variable differently.
-3. Install Kubeflow on Kubernetes
-    - Follow the [Kubeflow installation instructions](https://www.kubeflow.org/docs/started/installing-kubeflow/), or try the [test drive](#test-drive) if this is too much hard work.
+   ```bash
+   export KUBECONFIG=$(pwd)/kubeconfig
+   ```
+   (If you use a non-`bash` shell, you may need to spell the command to set an environment variable differently.)
+4. To launch the Kubeflow Pipelines UI, from the `terraform-k8s-kubeflow/testfaster` directory, run:
+   ```bash
+   testctl ip
+   ```
+   And copy the final URL into your browser. Log in with `admin@kubeflow.org` and `12341234`. Go to `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
+5. Now in the same shell you ran the `export` command, you can run `same run` (see next section) and it will be able to find and deploy to Kubeflow pipelines in the configured cluster.
+
+### Option B: Use Existing Kubeflow Pipelines
+
+Ensure your active `kubectl` context is pointing to the Kubernetes cluster with Kubeflow Pipelines installed, and run `same run` (see next page for example).
+
+Look in `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
+
+### Option C: Install Kubeflow Pipelines on Kubernetes
+
+Follow the [Kubeflow installation instructions](https://www.kubeflow.org/docs/started/installing-kubeflow/), and then follow the [existing Kubeflow Pipelines](#option-b-use-existing-kubeflow-pipelines) section.
+
+Or, try the [Test Drive](#option-a-test-drive) if this is too much hard work.
+
 
 ## Next
 
-You're done setting up SAME and are now ready to execute! The default execution uses Kubeflow (either locally or in the cloud). Use the `-t` flag to set another target.
+You're done setting up SAME and are now ready to execute!
+The default execution uses Kubeflow (either locally or in the cloud). Use the `-t` flag to set another target.
 
-To try out an example, check out the hello-world example from [First Notebook](./first-notebook.md).
+To try out an example, check out the roadsigns example from [Example Notebook](./example-notebook.md).
