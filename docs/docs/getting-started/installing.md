@@ -51,7 +51,7 @@ You can run `testctl get` again to get a new one at any time.
 
 3. Clone the Kubeflow Combinator repo and get a cluster:
    ```bash
-   git clone https://github.com/combinator-ml/terraform-k8s-kubeflow
+   git clone https://github.com/combinator-ml/terraform-k8s-stack-kubeflow-mlflow
    cd terraform-k8s-kubeflow
    cd examples/testfaster
    ```
