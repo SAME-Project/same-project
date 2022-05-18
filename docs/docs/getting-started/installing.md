@@ -49,7 +49,7 @@ You can run `testctl get` again to get a new one at any time.
 2. Copy and run the `testctl` install instructions at [Access Token](https://testfaster.ci/access_token).
    **Make sure to include the `testctl login` command**.
 
-3. Clone the Kubeflow Combinator repo and get a cluster:
+3. Clone this Kubeflow Combinator repo and get a cluster:
    ```bash
    git clone https://github.com/combinator-ml/terraform-k8s-stack-kubeflow-mlflow
    cd terraform-k8s-stack-kubeflow-mlflow
