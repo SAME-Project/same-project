@@ -34,6 +34,6 @@ Second, go to the cell you want to split steps with, and add a tag of the follow
 
 Now, when you execute `same program run` the cells will automatically be grouped together into steps, and executed serially. No additional work is necessary for the end user.
 
-![A sample three step execution](../images/three-step-execution.jpg)
+<img width="830" alt="multi-step-execution" src="/images/multi-step-pipeline.png">
 
 We inject an additional step for each graph, a "run info" step (which is necessary because we only know things like Run ID when the step is executed).
