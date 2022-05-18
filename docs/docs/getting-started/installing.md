@@ -71,9 +71,15 @@ You can run `testctl get` again to get a new one at any time.
 
 ### Option B: Use Existing Kubeflow Pipelines
 
-Ensure your active `kubectl` context is pointing to the Kubernetes cluster with Kubeflow Pipelines installed, and run `same run` (see next page for example).
+Ensure your active `kubectl` context is pointing to the Kubernetes cluster with Kubeflow Pipelines installed:
 
-Look in `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
+```bash
+kubectl config current-context
+```
+
+If so, you are ready to run `same run` (see next page for example).
+
+After running `same run`, look in `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
 
 ### Option C: Install Kubeflow Pipelines on Kubernetes
 
