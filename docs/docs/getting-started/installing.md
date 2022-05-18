@@ -10,7 +10,7 @@ weight: 10
 
 ### System Requirements
 
-- Python 3.8+
+- Python >=3.8
 - Docker (optional, used by `same verify` command)
 
 ### Install [`sameproject` from PyPI](https://pypi.org/project/sameproject/)
@@ -18,7 +18,7 @@ weight: 10
 For example, with `pip`
 
 ```bash
-pip3 install --upgrade sameproject
+pip3 install sameproject
 ```
 
 ### Verify installation
@@ -29,8 +29,8 @@ Validate successful installation by running `same version`. Output should look s
 same version
 ```
 
-```shell
-0.2.0
+```
+0.2.1
 ```
 
 ## Connecting to a Workflow Engine
@@ -44,15 +44,15 @@ Use a test drive Kubernetes cluster with Kubeflow Pipelines preinstalled.
 This test drive cluster will expire 1 hour after starting it.
 You can run `testctl get` again to get a new one at any time.
 
-1. Register for a [Testfaster account](https://testfaster.ci/access_token).
+1. Register for a [Testfaster account](https://testfaster.ci/).
 
 2. Copy and run the `testctl` install instructions at [Access Token](https://testfaster.ci/access_token).
    **Make sure to include the `testctl login` command**.
 
-3. Clone this Kubeflow Combinator repo and get a cluster:
+3. Clone the Kubeflow Combinator repo and get a cluster:
    ```bash
-   git clone https://github.com/combinator-ml/terraform-k8s-stack-kubeflow-mlflow
-   cd terraform-k8s-stack-kubeflow-mlflow
+   git clone https://github.com/combinator-ml/terraform-k8s-kubeflow
+   cd terraform-k8s-kubeflow
    cd examples/testfaster
    ```
    ```bash
@@ -69,17 +69,11 @@ You can run `testctl get` again to get a new one at any time.
    And copy the final URL into your browser. Log in with `admin@kubeflow.org` and `12341234`. Go to `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
 5. Now in the same shell you ran the `export` command, you can run `same run` (see next section) and it will be able to find and deploy to Kubeflow pipelines in the configured cluster.
 
-### Option B: Use Existing Kubeflow Pipelines Install
+### Option B: Use Existing Kubeflow Pipelines
 
-Ensure your active `kubectl` context is pointing to the Kubernetes cluster with Kubeflow Pipelines installed:
+Ensure your active `kubectl` context is pointing to the Kubernetes cluster with Kubeflow Pipelines installed, and run `same run` (see next page for example).
 
-```bash
-kubectl config current-context
-```
-
-If so, you are ready to run `same run` (see next page for example).
-
-After running `same run`, look in `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
+Look in `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
 
 ### Option C: Install Kubeflow Pipelines on Kubernetes
 
