@@ -47,3 +47,23 @@ In the Kubeflow UI, click on **Pipelines -> Experiments** to see your runs!
 
 <img width="830" alt="multi-step-execution" src="/images/multi-step-pipeline.png">
 
+## Try Your Own Notebook
+
+Try running
+```bash
+same init
+```
+
+And then
+```bash
+same verify
+```
+
+And finally
+```bash
+same run
+```
+
+In an empty folder with your own notebook in it!
+
+If you have any issues, please [report a GitHub issue](https://github.com/SAME-Project/same-project/issues/new) or [come tell us on Slack](https://join.slack.com/t/thesameproject/shared_invite/zt-lq9rk2g6-Jyfv3AXu_qnX9LqWCmV7HA)!
