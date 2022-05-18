@@ -1,14 +1,32 @@
-# SAME Python Tests
+# SAME Project - Tests
 
-## Overview
+Contains a repository of unit tests and integration tests for the SAME project. The module structure mimics the module structure in the [python codebase](../sameproject/README.md), with the exception of the [testdata](/testdata) module, which contains notebooks and configuration we can test against.
 
-This folder contains tests for each of the major modules in `same-mono-private`:
-
-- **[backends](https://github.com/SAME-Project/same-mono-private/tree/main/backends):** Tests for backend extensions such as Durable Functions.
-- **[cli](https://github.com/SAME-Project/same-mono-private/tree/main/cli):** CLI tests, including E2E tests against the kubeflow and AML backends.
-- **[sdk](https://github.com/SAME-Project/same-mono-private/tree/main/test/sdk):** Unit tests for SDK functions.
-- **testdata:** Shared folder for test data used by the various module tests, including test notebooks, environments and configurations.
 
 ## Running Tests
 
-For how to run tests, refer to [How to run the tests in the repo](https://github.com/SAME-Project/SAME-Docs/blob/main/content/getting-started/dev-build.md#how-to-run-the-tests-in-the-repo) in the [SAME Docs](https://samedocs.azurewebsites.net/getting-started/dev-build/#how-to-run-the-tests-in-the-repo).
+For detailed instructions on how to run tests, refer to the [developer documentation](https://github.com/SAME-Project/same-project/blob/main/docs/docs/getting-started/dev-build.md#running-tests). If you have problems, make sure your submodules are updated and that you are running commands from a `poetry shell`.
+
+```bash
+pytest
+```
+
+Integration tests for specific backends are disabled by default, as they require a running instnance of the backend to test against. If you want to enable integrations for a particular backend, such as `kubeflow`, you will need to set its respective `pytest` flag:
+
+```bash
+pytest --kubeflow           # enables the kubeflow integration tests
+pytest --durable_functions  # enables the durable functions integration tests
+...
+```
+
+We also have a repository of "from-the-wild" notebooks that we have collected from various sources online. These notebooks are contained and registered in the [testdata](/testdata) module. To test a particular backend against "from-the-wild" notebooks, you will need to set the `--external` flag as well:
+
+```bash
+pytest --kubeflow --external  # tests "from-the-wild" notebooks against a kubeflow backend
+```
+
+Finally, our tests have support for parallelisation, which speeds up integration tests considerably. To run tests on multiple threads, specify the `-n` option when running `pytest`:
+
+```bash
+pytest --durable_functions -n 4  # tests a durable function backend using 4 threads
+```
