@@ -30,7 +30,7 @@ same version
 ```
 
 ```
-0.2.1
+0.2.2
 ```
 
 ## Connecting to a Workflow Engine
