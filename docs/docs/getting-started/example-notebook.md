@@ -2,7 +2,7 @@
 type: docs
 title: "Hello World Notebook"
 linkTitle: "Hello World"
-description: "Deploying Your First Notebook"
+description: "Deploying An Example Notebook"
 weight: 20
 ---
 ## Clone the Sample Repo
@@ -13,22 +13,37 @@ To get started, first you'll need to clone our sample repo. To do so, execute th
 git clone https://github.com/SAME-Project/SAME-samples.git
 ```
 
-Next, change into the hello-world directory:
+Next, change into the `03-road-signs` directory:
 
 ```bash
 cd SAME-samples
-cd 01-hello-world
+cd 03-road-signs
 ```
 
-Finally, deploy your notebook to your environment. If you are using kubeflow, you would execute the following command:
+This is a complete data fetching, data engineering and model training example in three steps.
+
+### Check the Requirements Work With the Container and the Notebook
+
+This step is optional, and requires that you have Docker running locally.
+If you don't, you can skip straight to deploying the pipeline to your Workflow Engine.
 
 ```bash
-same program run
+same verify
 ```
 
-This command converts the notebook into a single python script, and deploys it to your [previously configured](installing.md) Kubeflow.
+Note: this step can fail spuriously when run on a different architecture versus the workflow engine (e.g. M1 Mac).
+
+### Deploy Pipeline to Workflow Engine
+
+Finally, deploy your notebook to your environment. If you are using Kubeflow, you would execute the following command:
+
+```bash
+same run
+```
+
+This command converts the notebook into a multi-stage pipeline, and deploys it to your [previously configured](installing.md) Kubeflow.
 
 In the Kubeflow UI, click on **Pipelines -> Experiments** to see your runs!
 
-<img width="830" alt="one-step-execution" src="https://user-images.githubusercontent.com/264658/157191116-42bc92eb-2814-4622-81ba-0a2e048c59c4.png">
+<img width="830" alt="multi-step-execution" src="/images/multi-step-pipeline.png">
 
