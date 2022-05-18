@@ -10,7 +10,7 @@ weight: 10
 
 ### System Requirements
 
-- Python >=3.8
+- Python 3.8+
 - Docker (optional, used by `same verify` command)
 
 ### Install [`sameproject` from PyPI](https://pypi.org/project/sameproject/)
