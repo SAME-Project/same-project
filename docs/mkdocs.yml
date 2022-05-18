@@ -6,7 +6,6 @@ nav:
       - Example Notebook: getting-started/example-notebook.md
       - Adding Steps: getting-started/adding-steps.md
       - Changing Environment: getting-started/changing-environment.md
-      - Working with Datasets: getting-started/working-with-datasets.md
       - Developer Guide: getting-started/dev-build.md
 #     - Developer Guide:
 #           - How to contribute: developer/developer.md
