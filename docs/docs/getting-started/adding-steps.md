@@ -5,7 +5,7 @@ description: "Breaking a single notebook into many steps."
 weight: 30
 ---
 
-In order to add steps, we need a comment in the notebook itself. This can be done by adding a tag in the notebook, or a comment in the python file.
+In order to add steps, we need a comment in the notebook itself. This can be done by adding a tag in the notebook.
 
 ## Allowing for Adding Specific Tags
 
