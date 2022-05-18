@@ -18,7 +18,7 @@ weight: 10
 For example, with `pip`
 
 ```bash
-pip3 install sameproject
+pip3 install --upgrade sameproject
 ```
 
 ### Verify installation

@@ -3,11 +3,10 @@ nav:
   - Getting started:
       # - SAME Quickstart: getting-started/_index.md
       - Installing: getting-started/installing.md
-      - First Notebook: getting-started/first-notebook.md
+      - Example Notebook: getting-started/example-notebook.md
       - Adding Steps: getting-started/adding-steps.md
       - Changing Environment: getting-started/changing-environment.md
-      - Dev Build: getting-started/dev-build.md
-      - Importing Packages: getting-started/importing-packages.md
+      - Developer Guide: getting-started/dev-build.md
 #     - Developer Guide:
 #           - How to contribute: developer/developer.md
 #           - Debugging guide: developer/debug.md
