@@ -69,7 +69,7 @@ You can run `testctl get` again to get a new one at any time.
    And copy the final URL into your browser. Log in with `admin@kubeflow.org` and `12341234`. Go to `Pipelines` -> `Experiments` -> `Default` in the Kubeflow UI.
 5. Now in the same shell you ran the `export` command, you can run `same run` (see next section) and it will be able to find and deploy to Kubeflow pipelines in the configured cluster.
 
-### Option B: Use Existing Kubeflow Pipelines
+### Option B: Use Existing Kubeflow Pipelines Install
 
 Ensure your active `kubectl` context is pointing to the Kubernetes cluster with Kubeflow Pipelines installed:
 
