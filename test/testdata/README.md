@@ -16,7 +16,7 @@ folders contain fully-configured notebooks that have been registered with
 the testdata suite - see below.
 
 
-## Process
+## Adding New Notebooks
 
 To add a notebook to the test suite, create a folder for it in the relevant
 child directory, i.e. `pytorch` if it's a pytorch notebook. Add the notebook
