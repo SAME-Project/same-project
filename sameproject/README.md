@@ -23,9 +23,9 @@ The most extensively developed backend right now is `kubeflow`, which supports t
 
 Other backends support the following subset of these features:
 
-                  |**1**  |**2**  |**3**  |**4**
-:-----:           |:-----:|:-----:|:-----:|:-----:
-**kubeflow**          | x| x| x| x
-**durable functions** |  |  |  |    
-**aml**               |  |  |  |     
-**vertex**            |  |  |  |     
+|                     |**1**|**2**|**3**|**4**|
+|--------------------:|:---:|:---:|:---:|:----|
+|**kubeflow**         |  x  |  x  |  x  |  x  |
+|**durable functions**|     |     |     |     |
+|**aml**              |     |     |     |     |
+|**vertex**           |     |     |     |     |
