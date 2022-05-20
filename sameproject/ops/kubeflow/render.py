@@ -191,13 +191,20 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
         512 * 1024 * 1024,  # 512MB
     )
 
+    same_env = same_config.runtime_options.get(
+        "same_env",
+        "default",
+    )
+
     step_contract = {
         "name": step.name,
+        "same_env": same_env,
+        "memory_limit": memory_limit,
         "unique_name": step.unique_name,
+        "requirements_file": requirements_file,
         "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
-        "requirements_file": requirements_file,
-        "memory_limit": memory_limit,
+        "same_yaml": urlsafe_b64encode(bytes(same_config.to_yaml(), "utf-8")).decode(),
     }
 
     return env.get_template(kubeflow_step_template).render(step_contract)

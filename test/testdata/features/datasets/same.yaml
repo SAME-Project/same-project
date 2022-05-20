@@ -15,9 +15,9 @@ datasets:
   example:
     schema_uri: "http://todo.fix.me"
     environments:
-      default: ipfs://QmUuwHhYR2Tpas8BgBaQxcaAauHtMAkyK2mUAhnhk3JpDj
-      prod: ipfs://Qma4Z2E1bQMWPnerTWi8qBtXjHpzmBFcNb1zpzavur4LRo
+      default: ipfs://QmYni7jHKMpVNXXhVBeAU8VfWFzzcKgyWpnQNGSPtmSZMz/default.json
+      prod: ipfs://QmZPVPZgaGMonHrEbtXtFKCL3cishod651zzDHPisREvmm/prod.json
 
 # The linked IPFS documents can be viewed here:
-# https://api.ipfsbrowser.com/ipfs/get.php?hash=QmUuwHhYR2Tpas8BgBaQxcaAauHtMAkyK2mUAhnhk3JpDj
-# https://api.ipfsbrowser.com/ipfs/get.php?hash=Qma4Z2E1bQMWPnerTWi8qBtXjHpzmBFcNb1zpzavur4LRo
+# https://api.ipfsbrowser.com/ipfs/get.php?hash=QmYni7jHKMpVNXXhVBeAU8VfWFzzcKgyWpnQNGSPtmSZMz/default.json
+# https://api.ipfsbrowser.com/ipfs/get.php?hash=QmZPVPZgaGMonHrEbtXtFKCL3cishod651zzDHPisREvmm/prod.json

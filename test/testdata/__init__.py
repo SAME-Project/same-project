@@ -156,7 +156,7 @@ def _validate_features_datasets(res):
     with path.open("r") as file:
         data = json.loads(file.read())
 
-    return json.dumps(data) == json.dumps(res["x"])
+    return json.dumps(data) == json.dumps(json.load(res["x"]))
 
 
 _register_notebook(
