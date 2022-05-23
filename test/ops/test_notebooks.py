@@ -27,7 +27,7 @@ tagged_notebooks = [
 ]
 
 magic_line_testcases = [
-    ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", True),
+    ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", False),
     ("multiline_strings", "test/ops/testdata/edgecase_notebooks/multiline_strings.ipynb", False),
 ]
 
