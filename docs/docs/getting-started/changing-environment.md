@@ -31,8 +31,8 @@ environment=private-training-env
 
 ![Private Environment Tag](../images/environment-private-training-env.jpg)
 
-### Update SAME File
+### Update SAME Config
 
-Then in your SAME file, you'll add a section that maps to the specific image you'll need.
+Then in your `same.yaml` config file, you'll add a section that maps to the specific image you'll need.
 
-![SAME file contents](../images/private-environment-same-file.jpg)
+![SAME config file contents](../images/private-environment-same-file.jpg)
