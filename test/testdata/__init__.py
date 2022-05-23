@@ -152,11 +152,8 @@ def _validate_features_exploding_variables(res):
 
 
 def _validate_features_datasets(res):
-    path = Path(__file__).parent / "features/datasets/default.json"
-    with path.open("r") as file:
-        data = json.loads(file.read())
-
-    return json.dumps(data) == json.dumps(json.load(res["x"]))
+    data = json.loads(res["x"])
+    return "names" in data and data["names"]["0"] == "david"
 
 
 _register_notebook(
