@@ -12,7 +12,7 @@ notebook_path = Path("test/ops/testdata/same_notebooks/generic/sample_notebook.i
 requirements_path = Path("test/ops/testdata/same_notebooks/generic/requirements.txt")
 
 magic_line_testcases = [
-    ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", True),
+    ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", False),
     ("multiline_strings", "test/ops/testdata/edgecase_notebooks/multiline_strings.ipynb", False),
 ]
 
