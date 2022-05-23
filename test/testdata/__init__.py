@@ -151,6 +151,11 @@ def _validate_features_exploding_variables(res):
     return True
 
 
+def _validate_features_datasets(res):
+    data = json.loads(res["x"])
+    return "names" in data and data["names"]["0"] == "david"
+
+
 _register_notebook(
     "features_function_references",
     "Checks that functions can reference each other in notebooks.",
@@ -191,6 +196,13 @@ _register_notebook(
     "features",
     Path(__file__).parent / "features/exploding_variables/same.yaml",
     _validate_features_exploding_variables,
+)
+_register_notebook(
+    "features_datasets",
+    "Checks that 'sdk.dataset(...)' integration is working correctly.",
+    "features",
+    Path(__file__).parent / "features/datasets/same.yaml",
+    _validate_features_datasets,
 )
 
 

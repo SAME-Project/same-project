@@ -108,6 +108,10 @@ _register_option(
     "Maximum size in bytes allowed for variables being serialised between steps.",
     type=int,
 )
+_register_option(
+    "same_env",
+    "Environment to compile and deploy notebooks against.",
+)
 
 # Options for Kubeflow backend:
 _register_option(

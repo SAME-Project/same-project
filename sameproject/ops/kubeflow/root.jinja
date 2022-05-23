@@ -18,8 +18,8 @@ from {{ step.unique_name }} import {{ step.unique_name }}_fn
 run_info_comp = kfp.v2.dsl.component(
     func=run_info_fn,
     packages_to_install=[
-        "kfp",
-        "dill",
+        "dill==0.3.5.1",
+        "kfp==1.8.12",
     ],
 )
 
@@ -28,9 +28,9 @@ run_info_comp = kfp.v2.dsl.component(
     func={{ step.unique_name}}_fn,
     base_image="{{ step.image_tag }}",
     packages_to_install=[
-        "dill",
-        "requests",
+        "dill==0.3.5.1",
         "pympler==1.0.1",
+        "requests==2.27.1",
         {{ step.package_string }} # TODO: make this a loop
     ],
 )

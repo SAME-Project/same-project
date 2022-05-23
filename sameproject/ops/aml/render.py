@@ -69,7 +69,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     root_contract["root_parameters_as_string"] = ", ".join(params_to_merge)
 
     root_contract["list_of_environments"]["default"] = {}
-    root_contract["list_of_environments"]["default"]["image_tag"] = "library/python:3.9-slim-buster"
+    root_contract["list_of_environments"]["default"]["image_tag"] = "library/python:3.10-slim-buster"
     root_contract["list_of_environments"]["default"]["private_registry"] = False
 
     for name in same_config.environments:
