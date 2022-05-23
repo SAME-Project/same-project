@@ -18,27 +18,6 @@ import io
 
 
 @pytest.mark.kubeflow
-@test.testdata.notebook("features_datasets")
-def test_guy_debug(config, notebook, requirements, validation_fn):
-    compiled_path, root_file = compile(config, "kubeflow")
-    deployment = deploy("kubeflow", compiled_path, root_file)
-    steps = get_steps(notebook, config)
-    status = _fetch_status(deployment)
-    artifacts, logs = _fetch_node_data(deployment)
-
-    last_log = _get_for_step(logs, 0)
-    for i in range(1, len(steps)):
-        if _get_for_step(logs, i) is not None:
-            last_log = _get_for_step(logs, i)
-    assert status == "Succeeded", f"Kubeflow run failed:\n{last_log}"
-
-    # Validate the output context of the last step in the notebook:
-    if validation_fn is not None:
-        last_ctx = _get_artifact_context(artifacts, len(steps) - 1)
-        assert validation_fn(last_ctx)
-
-
-@pytest.mark.kubeflow
 @test.testdata.notebooks("features")
 def test_kubeflow_features(config, notebook, requirements, validation_fn):
     compiled_path, root_file = compile(config, "kubeflow")

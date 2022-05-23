@@ -11,7 +11,7 @@ datasets:
       PROD: s3://contoso_DS/reco/202101250655/user_data.parquet
 environments:
   default:
-    image_tag: library/python:3.9-slim-buster
+    image_tag: library/python:3.10-slim-buster
   python37:
     image_tag: library/python:3.7-slim-buster
     private_registry: false

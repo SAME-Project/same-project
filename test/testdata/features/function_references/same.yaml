@@ -7,6 +7,6 @@ notebook:
   path: function_references.ipynb
 environments:
   default:
-    image_tag: library/python:3.9-slim-buster
+    image_tag: library/python:3.10-slim-buster
 run:
   name: "function_references"
