@@ -66,6 +66,7 @@ def _extract_artifact_data(data):
 
 def _get_artifact_context(artifacts, step_num):
     # Monkey-patch of the main module to support loading exploding vars:
+    # TODO(guy): Why is this necessary for classes?
     sys.modules["__main__"].__dict__["ExplodingVariable"] = ExplodingVariable
 
     # Dill seems to load modules into the global module cache, so if we load

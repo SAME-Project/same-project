@@ -1,0 +1,23 @@
+apiVersion: projectsame.io/v1alpha1
+metadata:
+  name: datasets
+  version: 0.0.1
+notebook:
+  name: "datasets"
+  path: datasets.ipynb
+  requirements: requirements.txt
+environments:
+  default:
+    image_tag: library/python:3.10
+run:
+  name: "datasets"
+datasets:
+  example:
+    schema_uri: "http://todo.fix.me"
+    environments:
+      default: ipfs://QmYni7jHKMpVNXXhVBeAU8VfWFzzcKgyWpnQNGSPtmSZMz/default.json
+      prod: ipfs://QmZPVPZgaGMonHrEbtXtFKCL3cishod651zzDHPisREvmm/prod.json
+
+# The linked IPFS documents can be viewed here:
+# https://api.ipfsbrowser.com/ipfs/get.php?hash=QmYni7jHKMpVNXXhVBeAU8VfWFzzcKgyWpnQNGSPtmSZMz/default.json
+# https://api.ipfsbrowser.com/ipfs/get.php?hash=QmZPVPZgaGMonHrEbtXtFKCL3cishod651zzDHPisREvmm/prod.json
