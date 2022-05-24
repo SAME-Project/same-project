@@ -85,7 +85,7 @@ def _get_for_step(dict, step_num):
     return None
 
 
-def _fetch_status(deployment, timeout=600):
+def _fetch_status(deployment, timeout=1200):
     client = kfp.Client()
     run_id = deployment.run_info.id
 
