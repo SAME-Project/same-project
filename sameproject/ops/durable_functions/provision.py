@@ -3,7 +3,10 @@ from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.mgmt.web import WebSiteManagementClient
 from azure.identity import DefaultAzureCredential
+from zipfile import ZipFile
+from tempfile import mktemp
 from pathlib import Path
+import requests
 import json
 
 
@@ -33,6 +36,7 @@ def provision_orchestrator(
         },
     )
 
+    # Provisions a storage account for the functionapp:
     sa = sm_client.storage_accounts.begin_create(
         "same-resource-group",
         "samestorageaccount",
@@ -46,12 +50,13 @@ def provision_orchestrator(
     )
     sa.wait()
 
+    # To use the storage account we need an access key:
     sak = sm_client.storage_accounts.list_keys(
         "same-resource-group",
         "samestorageaccount",
     )
-    storage_string = f"DefaultEndpointsProtocol=https;AccountName=samestorageaccount;EndpointSuffix=core.windows.net;AccountKey={sak.keys[0].value}"
 
+    # Provisions an app service plan for the functionapp:
     asp = wm_client.app_service_plans.begin_create_or_update(
         "same-resource-group",
         "same-app-service-plan",
@@ -66,6 +71,7 @@ def provision_orchestrator(
     )
     asp.wait()
 
+    # Provisions the actual functionapp and configures it for python:
     wa = wm_client.web_apps.begin_create_or_update(
         "same-resource-group",
         "same-site",
@@ -79,7 +85,7 @@ def provision_orchestrator(
                 "app_settings": [
                     {
                         "name": "AzureWebJobsStorage",
-                        "value": storage_string,
+                        "value": f"DefaultEndpointsProtocol=https;AccountName=samestorageaccount;EndpointSuffix=core.windows.net;AccountKey={sak.keys[0].value}",
                     },
                     {
                         "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -94,3 +100,34 @@ def provision_orchestrator(
         }
     )
     wa.wait()
+
+    # To deploy a function to the functionapp we need credentials:
+    pcs = wm_client.web_apps.begin_list_publishing_credentials(
+        "same-resource-group",
+        "same-site",
+    )
+    pcs.wait()
+
+    # Zips the relevant files for the orchestrator function:
+    root = Path(__file__).parent
+    zip = Path(mktemp(suffix=".zip"))
+    with ZipFile(zip, "w") as archive:
+        archive.write(root / "host.json", "host.json")
+        archive.write(root / "requirements.txt", "requirements.txt")
+        archive.write(root / "orchestrator" / "__init__.py", "orchestrator/__init__.py")
+        archive.write(root / "orchestrator" / "function.json", "orchestrator/function.json")
+
+    # Deploys the zipped function to the functionapp using zip deployment:
+    #  https://docs.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
+    username = pcs.result().publishing_user_name
+    password = pcs.result().publishing_password
+    with zip.open("rb") as file:
+        zip_data = file.read()
+
+    res = requests.post(
+        "https://same-site.scm.azurewebsites.net/api/zipdeploy",
+        data=zip_data,
+        auth=(username, password),
+    )
+
+    print(f"Deployment status code: {res.status_code}")
