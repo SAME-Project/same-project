@@ -1,6 +1,6 @@
 {
-  "scriptFile": "execute_step.py",
-  "entryPoint": "execute_step",
+  "scriptFile": "executor.py",
+  "entryPoint": "executor",
   "bindings": [
     {
       "name": "input",

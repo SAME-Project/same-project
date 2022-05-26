@@ -3,14 +3,14 @@ from .context import code_executor
 from .context import exception_utils
 from .context import serialization_utils
 from .context import Step
-from .execution_environment import ExecutionEnvironment
+from .environment import ExecutionEnvironment
 import azure.functions as func
 import azure.functions.blob as blob
 import logging
 import time
 
 
-def execute_step(
+def executor(
     input: dict,
     envin: blob.InputStream,
     envout: func.Out[bytes]

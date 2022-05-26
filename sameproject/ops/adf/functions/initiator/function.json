@@ -1,6 +1,6 @@
 {
-  "scriptFile": "start_steps_workflow.py",
-  "entryPoint": "start_steps_workflow",
+  "scriptFile": "initiator.py",
+  "entryPoint": "initiator",
   "bindings": [
     {
       "authLevel": "anonymous",

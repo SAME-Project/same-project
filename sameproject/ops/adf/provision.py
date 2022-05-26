@@ -1,4 +1,3 @@
-# from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.mgmt.web import WebSiteManagementClient
@@ -10,8 +9,7 @@ import requests
 import json
 
 
-# TODO: deploy a storage account for the functionapp.
-# TODO: make idempotent - seems to be by default though!.
+# TODO configure application insights
 def provision_orchestrator(
     subscription_id: str,
 ):
@@ -29,6 +27,7 @@ def provision_orchestrator(
     sm_client = StorageManagementClient(creds, subscription_id)
 
     # Create a resource group to house everything we"re going to provision:
+    print("Provisioning resource group 'same-resource_group'...")
     rm_client.resource_groups.create_or_update(
         "same-resource-group",
         {
@@ -37,6 +36,7 @@ def provision_orchestrator(
     )
 
     # Provisions a storage account for the functionapp:
+    print("Provisioning storage account 'samestorageaccount'...")
     sa = sm_client.storage_accounts.begin_create(
         "same-resource-group",
         "samestorageaccount",
@@ -57,6 +57,7 @@ def provision_orchestrator(
     )
 
     # Provisions an app service plan for the functionapp:
+    print("Provisioning app service plan 'same-app-service-plan'...")
     asp = wm_client.app_service_plans.begin_create_or_update(
         "same-resource-group",
         "same-app-service-plan",
@@ -72,6 +73,7 @@ def provision_orchestrator(
     asp.wait()
 
     # Provisions the actual functionapp and configures it for python:
+    print("Provisioning function app 'same-site'...")
     wa = wm_client.web_apps.begin_create_or_update(
         "same-resource-group",
         "same-site",
@@ -109,13 +111,9 @@ def provision_orchestrator(
     pcs.wait()
 
     # Zips the relevant files for the orchestrator function:
-    root = Path(__file__).parent
-    zip = Path(mktemp(suffix=".zip"))
-    with ZipFile(zip, "w") as archive:
-        archive.write(root / "host.json", "host.json")
-        archive.write(root / "requirements.txt", "requirements.txt")
-        archive.write(root / "orchestrator" / "__init__.py", "orchestrator/__init__.py")
-        archive.write(root / "orchestrator" / "function.json", "orchestrator/function.json")
+    print("Creating zip archive of orchestrator functions...")
+    zip = create_function_archive()
+    print(f"Archive saved to: {zip.absolute()}")
 
     # Deploys the zipped function to the functionapp using zip deployment:
     #  https://docs.microsoft.com/en-us/azure/azure-functions/deployment-zip-push
@@ -124,10 +122,25 @@ def provision_orchestrator(
     with zip.open("rb") as file:
         zip_data = file.read()
 
+    print("Deploying zip archive to: https://same-site.scm.azurewebsites.net/api/zipdeploy")
     res = requests.post(
         "https://same-site.scm.azurewebsites.net/api/zipdeploy",
         data=zip_data,
         auth=(username, password),
     )
 
-    print(f"Deployment status code: {res.status_code}")
+    if res.status_code == 200:
+        print("Successful deployment!")
+    else:
+        raise Exception(f"Deployment was unsuccessful, with status code: {res.status_code}")
+
+
+def create_function_archive():
+    """Creates a temporary zip archive of the 'functions/' directory."""
+    zip = Path(mktemp(suffix=".zip"))
+    with ZipFile(zip, "w") as archive:
+        root = Path(__file__).parent / "functions"
+        for file in root.rglob("*"):
+            archive.write(file, file.relative_to(root))
+
+    return zip

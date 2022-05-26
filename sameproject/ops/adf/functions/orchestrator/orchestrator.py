@@ -6,7 +6,7 @@ import azure.durable_functions as df
 EXECUTE_STEP_ACTIVITY_NAME = "execute_step"
 
 
-def _execute_steps_workflow(context: df.DurableOrchestrationContext):
+def _orchestrator(context: df.DurableOrchestrationContext):
     """
     Orchestrates the execution of a given list of Steps.
     """
@@ -14,7 +14,7 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
     input = context.get_input()
     if input is None:
         raise Exception("Input not provided")
-    
+
     # Get user for which to execute (and get/put state)
     user = input.get("user", None)
     if user is None:
@@ -48,7 +48,7 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
         idin = id
         idout = id + 1
         id += 1
-        input  = {
+        input = {
             "step": step,
             "user": user,
             "idin": idin,
@@ -60,4 +60,4 @@ def _execute_steps_workflow(context: df.DurableOrchestrationContext):
     return results
 
 
-execute_steps_workflow = df.Orchestrator.create(_execute_steps_workflow)
+orchestrator = df.Orchestrator.create(_orchestrator)

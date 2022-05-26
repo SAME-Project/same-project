@@ -1,10 +1,9 @@
-from .context import http_utils
 import azure.functions as func
 import azure.durable_functions as df
 import logging
 
 
-async def start_steps_workflow(req: func.HttpRequest, starter: str) -> func.HttpResponse:
+async def initiator(req: func.HttpRequest, starter: str) -> func.HttpResponse:
     """
     Starts the orchestration that will execute a given list of Steps.
     """
