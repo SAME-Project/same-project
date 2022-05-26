@@ -1,32 +1,34 @@
-import azure.functions as func
 import azure.durable_functions as df
+import azure.functions as fn
 import logging
+import json
 
 
-async def initiator(req: func.HttpRequest, starter: str) -> func.HttpResponse:
-    """
-    Starts the orchestration that will execute a given list of Steps.
-    """
-    client = df.DurableOrchestrationClient(starter)
+def info(msg: str):
+    logging.info(f"initiator: {msg}")
+
+
+async def initiator(req: fn.HttpRequest, client: str) -> fn.HttpResponse:
+    """Initiates the orchestration of a SAME pipeline."""
+    client = df.DurableOrchestrationClient(client)
 
     try:
-        # Fetch the steps
-        body = req.get_json()
+        json_data = req.get_json()
+    except ValueError:
+        return fn.HttpResponse(
+            status_code=400,
+            body="error: a json request body is required"
+        )
 
-        # Start workflow orchestrator
-        instance_id = await client.start_new(req.route_params["functionName"], None, body)
-        logging.info(f"Started orchestration with ID = '{instance_id}'.")
-    except Exception as ex:
-        status_code = 400
-        result = {
-            "status": "fail",
-            "exception": str(ex)
-        }
-        stats = {}
-        response_payload = {
-            "result": result,
-            "stats": stats
-        }
-        return http_utils.generate_response(response_payload, status_code)
+    info(f"body of request: {json_data}")
 
+    try:
+        instance_id = await client.start_new("orchestrator", json_data)
+    except Exception as err:
+        return fn.HttpResponse(
+            status_code=400,
+            body=f"error: failed to orchestrate workflow: {err}",
+        )
+
+    info(f"started orchestration with id: {instance_id}")
     return client.create_check_status_response(req, instance_id)

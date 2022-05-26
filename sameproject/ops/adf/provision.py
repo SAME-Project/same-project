@@ -1,3 +1,4 @@
+from azure.mgmt.applicationinsights import ApplicationInsightsManagementClient
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.storage import StorageManagementClient
 from azure.mgmt.web import WebSiteManagementClient
@@ -10,6 +11,7 @@ import json
 
 
 # TODO configure application insights
+# TODO pin api versions for all of the clients
 def provision_orchestrator(
     subscription_id: str,
 ):
@@ -25,6 +27,11 @@ def provision_orchestrator(
     rm_client = ResourceManagementClient(creds, subscription_id)
     wm_client = WebSiteManagementClient(creds, subscription_id)
     sm_client = StorageManagementClient(creds, subscription_id)
+    aim_client = ApplicationInsightsManagementClient(creds)
+
+    # A hack to fix a bug in azure.mgmt.applicationinsights.
+    #   see: https://github.com/Azure/azure-sdk-for-python/issues/24606
+    setattr(aim_client._config, "subscription_id", subscription_id)
 
     # Create a resource group to house everything we"re going to provision:
     print("Provisioning resource group 'same-resource_group'...")
@@ -54,6 +61,18 @@ def provision_orchestrator(
     sak = sm_client.storage_accounts.list_keys(
         "same-resource-group",
         "samestorageaccount",
+    )
+
+    # Provisions an application insights component for logging:
+    print("Provisioning application insights component 'same-app-insights'...")
+    ai = aim_client.components.create_or_update(
+        "same-resource-group",
+        "same-app-insights",
+        {
+            "kind": "web",
+            "location": "West US",
+            "application_type": "web",
+        }
     )
 
     # Provisions an app service plan for the functionapp:
@@ -96,6 +115,14 @@ def provision_orchestrator(
                     {
                         "name": "FUNCTIONS_WORKER_RUNTIME",
                         "value": "python",
+                    },
+                    {
+                        "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                        "value": ai.instrumentation_key,
+                    },
+                    {
+                        "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                        "value": f"InstrumentationKey=${ai.instrumentation_key}",
                     },
                 ],
             }

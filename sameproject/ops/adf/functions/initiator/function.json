@@ -7,7 +7,7 @@
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
-      "route": "orchestrators/{functionName}",
+      "route": "initiate",
       "methods": [
         "post",
         "get"
@@ -19,7 +19,7 @@
       "direction": "out"
     },
     {
-      "name": "starter",
+      "name": "client",
       "type": "orchestrationClient",
       "direction": "in"
     }

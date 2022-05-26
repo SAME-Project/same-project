@@ -35,6 +35,7 @@ azure-mgmt-web = "^6.1.0"
 azure-mgmt-resource = "^21.1.0"
 azure-identity = "^1.10.0"
 azure-mgmt-storage = "^20.0.0"
+azure-mgmt-applicationinsights = "^3.0.0"
 
 [tool.poetry.extras]
 # AzureML seems to have binary components which don't work on Python >3.8 or

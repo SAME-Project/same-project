@@ -153,4 +153,4 @@ test.py
 config.json
 
 .vscode
-.azureml
+.azuremlsettings.local
