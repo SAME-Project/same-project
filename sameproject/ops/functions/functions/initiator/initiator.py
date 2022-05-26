@@ -23,7 +23,7 @@ async def initiator(req: fn.HttpRequest, client: str) -> fn.HttpResponse:
     info(f"body of request: {json_data}")
 
     try:
-        instance_id = await client.start_new("orchestrator", json_data)
+        instance_id = await client.start_new("orchestrator", None, json_data)
     except Exception as err:
         return fn.HttpResponse(
             status_code=400,

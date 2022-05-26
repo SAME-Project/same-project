@@ -168,6 +168,13 @@ def create_function_archive():
     with ZipFile(zip, "w") as archive:
         root = Path(__file__).parent / "functions"
         for file in root.rglob("*"):
-            archive.write(file, file.relative_to(root))
+            rel_file = file.relative_to(root)
+
+            # TODO: this is quite fragile, use gitignore maybe?
+            if str(rel_file).startswith(".venv") or "__pycache__" in str(rel_file):
+                continue
+
+            print(f"\t...adding {rel_file}")
+            archive.write(file, rel_file)
 
     return zip
