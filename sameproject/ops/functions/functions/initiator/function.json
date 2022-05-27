@@ -1,0 +1,27 @@
+{
+  "scriptFile": "initiator.py",
+  "entryPoint": "initiator",
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "route": "initiate",
+      "methods": [
+        "post",
+        "get"
+      ]
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    },
+    {
+      "name": "client",
+      "type": "orchestrationClient",
+      "direction": "in"
+    }
+  ]
+}

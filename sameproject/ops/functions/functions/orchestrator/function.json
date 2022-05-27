@@ -1,0 +1,11 @@
+{
+  "scriptFile": "orchestrator.py",
+  "entryPoint": "orchestrator",
+  "bindings": [
+    {
+      "name": "context",
+      "type": "orchestrationTrigger",
+      "direction": "in"
+    }
+  ]
+}

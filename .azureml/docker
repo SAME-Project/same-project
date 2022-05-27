@@ -1,0 +1,92 @@
+script:
+arguments: []
+target: local
+framework: Python
+communicator: None
+maxRunDurationSeconds:
+nodeCount: 1
+priority:
+environment:
+  name:
+  version:
+  environmentVariables:
+    EXAMPLE_ENV_VAR: EXAMPLE_VALUE
+  python:
+    userManagedDependencies: false
+    interpreterPath: python
+    condaDependenciesFile: .azureml/conda_dependencies.yml
+    baseCondaEnvironment:
+  docker:
+    enabled: true
+    baseImage: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:20211124.v1
+    baseDockerfile:
+    sharedVolumes: true
+    shmSize: 2g
+    arguments: []
+    baseImageRegistry:
+      address:
+      username:
+      password:
+      registryIdentity:
+    platform:
+      os: Linux
+      architecture: amd64
+  spark:
+    repositories: []
+    packages: []
+    precachePackages: true
+  databricks:
+    mavenLibraries: []
+    pypiLibraries: []
+    rcranLibraries: []
+    jarLibraries: []
+    eggLibraries: []
+  r:
+  inferencingStackVersion:
+history:
+  outputCollection: true
+  snapshotProject: true
+  directoriesToWatch:
+  - logs
+spark:
+  configuration:
+    spark.app.name: Azure ML Experiment
+    spark.yarn.maxAppAttempts: 1
+docker:
+  useDocker: false
+  sharedVolumes: true
+  arguments: []
+  shmSize: 2g
+hdi:
+  yarnDeployMode: cluster
+tensorflow:
+  workerCount: 1
+  parameterServerCount: 1
+mpi:
+  processCountPerNode: 1
+  nodeCount: 1
+pytorch:
+  communicationBackend: nccl
+  processCount:
+  nodeCount: 1
+paralleltask:
+  maxRetriesPerWorker: 0
+  workerCountPerNode: 1
+  terminalExitCodes:
+dataReferences: {}
+data: {}
+datacaches: []
+outputData: {}
+sourceDirectoryDataStore:
+amlcompute:
+  vmSize:
+  vmPriority:
+  retainCluster: false
+  name:
+  clusterMaxNodeCount:
+kubernetescompute:
+  instanceType:
+credentialPassthrough: false
+command: ''
+environmentVariables: {}
+applicationEndpoints: {}
