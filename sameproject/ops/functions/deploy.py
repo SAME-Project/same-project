@@ -31,3 +31,5 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     # Result is a JSON blob describing the 'orchestrator' execution context:
     data = json.loads(res.text)
     print(f"Successfully started an execution of notebook '{config.notebook.name}', cURL the following URI for status updates:\n\t{data['statusQueryGetUri']}")
+
+    return data

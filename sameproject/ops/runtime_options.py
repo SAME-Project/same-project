@@ -1,5 +1,6 @@
 from box import Box
 import click
+import os
 
 # Registry of runtime options, which are backend-specific data passed to
 # SAME via command line flags, environment variables or the SAME config file.
@@ -82,13 +83,17 @@ def _register_option(name: str, desc: str, type=str, flag=None, env=None):
     if env is None:
         env = name.upper()
 
+    value = None
+    if env in os.environ:
+        value = type(os.environ[env])
+
     _registry[name] = Box({
         "name": name,
         "desc": desc,
         "flag": flag,
         "env": env,
         "type": type,
-        "value": None,
+        "value": value,
         "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
     })
 
