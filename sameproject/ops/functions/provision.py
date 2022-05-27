@@ -10,7 +10,6 @@ import requests
 import json
 
 
-# TODO configure application insights
 # TODO pin api versions for all of the clients
 def provision_orchestrator(
     subscription_id: str,
