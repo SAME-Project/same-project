@@ -1,5 +1,6 @@
 from box import Box
 import click
+import os
 
 # Registry of runtime options, which are backend-specific data passed to
 # SAME via command line flags, environment variables or the SAME config file.
@@ -58,6 +59,7 @@ def get_option_decorator(name):
         help=_registry[name].desc,
         envvar=_registry[name].env,
         callback=_registry[name].callback,
+        is_flag=_registry[name].type == bool,
         expose_value=False,  # don't affect click method signatures
         required=False,  # TODO: support required runtime options?
         is_eager=True,  # handle runtime options before other options
@@ -81,13 +83,17 @@ def _register_option(name: str, desc: str, type=str, flag=None, env=None):
     if env is None:
         env = name.upper()
 
+    value = None
+    if env in os.environ:
+        value = type(os.environ[env])
+
     _registry[name] = Box({
         "name": name,
         "desc": desc,
         "flag": flag,
         "env": env,
         "type": type,
-        "value": None,
+        "value": value,
         "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
     })
 
@@ -98,6 +104,9 @@ def _get_cerberus_type(name, type):
 
     if type == int:
         return "integer"
+
+    if type == bool:
+        return "boolean"
 
     raise TypeError(f"Runtime option '{name}' has unsupported type '{type}'.")
 
@@ -133,6 +142,17 @@ _register_option(
 _register_option(
     "image_pull_secret_email",
     "Email address for private docker registry for private image pulls.",
+)
+
+# Options for Azure durable functions backend:
+_register_option(
+    "functions_subscription_id",
+    "Azure subscription ID in which to provision backend functions.",
+)
+_register_option(
+    "functions_skip_provisioning",
+    "Skip provisioning of azure functions resources, to be used only if they already exist.",
+    type=bool,
 )
 
 # Options for AML backend:

@@ -171,6 +171,13 @@ _register_notebook(
     lambda res: json.loads(res["x"])["x"] == 0,
 )
 _register_notebook(
+    "features_singlestep",
+    "Checks that single-step notebooks are supported.",
+    "features",
+    Path(__file__).parent / "features/singlestep/same.yaml",
+    lambda res: res["y"] == "1",
+)
+_register_notebook(
     "features_multistep",
     "Checks that multistep notebooks are supported.",
     "features",
