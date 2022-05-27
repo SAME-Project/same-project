@@ -20,8 +20,8 @@ import io
 @pytest.mark.kubeflow
 @test.testdata.notebooks("features")
 def test_kubeflow_features(config, notebook, requirements, validation_fn):
-    compiled_path, root_file = compile(config, "kubeflow")
-    deployment = deploy("kubeflow", compiled_path, root_file)
+    base_path, root_file = compile(config, "kubeflow")
+    deployment = deploy("kubeflow", base_path, root_file, config)
     steps = get_steps(notebook, config)
     status = _fetch_status(deployment)
     artifacts, logs = _fetch_node_data(deployment)
@@ -42,8 +42,8 @@ def test_kubeflow_features(config, notebook, requirements, validation_fn):
 @pytest.mark.external
 @test.testdata.notebooks("pytorch", "tensorflow", "sklearn")
 def test_kubeflow_external(config, notebook, requirements, validation_fn):
-    compiled_path, root_file = compile(config, "kubeflow")
-    deployment = deploy("kubeflow", compiled_path, root_file)
+    base_path, root_file = compile(config, "kubeflow")
+    deployment = deploy("kubeflow", base_path, root_file, config)
     steps = get_steps(notebook, config)
     status = _fetch_status(deployment)
     artifacts, logs = _fetch_node_data(deployment)

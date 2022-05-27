@@ -12,16 +12,14 @@ import tempfile
 import click
 
 
-def render(execution_target: str, steps: list, same_run_config: SameConfig, compile_path: str = None) -> Tuple[Path, str]:
+def render(target: str, steps: list, config: SameConfig, compile_path: str = None) -> Tuple[Path, str]:
     target_renderers = {
         "aml": aml.render,
         "kubeflow": kubeflow.render,
         "functions": functions.render,
-        "vertex": vertex.render,
-        "kubeflowv1": kubeflowv1.render,
     }
 
-    render_function = target_renderers.get(execution_target, None)
+    render_function = target_renderers.get(target, None)
     if render_function is None:
         raise ValueError(f"Unknown backend: {execution_target}")
 
@@ -32,20 +30,18 @@ def render(execution_target: str, steps: list, same_run_config: SameConfig, comp
     return (compile_path, root_module_name)
 
 
-def deploy(execution_target: str, base_path: Path, root_file: str, same_run_config: SameConfig):
+def deploy(target: str, base_path: Path, root_file: str, config: SameConfig):
     target_deployers = {
         "aml": aml.deploy,
         "kubeflow": kubeflow.deploy,
         "functions": functions.deploy,
-        "vertex": vertex.deploy,
-        "kubeflowv1": kubeflowv1.deploy,
     }
 
-    deploy_function = target_deployers.get(execution_target, None)
+    deploy_function = target_deployers.get(target, None)
     if deploy_function is None:
-        raise ValueError(f"Unknown backend: {execution_target}")
+        raise ValueError(f"Unknown backend: {target}")
 
     click.echo(f"Files persisted in: {base_path}")
-    deploy_return = deploy_function(base_path, root_file, same_run_config)
+    deploy_return = deploy_function(base_path, root_file, config)
 
     return deploy_return

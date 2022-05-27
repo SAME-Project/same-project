@@ -26,7 +26,7 @@ import click
     "-t",
     "--target",
     default="kubeflow",
-    type=click.Choice(["aml", "kubeflow", "functions", "kubeflowv1", "vertex"]),
+    type=click.Choice(["aml", "kubeflow", "functions"]),
 )
 @click.option(
     "--persist-temp-files",
@@ -54,21 +54,7 @@ def run(
     """Compiles and deploys a pipeline from a SAME config file."""
     # Validate runtime options against the configured backend:
 
-    try:
-        validate_options(target)
-    except SyntaxError as e:
-        # Cerberus already prints out all the errors, so we just need to return if there's a Syntax Error
-        return
-
-    # TODO: Make SAME config object immutable (frozen_box=True).
-    same_run_config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
-    same_run_config = same_run_config.resolve(Path(same_file.name).parent)
-    same_run_config = same_run_config.inject_runtime_options()
-
-    click.echo(f"Loading SAME config: {same_file.name}")
-    base_path, root_file = notebooks.compile(same_run_config, target)
-    if persist_temp_files:
-        print(f"Temporary files persisted here: {base_path}")
-
+    click.echo(f"File is: {same_file.name}")
+    base_path, root_file = notebooks.compile(config, target)
     if not no_deploy:
-        backends.deploy(target, base_path, root_file, same_run_config)
+        backends.deploy(target, base_path, root_file, config)
