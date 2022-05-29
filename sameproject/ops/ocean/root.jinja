@@ -97,43 +97,6 @@ def test_dcgan(local=False):
     # Decide which device we want to run on
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
-    # Network
-    network = {% network %}
-
-    # Create the generator
-    netG = network(ngpu).to(device)
-
-    # Handle multi-gpu if desired
-    if (device.type == 'cuda') and (ngpu > 1):
-        netG = nn.DataParallel(netG, list(range(ngpu)))
-
-    netG.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
-
-    netG.eval()
-
-    # Create batch of latent vectors that we will use to visualize
-    #  the progression of the generator
-    fixed_noise = torch.randn(1, nz, 1, 1, device=device)
-
-    with torch.no_grad():
-        img = netG(fixed_noise).detach().cpu()
-
-    def denormalize_image(image):
-        """Reverse to normalize_image() function"""
-        max_ = image.max()
-        min_ = image.min()
-        return (image - min_)/(max_ - min_)
-
-    img = denormalize_image(img)
-
-    img = img.squeeze().permute(1,2,0)
-
-    filename = results_dir / 'test.pickle' if local else "/data/outputs/result"
-
-    with open(filename, 'wb') as pickle_file:
-        print(f"Pickling results in {filename}")
-        pickle.dump(img, pickle_file)
-
 if __name__ == "__main__":
     local = (len(sys.argv) == 2 and sys.argv[1] == "local")
     test_dcgan(local)
