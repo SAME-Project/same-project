@@ -1,4 +1,4 @@
-{% autoescape off %}
+
 from typing import NamedTuple
 from base64 import b64encode
 import json
@@ -25,9 +25,9 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from run_info import run_info_fn
 
-{% for step in list_of_steps %}
-from {{ step.unique_name }} import {{ step.unique_name }}_fn
-{% endfor %}
+
+from same_step_000_afdeddf09e474ffdbe0543fd0d775bbd import same_step_000_afdeddf09e474ffdbe0543fd0d775bbd_fn
+
 
 
 run_info_comp = kfp.components.create_component_from_func(
@@ -38,18 +38,18 @@ run_info_comp = kfp.components.create_component_from_func(
     ],
 )
 
-{% for step in list_of_steps %}
-{{ step.unique_name }}_comp = create_component_from_func(
-    func={{ step.unique_name }}_fn,
-    base_image="{{ step.image_tag }}",
+
+same_step_000_afdeddf09e474ffdbe0543fd0d775bbd_comp = create_component_from_func(
+    func=same_step_000_afdeddf09e474ffdbe0543fd0d775bbd_fn,
+    base_image="combinatorml/jupyterlab-tensorflow-opencv:0.9",
     packages_to_install=[
         "dill==0.3.5.1",
         "pympler==1.0.1",
         "requests==2.27.1",
-        {{ step.package_string }} # TODO: make this a loop
+        'matplotlib', 'numpy', 'Pillow', 'torch', 'torchvision' # TODO: make this a loop
     ],
 )
-{% endfor %}
+
 
 # TODO: support kubeflow-specific config like aws secrets, mlflow endpoints.
 @dsl.pipeline(name="Compilation of pipelines",)
@@ -58,35 +58,23 @@ def root(
 ):
     # Generate secrets (if not already created)
     secrets_by_env = {}
-{% for env_name in secrets_to_create_as_dict %}
-{% set secret = secrets_to_create_as_dict[env_name] %}
 
-    data = {
-        ".dockerconfigjson": b64encode(json.dumps(cred_payload).encode()).decode()
-    }
-
-{% endfor %}
 
     run_info = run_info_comp(run_id=kfp.dsl.RUN_ID_PLACEHOLDER)
 
 
-{% for step in list_of_steps %}
-    {{ step.unique_name }} = {{ step.unique_name }}_comp(
-{% if step.previous_step_name %}
-        input_context={{ step.previous_step_name }}.outputs["output_context"],
-{% else %}
+
+    same_step_000_afdeddf09e474ffdbe0543fd0d775bbd = same_step_000_afdeddf09e474ffdbe0543fd0d775bbd_comp(
+
         input_context="",
-{% endif %}
+
         run_info=run_info.outputs["run_info"],
         metadata_url=metadata_url
     )
 
-{% if step.previous_step_name %}
-    {{ step.unique_name }}.after({{ step.previous_step_name }})
-{% endif %}
-    {{ step.unique_name }}.execution_options.caching_strategy.max_cache_staleness = "P0D"
-    for k in env_vars:
-        {{ step.unique_name }}.add_env_variable(V1EnvVar(name=k, value=env_vars[k]))
-{% endfor %}
 
-{% endautoescape %}
+    same_step_000_afdeddf09e474ffdbe0543fd0d775bbd.execution_options.caching_strategy.max_cache_staleness = "P0D"
+    for k in env_vars:
+        same_step_000_afdeddf09e474ffdbe0543fd0d775bbd.add_env_variable(V1EnvVar(name=k, value=env_vars[k]))
+
+
