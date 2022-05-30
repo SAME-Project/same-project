@@ -8,7 +8,7 @@ authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsde
 same = 'sameproject.main:main'
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = "~3.8"
 click = ">=8.1"
 jupytext = "^1.11.5"
 jupyter = "^1.0.0"
@@ -31,16 +31,10 @@ Pympler = "^1.0.1"
 docker = "^5.0.3"
 docopt = "^0.6.2"
 yarg = "^0.1.9"
-azure-mgmt-web = "^6.1.0"
-azure-mgmt-resource = "^21.1.0"
-azure-identity = "^1.10.0"
-azure-mgmt-storage = "^20.0.0"
-azure-mgmt-applicationinsights = "^3.0.0"
+pipreqs = "^0.4.11"
+azureml-core = "^1.42.0"
 
 [tool.poetry.extras]
-# AzureML seems to have binary components which don't work on Python >3.8 or
-# aarch64 ("M1") macOS, which severely restricts where SAME can run (e.g. not
-# on Ubuntu 21.10), so we make it optional.
 azureml = [
     "azureml-dataprep-rslex",
     "azureml-core",
