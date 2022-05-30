@@ -9,6 +9,7 @@ import kfp
 from kfp.v2 import dsl
 from kfp.v2.dsl import component, Output, HTML
 from google.cloud import aiplatform
+import dotenv
 
 import os
 
@@ -34,6 +35,7 @@ def main():
     required=True,
 )
 def compile_vertex(compiled_directory: os.strerror):
+    dotenv.load_dotenv()
     sys.path.append(compiled_directory)
     p = Path(compiled_directory)
 
@@ -96,19 +98,22 @@ def compile_vertex(compiled_directory: os.strerror):
     required=True,
 )
 def deploy_vertex(compiled_pipeline_path: str, project_id: str, service_account: str, service_account_credentials_file: str):
+    dotenv.load_dotenv()
     from google.cloud import aiplatform
 
     project_id = os.environ.get("PROJECT_ID", project_id)
     service_account = os.environ.get("SERVICE_ACCOUNT_ID", service_account)
     service_account_credentials_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", service_account_credentials_file)
+    location = "northamerica-northeast2"
 
-    aiplatform.init(project=project_id, location="northamerica-northeast2", credentials=service_account_credentials_file)
+    aiplatform.init(project=project_id, location=location, credentials=service_account_credentials_file)
 
     job = aiplatform.PipelineJob(
         display_name="MY_DISPLAY_JOB",
         template_path=compiled_pipeline_path,
         project=project_id,
         credentials=service_account_credentials_file,
+        location=location,
     )
 
     # job = aiplatform.PipelineJob(
@@ -226,3 +231,5 @@ python3 /home/daaronch/code/same-project/sameproject/ops/vertex/vertex_debugger.
 
 python3 /home/daaronch/code/same-project/sameproject/ops/vertex/vertex_debugger.py deploy-vertex --project-id $PROJECT_ID --pipeline-root "gs://$PIPELINE_ROOT" --service-account $SERVICE_ACCOUNT_ID --service-account-credentials-file $GOOGLE_APPLICATION_CREDENTIALS --compiled-pipeline-path
 """
+
+# export $(cat .env | xargs)
