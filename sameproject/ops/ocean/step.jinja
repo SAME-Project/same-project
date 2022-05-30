@@ -17,6 +17,7 @@ import numpy as np
 import random
 from pathlib import Path
 import pickle
+from azureml.core import Run
 import sys
 import time
 
@@ -35,44 +36,6 @@ from base64 import (
 )
 
 def main({{ parameter_string }}) -> NamedTuple('FuncOutput',[('context', str),]):
-	import dill
-	import base64
-	from base64 import urlsafe_b64encode, urlsafe_b64decode
-	from copy import copy as __copy
-	from types import ModuleType as __ModuleType
-	from pprint import pprint as __pp
-	import datetime as __datetime
-	import requests
-
-	__run_info_dict = dill.loads(urlsafe_b64decode(__run_info))
-	__base64_decode = urlsafe_b64decode(__context)
-	__context_import_dict = dill.loads(__base64_decode)
-
-	__variables_to_mount = {}
-	__loc = {}
-
-	for __k in __context_import_dict:
-		__variables_to_mount[__k] = dill.loads(__context_import_dict[__k])
-
-	__json_data = {
-		"experiment_id": __run_info_dict["experiment_id"],
-		"run_id": __run_info_dict["run_id"],
-		"step_id": "{{ name }}",
-		"metadata_type": "input",
-		"metadata_value": __context,
-		"metadata_time": __datetime.datetime.now().isoformat(),
-	}
-
-	print(f"Metadata url: {__metadata_url}")
-	if __metadata_url != '':
-		print("Found metadata URL - executing.")
-		__pp(__json_data)
-		try:
-			__r = requests.post(__metadata_url, json=__json_data,)	
-			__r.raise_for_status()
-		except requests.exceptions.HTTPError as __err:
-			print(f"Error: {__err}")
-
 	__inner_code_to_execute = """
 import dill
 import base64
@@ -81,47 +44,9 @@ from types import ModuleType as __ModuleType
 
 {{ inner_code | replace("\\", "\\\\") | replace("\"", "\\\"") }}
 
-__locals_keys = frozenset(locals().keys())
-__globals_keys = frozenset(globals().keys())
-__context_export = {}
-
-for val in __globals_keys:
-	if not val.startswith("_") and not isinstance(val, __ModuleType):
-		__context_export[val] = dill.dumps(globals()[val])
-
-# Locals needs to come after globals in case we made changes
-for val in __locals_keys:
-	if not val.startswith("_") and not isinstance(val, __ModuleType):
-		__context_export[val] = dill.dumps(locals()[val])
-
 __b64_string = str(urlsafe_b64encode(dill.dumps(__context_export)), encoding="ascii")
 
 """
-	exec(__inner_code_to_execute, __variables_to_mount, __loc)
-
-	__json_output_data = {
-		"experiment_id": __run_info_dict["experiment_id"],
-		"run_id": __run_info_dict["run_id"],
-		"step_id": "%v",
-		"metadata_type": "output",
-		"metadata_value": __loc["__b64_string"],
-		"metadata_time": __datetime.datetime.now().isoformat(),
-	}
-
-	print(f"Metadata url: {__metadata_url}")
-	if __metadata_url != '':
-		print("Found metadata URL - executing.")
-		__pp(__json_data)
-		try:
-			__r = requests.post(__metadata_url, json=__json_output_data,)	
-			__r.raise_for_status()
-		except requests.exceptions.HTTPError as err:
-			print(f"Error: {err}")
-
-	from collections import namedtuple
-	output = namedtuple("FuncOutput", ["context"])
-	return output(__loc["__b64_string"])
-
 
 if __name__ == "__main__":
 	__run = Run.get_context()

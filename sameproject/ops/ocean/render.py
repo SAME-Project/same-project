@@ -106,13 +106,6 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
     if same_config.get("ocean"):
         root_contract["ocean_workspace_credentials"] = {
-            # "AML_SP_PASSWORD_VALUE": same_config.aml.AML_SP_PASSWORD_VALUE,
-            # "AML_SP_TENANT_ID": same_config.aml.AML_SP_TENANT_ID,
-            # "AML_SP_APP_ID": same_config.aml.AML_SP_APP_ID,
-            # "WORKSPACE_SUBSCRIPTION_ID": same_config.aml.WORKSPACE_SUBSCRIPTION_ID,
-            # "WORKSPACE_RESOURCE_GROUP": same_config.aml.WORKSPACE_RESOURCE_GROUP,
-            # "WORKSPACE_NAME": same_config.aml.WORKSPACE_NAME,
-            # "AML_COMPUTE_NAME": same_config.aml.AML_COMPUTE_NAME,
         }
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.
