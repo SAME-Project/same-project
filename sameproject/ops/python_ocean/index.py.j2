@@ -13,25 +13,40 @@ import os
 {% endblock in_prompt %}
 
 {% block input %}
-{{ cell.source | ipython2python }}
 {% if 'input' in cell['metadata'].get('tags', []): -%}
-print(cell['metadata'].get('tags', []))
-dids = os.getenv('DIDS', None)
+def get_input(local=False):
+    if local:
+        {{ cell.source | ipython2python }}
+        return filename
+    print(cell['metadata'].get('tags', []))
+    dids = os.getenv('DIDS', None)
 
-if not dids:
-    assert 1=0, "No DIDs found in environment. Aborting."
+    if not dids:
+        print("No DIDs found in environment. Aborting.")
+        return
 
-dids = json.loads(dids)
+    dids = json.loads(dids)
 
-cwd = os.getcwd()
-print('cwd', cwd)
-    
+    cwd = os.getcwd()
+    print('cwd', cwd)
+        
 
-for did in dids:
-    print('ls', f'/data/inputs/{did}/0')
-    print('ls2', os.listdir(f'/data/inputs/'))
-    filename = Path(f'/data/inputs/{did}/0')  # 0 for metadata service
-    print(f"Reading asset file {filename}.")
+    for did in dids:
+        print('ls', f'/data/inputs/{did}/0')
+        print('ls2', os.listdir(f'/data/inputs/'))
+        filename = Path(f'/data/inputs/{did}/0')  # 0 for metadata service
+        print(f"Reading asset file {filename}.")
+        return filename
+
+{% elif 'train' in cell['metadata'].get('tags', []): -%}
+def run_model(local=False):
+
+    t0 = time.time()
+
+    {{ cell.source | ipython2python }}
+
+{% else -%}
+{{ cell.source | ipython2python }}
 
 {% endif %}
 {% endblock input %}
