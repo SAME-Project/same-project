@@ -36,3 +36,4 @@ jupyter nbconvert path_to_notebook --to python --template=./sameproject/ops/pyth
 
 Check that the generated script has no syntax errors.
 
+See the `dcgan.ipynb` and `dcgan.py` examples for more details.
