@@ -15,21 +15,14 @@ dockertag = {
 }
 
 
-# Validator functions for testing validation:
-def required_for_one(backend, name, opts):
-    if backend == "one":
-        if name not in opts or opts[name] is None:
-            raise Exception(f"Option '{name}' must be set for backend '{backend}'.")
-
-
 # Runtime options for testing schemas and validation:
-opts._register_option(
+opts.register_option(
     "test_one_alphanum", "",
     type=str,
     schema=alphanum,
-    validator=required_for_one,
+    validator=opts.required_for_backend("one"),
 )
-opts._register_option(
+opts.register_option(
     "test_one_dockertag", "",
     type=str,
     schema=dockertag,

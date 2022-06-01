@@ -90,13 +90,16 @@ def validate_options(backend: str):
             _registry[name].validator(backend, name, opts)
 
 
-def _compose_decorators(fn: Callable, decorators: List[Callable]) -> Callable:
-    for decorator in decorators:
-        fn = decorator(fn)
-    return fn
+def required_for_backend(backend: str) -> Callable:
+    """Validator that marks an option as required for a given backend."""
+    def _inner(_backend, name, opts):
+        if _backend == backend:
+            if opts[name] is None:
+                raise Exception(f"Option '{name}' must be set for backend '{backend}'.")
+    return _inner
 
 
-def _register_option(
+def register_option(
     name: str,
     desc: str,
     type: Any = str,
@@ -152,56 +155,20 @@ def _get_cerberus_type(name: str, type: Any) -> str:
     raise TypeError(f"Runtime option '{name}' has unsupported type '{type}'.")
 
 
+def _compose_decorators(fn: Callable, decorators: List[Callable]) -> Callable:
+    for decorator in decorators:
+        fn = decorator(fn)
+    return fn
+
+
 # General SAME configuration:
-_register_option(
+register_option(
     "serialisation_memory_limit",
     "Maximum size in bytes allowed for variables being serialised between steps.",
     type=int,
 )
-_register_option(
+
+register_option(
     "same_env",
     "Environment to compile and deploy notebooks against.",
 )
-
-# Options for Kubeflow backend:
-_register_option(
-    "image_pull_secret_name",
-    "The name of the kubernetes secret to create for docker secrets.",
-)
-_register_option(
-    "image_pull_secret_registry_uri",
-    "URI of private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_username",
-    "Username for private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_password",
-    "Password for private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_email",
-    "Email address for private docker registry for private image pulls.",
-)
-
-# Options for Azure durable functions backend:
-_register_option(
-    "functions_subscription_id",
-    "Azure subscription ID in which to provision backend functions.",
-)
-_register_option(
-    "functions_skip_provisioning",
-    "Skip provisioning of azure functions resources, to be used only if they already exist.",
-    type=bool,
-)
-
-# Options for AML backend:
-# TODO: write help lines for each of these options
-_register_option("aml_compute_name", "")
-_register_option("aml_sp_password_value", "")
-_register_option("aml_sp_tenant_id", "")
-_register_option("aml_sp_app_id", "")
-_register_option("workspace_subscription_id", "")
-_register_option("workspace_resource_group", "")
-_register_option("workspace_name", "")
