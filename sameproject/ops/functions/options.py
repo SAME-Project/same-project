@@ -5,6 +5,7 @@ register_option(
     "Azure subscription ID in which to provision backend functions.",
     validator=required_for_backend("functions"),
     schema={
+        "nullable": True,
         "type": "string",
         "regex": r"^[\d\w-]+",
     },
