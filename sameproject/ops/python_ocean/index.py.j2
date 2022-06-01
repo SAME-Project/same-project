@@ -16,7 +16,10 @@ import os
 {% if 'input' in cell['metadata'].get('tags', []): -%}
 def get_input(local=False):
     if local:
+    {% filter indent(8) %}
         {{ cell.source | ipython2python }}
+    {% endfilter %}
+
         return filename
     print(cell['metadata'].get('tags', []))
     dids = os.getenv('DIDS', None)
@@ -42,14 +45,17 @@ def get_input(local=False):
 def run_model(local=False):
 
     t0 = time.time()
-
+    {% filter indent(4) %}
     {{ cell.source | ipython2python }}
+    {% endfilter %}
 
 {% else -%}
 {{ cell.source | ipython2python }}
 
 {% endif %}
 {% endblock input %}
+if __name__ == "__main__":
+    run_model()
 
 {% block markdowncell scoped %}
 {{ cell.source | comment_lines }}
