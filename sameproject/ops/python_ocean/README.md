@@ -36,4 +36,11 @@ jupyter nbconvert path_to_notebook --to python --template=./sameproject/ops/pyth
 
 Check that the generated script has no syntax errors.
 
-See the `dcgan.ipynb` and `dcgan.py` examples for more details.
+See `dcgan.ipynb` and `dcgan.py` for more details and reach out if you run into issues.
+
+## Algovera
+
+Algovera is a community of individuals working to facilitate and accelerate the development of decentralised AI products and research.
+
+[Website](https://www.algovera.ai/) | [Notion](https://algovera.notion.site/) | [Discord](https://discord.gg/e65RuHSDS5) | [Calendar](https://calendar.google.com/calendar/embed?src=c_4qajdfj4imie9cpnkbvkrc7ri4%40group.calendar.google.com) | [Twitter](https://twitter.com/AlgoveraAI) | [YouTube](https://www.youtube.com/channel/UC2A5iUpP6k52ZZmC8LFj1IA) |
+
