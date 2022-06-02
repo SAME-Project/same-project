@@ -7,6 +7,11 @@ from pathlib import Path
 from box import Box
 import logging
 
+# Subschemas used for validating input to `same init`.
+name_schema = {"type": "string", "required": True, "regex": r"^[\d\w ]+"}
+image_schema = {"type": "string", "required": True, "regex": ".*/.*"}
+datasets_schema = {"type": "string", "regex": r"^[\d\w]+"}
+environment_schema = {"type": "string", "regex": r"^[\d\w]+"}
 
 # Schema for validating SAME config files.
 schema = {
@@ -17,13 +22,13 @@ schema = {
             "version": {"type": "string", "required": True},
             "labels": {"type": "list"},
             "sha": {"type": "string"},
-            "name": {"type": "string", "required": True, "regex": r"^[\d\w ]+"},
+            "name": name_schema,
         },
         "required": True,
     },
     "datasets": {
         "type": "dict",
-        "keysrules": {"type": "string", "regex": r"^[\d\w]+"},
+        "keysrules": datasets_schema,
         "valuesrules": {
             "type": "dict",
             "schema": {
@@ -40,11 +45,11 @@ schema = {
     "environments": {
         "type": "dict",
         "must_have_default": True,
-        "keysrules": {"type": "string", "regex": r"^[\d\w]+"},
+        "keysrules": environment_schema,
         "valuesrules": {
             "type": "dict",
             "schema": {
-                "image_tag": {"type": "string", "required": True, "regex": ".*/.*"},
+                "image_tag": image_schema,
                 "private_registry": {"type": "boolean"},
                 "credentials": {
                     "type": "dict",
