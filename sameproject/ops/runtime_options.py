@@ -1,7 +1,5 @@
-from traceback import print_last
 from typing import Any, Callable, List, Optional
-from cerberus import Validator, errors
-
+from cerberus import Validator
 from box import Box
 import click
 import os
@@ -28,12 +26,16 @@ def runtime_schema() -> dict:
     schema = {"type": "dict", "schema": {}, "allow_unknown": True}
 
     for opt in list_options():
-        schema["schema"][opt] = {
-            "type": _get_cerberus_type(
-                _registry[opt].name,
-                _registry[opt].type
-            )
-        }
+        opt_schema = _registry[opt].schema
+        if opt_schema is None:
+            opt_schema = {
+                "nullable": True,
+                "type": _get_cerberus_type(
+                    _registry[opt].name,
+                    _registry[opt].type
+                )
+            }
+        schema["schema"][opt] = opt_schema
 
     return schema
 
@@ -68,12 +70,7 @@ def get_option_decorator(name: str) -> Callable:
     )
 
 
-class UserFriendlyMessagesErrorHandler(errors.BasicErrorHandler):
-    messages = errors.BasicErrorHandler.messages.copy()
-    messages[errors.NOT_NULLABLE.code] = "Value of variable is missing or empty."
-
-
-def _register_option(name: str, desc: str, type=str, flag=None, env=None):
+def validate_options(backend: str):
     """
     Raises if the runtime options are set incorrectly for the given backend.
     Doing it with 'validator' functions allows us to have options that are
@@ -83,21 +80,8 @@ def _register_option(name: str, desc: str, type=str, flag=None, env=None):
     for name in list_options():
         opts[name] = get_option_value(name)
 
-    validator = Validator({"values": runtime_schema()}, error_handler=UserFriendlyMessagesErrorHandler)
+    validator = Validator({"values": runtime_schema()})
     if not validator.validate({"values": opts}):
-        print("The following environment variables had errors:")
-        error_values = validator.errors["values"][0]
-
-        left_col_width = len(max(error_values.keys())) + 5
-
-        for error_field_name, error_field_message_array in error_values.items():
-            lcol = error_field_name.upper()
-            val = f"'{opts[error_field_name] or ''}'"
-            for error_field_message in error_field_message_array:
-                print(f"  {lcol:<{left_col_width}}\t{val}\t{error_field_message.capitalize()}")
-                lcol = ""  # Empty lcol label if there's more than one error
-                val = ""
-
         raise SyntaxError(f"One or more runtime options is invalid: {validator.errors}")
 
     for name in list_options():
@@ -107,12 +91,10 @@ def _register_option(name: str, desc: str, type=str, flag=None, env=None):
 
 def required_for_backend(backend: str) -> Callable:
     """Validator that marks an option as required for a given backend."""
-
     def _inner(_backend, name, opts):
         if _backend == backend:
             if opts[name] is None:
                 raise Exception(f"Option '{name}' must be set for backend '{backend}'.")
-
     return _inner
 
 
@@ -153,11 +135,13 @@ def register_option(
         "env": env,
         "type": type,
         "value": value,
+        "schema": schema,
+        "validator": validator,
         "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
     })
 
 
-def _get_cerberus_type(name, type):
+def _get_cerberus_type(name: str, type: Any) -> str:
     if type == str:
         return "string"
 
@@ -170,56 +154,20 @@ def _get_cerberus_type(name, type):
     raise TypeError(f"Runtime option '{name}' has unsupported type '{type}'.")
 
 
+def _compose_decorators(fn: Callable, decorators: List[Callable]) -> Callable:
+    for decorator in decorators:
+        fn = decorator(fn)
+    return fn
+
+
 # General SAME configuration:
-_register_option(
+register_option(
     "serialisation_memory_limit",
     "Maximum size in bytes allowed for variables being serialised between steps.",
     type=int,
 )
-_register_option(
+
+register_option(
     "same_env",
     "Environment to compile and deploy notebooks against.",
 )
-
-# Options for Kubeflow backend:
-_register_option(
-    "image_pull_secret_name",
-    "The name of the kubernetes secret to create for docker secrets.",
-)
-_register_option(
-    "image_pull_secret_registry_uri",
-    "URI of private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_username",
-    "Username for private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_password",
-    "Password for private docker registry for private image pulls.",
-)
-_register_option(
-    "image_pull_secret_email",
-    "Email address for private docker registry for private image pulls.",
-)
-
-# Options for Azure durable functions backend:
-_register_option(
-    "functions_subscription_id",
-    "Azure subscription ID in which to provision backend functions.",
-)
-_register_option(
-    "functions_skip_provisioning",
-    "Skip provisioning of azure functions resources, to be used only if they already exist.",
-    type=bool,
-)
-
-# Options for AML backend:
-# TODO: write help lines for each of these options
-_register_option("aml_compute_name", "")
-_register_option("aml_sp_password_value", "")
-_register_option("aml_sp_tenant_id", "")
-_register_option("aml_sp_app_id", "")
-_register_option("workspace_subscription_id", "")
-_register_option("workspace_resource_group", "")
-_register_option("workspace_name", "")
