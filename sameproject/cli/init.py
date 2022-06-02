@@ -31,8 +31,6 @@ def init():
 
     nb_dict = read_notebook(nb_path)
     nb_name = str(nb_path).replace(".ipynb", "")
-    # if nb_name == "":
-    #     nb_name = "notebook"
     nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
     # Docker image data:
@@ -97,11 +95,6 @@ def init():
     # Add requirements if the user has configured one:
     if req is not None:
         same_config.notebook.requirements = str(req)
-
-    validator = SameValidator.get_validator()
-    if not validator.validate(same_config):
-        click.echo(f"One or more of the provided parameters was invalid: {validator.errors}", err=True)
-        exit(1)
 
     click.echo(f"About to write to {cfg.absolute()}:")
     click.echo()
