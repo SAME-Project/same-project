@@ -1,4 +1,4 @@
-from sameproject.ops.runtime_options import runtime_options, get_option_value
+from sameproject.ops.runtime_options import validate_options, runtime_options, get_option_value
 from sameproject.data.config import SameConfig
 from io import BufferedReader
 from pathlib import Path
@@ -58,12 +58,15 @@ def run(
     persist_temp_files: bool = False,  # TODO: remove this
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
+    # Validate runtime options against the configured backend:
+    validate_options(target)
+
     # TODO: Make SAME config object immutable (frozen_box=True).
     same_run_config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
     same_run_config = same_run_config.resolve(Path(same_file.name).parent)
     same_run_config = same_run_config.inject_runtime_options()
 
-    click.echo(f"File is: {same_file.name}")
+    click.echo(f"Loading SAME config: {same_file.name}")
     base_path, root_file = notebooks.compile(config, target)
     if not no_deploy:
         backends.deploy(target, base_path, root_file, config)
