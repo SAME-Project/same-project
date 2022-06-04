@@ -22,10 +22,9 @@ def runtime_options(fn) -> Callable:
 
 def runtime_schema() -> dict:
     """Returns a cerberus schema for validating runtime options."""
-    schema = {
-        "type": "dict",
-        "schema": {},
-    }
+
+    # TODO: #161 Not sure if this is correct (allowing unknown) - SHOULD work, since we validate elsewhere, but seems silly not to reuse the same validation rules. The reason I had to do this was in SameConfig, runtime_options does not get the same rules as we inject in options.py - it's just a dict.
+    schema = {"type": "dict", "schema": {}, "allow_unknown": True}
 
     for opt in list_options():
         opt_schema = _registry[opt].schema
@@ -65,9 +64,10 @@ def get_option_decorator(name: str) -> Callable:
         is_eager=True,  # handle runtime options before other options
     )
 
+
 class UserFriendlyMessagesErrorHandler(errors.BasicErrorHandler):
     messages = errors.BasicErrorHandler.messages.copy()
-    messages[errors.NOT_NULLABLE.code] = 'Value of variable is missing or empty.'
+    messages[errors.NOT_NULLABLE.code] = "Value of variable is missing or empty."
 
 
 def validate_options(backend: str):

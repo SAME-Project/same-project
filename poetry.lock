@@ -36,6 +36,14 @@ dev = ["check-manifest"]
 test = ["coverage"]
 
 [[package]]
+name = "applicationinsights"
+version = "0.11.10"
+description = "This project extends the Application Insights API surface to support Python."
+category = "main"
+optional = true
+python-versions = "*"
+
+[[package]]
 name = "appnope"
 version = "0.1.3"
 description = "Disable App Nap on macOS >= 10.9"
@@ -156,17 +164,17 @@ msrestazure = ">=0.4.32,<2.0.0"
 
 [[package]]
 name = "azure-identity"
-version = "1.10.0"
+version = "1.7.0"
 description = "Microsoft Azure Identity Library for Python"
 category = "main"
 optional = true
-python-versions = ">=3.6"
+python-versions = "*"
 
 [package.dependencies]
 azure-core = ">=1.11.0,<2.0.0"
 cryptography = ">=2.5"
 msal = ">=1.12.0,<2.0.0"
-msal-extensions = ">=0.3.0,<2.0.0"
+msal-extensions = ">=0.3.0,<0.4.0"
 six = ">=1.12.0"
 
 [[package]]
@@ -272,6 +280,18 @@ azure-mgmt-core = ">=1.3.0,<2.0.0"
 msrest = ">=0.6.21"
 
 [[package]]
+name = "azureml-automl-core"
+version = "1.42.0.post1"
+description = "Contains the non-ML non-Azure specific common code associated with running AutoML."
+category = "main"
+optional = true
+python-versions = ">=3.6,<3.9"
+
+[package.dependencies]
+azureml-dataset-runtime = ">=1.42.0,<1.43.0"
+azureml-telemetry = ">=1.42.0,<1.43.0"
+
+[[package]]
 name = "azureml-core"
 version = "1.42.0"
 description = "Azure Machine Learning core packages, modules, and classes"
@@ -314,6 +334,157 @@ pytz = "*"
 requests = {version = ">=2.19.1,<3.0.0", extras = ["socks"]}
 SecretStorage = "<4.0.0"
 urllib3 = ">=1.23,<=1.26.9"
+
+[[package]]
+name = "azureml-dataprep"
+version = "4.0.3"
+description = "Azure ML Data Preparation SDK is used to load, transform,     and write data for machine learning workflows"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+azure-identity = "1.7.0"
+azureml-dataprep-native = ">=38.0.0,<39.0.0"
+azureml-dataprep-rslex = ">=2.6.0dev0,<2.7.0"
+cloudpickle = ">=1.1.0,<3.0.0"
+dotnetcore2 = ">=3.0.0,<4.0.0"
+jsonschema = "*"
+pyyaml = ">=5.1.0,<7.0.0"
+
+[package.extras]
+fuse = ["fusepy (>=3.0.1,<4.0.0)"]
+pandas = ["numpy (>=1.14.0,<2.0.0)", "pandas (>=0.23.4,<2.0.0)", "pyarrow (>=0.17.0,<4.0.0)"]
+parquet = ["pyarrow (>=0.17.0,<4.0.0)"]
+pyspark = ["pyspark (==2.3.0)"]
+scipy = ["scipy (>=1.1.0,<2.0.0)"]
+
+[[package]]
+name = "azureml-dataprep-native"
+version = "38.0.0"
+description = "Python Package for AzureML DataPrep specific native extensions."
+category = "main"
+optional = true
+python-versions = "*"
+
+[[package]]
+name = "azureml-dataprep-rslex"
+version = "2.6.3"
+description = "Azure ML Data Preparation RustLex"
+category = "main"
+optional = true
+python-versions = "*"
+
+[[package]]
+name = "azureml-dataset-runtime"
+version = "1.42.0"
+description = "The package is to coordinate dependencies within AzureML packages.     This package is internal, and is not intended to be used directly."
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+azureml-dataprep = ">=4.0.0a,<4.1.0a"
+numpy = [
+    {version = "!=1.19.3", markers = "sys_platform == \"linux\""},
+    {version = "!=1.19.4", markers = "sys_platform == \"win32\""},
+]
+pyarrow = ">=0.17.0,<4.0.0"
+
+[package.extras]
+fuse = ["fusepy (>=3.0.1,<4.0.0)"]
+pandas = ["numpy (>=1.14.0,<2.0.0)", "pandas (>=0.23.4,<2.0.0)"]
+pyspark = ["pyspark (==2.3.0)"]
+scipy = ["scipy (>=1.1.0,<2.0.0)"]
+
+[[package]]
+name = "azureml-pipeline"
+version = "1.42.0"
+description = "Used to build, optimize, and manage their machine learning workflows."
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+azureml-pipeline-core = ">=1.42.0,<1.43.0"
+azureml-pipeline-steps = ">=1.42.0,<1.43.0"
+
+[[package]]
+name = "azureml-pipeline-core"
+version = "1.42.0"
+description = "Contains core functionality for Azure Machine Learning pipelines, which are configurable machine learning workflows."
+category = "main"
+optional = true
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+azureml-core = ">=1.42.0,<1.43.0"
+
+[[package]]
+name = "azureml-pipeline-steps"
+version = "1.42.0"
+description = "Aeva : represents a unit of computation in azureml-pipeline"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+azureml-pipeline-core = ">=1.42.0,<1.43.0"
+azureml-train-automl-client = ">=1.42.0,<1.43.0"
+azureml-train-core = ">=1.42.0,<1.43.0"
+
+[[package]]
+name = "azureml-telemetry"
+version = "1.42.0"
+description = "Used to collect telemetry data like Log messages,     metrics, events, and activity messages"
+category = "main"
+optional = true
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+applicationinsights = "*"
+azureml-core = ">=1.42.0,<1.43.0"
+
+[[package]]
+name = "azureml-train-automl-client"
+version = "1.42.0.post1"
+description = "Used for automatically finding the best machine learning model and its parameters."
+category = "main"
+optional = true
+python-versions = ">=3.6,<3.9"
+
+[package.dependencies]
+azureml-automl-core = ">=1.42.0,<1.43.0"
+azureml-core = ">=1.42.0,<1.43.0"
+azureml-dataset-runtime = ">=1.42.0,<1.43.0"
+azureml-telemetry = ">=1.42.0,<1.43.0"
+azureml-train-core = ">=1.42.0,<1.43.0"
+
+[[package]]
+name = "azureml-train-core"
+version = "1.42.0"
+description = "Provides estimators for training models."
+category = "main"
+optional = true
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+azureml-core = ">=1.42.0,<1.43.0"
+azureml-telemetry = ">=1.42.0,<1.43.0"
+azureml-train-restclients-hyperdrive = ">=1.42.0,<1.43.0"
+
+[[package]]
+name = "azureml-train-restclients-hyperdrive"
+version = "1.42.0"
+description = "Contains classes needed to create HyperDriveRuns with azureml-train-core."
+category = "main"
+optional = true
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+msrest = ">=0.5.1"
+msrestazure = ">=0.4.33"
+requests = ">=2.19.1"
 
 [[package]]
 name = "backcall"
@@ -616,6 +787,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "distro"
+version = "1.7.0"
+description = "Distro - an OS platform information API"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[[package]]
 name = "docker"
 version = "5.0.3"
 description = "A Python library for the Docker Engine API."
@@ -647,6 +826,17 @@ description = "Parse Python docstrings in reST, Google and Numpydoc format"
 category = "main"
 optional = false
 python-versions = ">=3.6,<4.0"
+
+[[package]]
+name = "dotnetcore2"
+version = "3.1.23"
+description = ".Net Core 3.1 runtime"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+distro = ">=1.2.0"
 
 [[package]]
 name = "entrypoints"
@@ -1425,8 +1615,8 @@ requests = ">=2.0.0,<3"
 
 [[package]]
 name = "msal-extensions"
-version = "1.0.0"
-description = "Microsoft Authentication Library extensions (MSAL EX) provides a persistence API that can save your data on disk, encrypted on Windows, macOS and Linux. Concurrent data access will be coordinated by a file lock mechanism."
+version = "0.3.1"
+description = ""
 category = "main"
 optional = true
 python-versions = "*"
@@ -1908,6 +2098,17 @@ description = "library with cross-python path, ini-parsing, io, code, log facili
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
+name = "pyarrow"
+version = "3.0.0"
+description = "Python library for Apache Arrow"
+category = "main"
+optional = true
+python-versions = ">=3.6"
+
+[package.dependencies]
+numpy = ">=1.16.6"
 
 [[package]]
 name = "pyasn1"
@@ -2712,13 +2913,13 @@ python-versions = "*"
 requests = "*"
 
 [extras]
-azureml = ["azureml-core", "azure-mgmt-applicationinsights", "azure-mgmt-web", "azure-identity"]
+azureml = ["azureml-core", "azureml-pipeline", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
 dev = ["PyJWT", "pip-tools", "pytest", "pytest-cov", "flake8", "ipython", "mock", "pytest-virtualenv", "johnnydep", "build", "pip", "ipykernel", "pytest-mock", "setuptools", "wheel", "python-dotenv", "pytest-xdist", "black"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "11b5a8bdd34c9cff717a3945389fd6ede83af5abed01a356a4c5c1808962d648"
+content-hash = "c2d928239f37dc3946c6a4467067409d631d835330231d65bda403d2fc58a601"
 
 [metadata.files]
 absl-py = [
@@ -2732,6 +2933,10 @@ adal = [
 anytree = [
     {file = "anytree-2.8.0-py2.py3-none-any.whl", hash = "sha256:14c55ac77492b11532395049a03b773d14c7e30b22aa012e337b1e983de31521"},
     {file = "anytree-2.8.0.tar.gz", hash = "sha256:3f0f93f355a91bc3e6245319bf4c1d50e3416cc7a35cc1133c1ff38306bbccab"},
+]
+applicationinsights = [
+    {file = "applicationinsights-0.11.10-py2.py3-none-any.whl", hash = "sha256:e89a890db1c6906b6a7d0bcfd617dac83974773c64573147c8d6654f9cf2a6ea"},
+    {file = "applicationinsights-0.11.10.tar.gz", hash = "sha256:0b761f3ef0680acf4731906dfc1807faa6f2a57168ae74592db0084a6099f7b3"},
 ]
 appnope = [
     {file = "appnope-0.1.3-py2.py3-none-any.whl", hash = "sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e"},
@@ -2793,8 +2998,8 @@ azure-graphrbac = [
     {file = "azure_graphrbac-0.61.1-py2.py3-none-any.whl", hash = "sha256:7b4e0f05676acc912f2b33c71c328d9fb2e4dc8e70ebadc9d3de8ab08bf0b175"},
 ]
 azure-identity = [
-    {file = "azure-identity-1.10.0.zip", hash = "sha256:656e5034d9cef297cf9b35376ed620085273c18cfa52cea4a625bf0d5d2d6409"},
-    {file = "azure_identity-1.10.0-py3-none-any.whl", hash = "sha256:b386f1ccbea6a48b9ab7e7f162adc456793c345193a7c1a713959562b08dcbbd"},
+    {file = "azure-identity-1.7.0.zip", hash = "sha256:3faaecb645e3b2300648a4a452458ec0e31e13d9dc928e710992e43ef4694205"},
+    {file = "azure_identity-1.7.0-py2.py3-none-any.whl", hash = "sha256:12a9cff44aecfef295254fe2ad591b49262c2dfbe51f476423cacae6bfa258d2"},
 ]
 azure-mgmt-applicationinsights = [
     {file = "azure-mgmt-applicationinsights-3.1.0.zip", hash = "sha256:98550aba9ab8217cb01ace9a41060561234d1fd3c237189c4b59919de49d8475"},
@@ -2828,8 +3033,72 @@ azure-mgmt-web = [
     {file = "azure-mgmt-web-6.1.0.zip", hash = "sha256:c26635089276515b0488fcf014aab50a0446f54800c6e0e5583cc493ac8d738f"},
     {file = "azure_mgmt_web-6.1.0-py3-none-any.whl", hash = "sha256:123c0fd9cd8fff14ed18db36c157071bf7813beaa24d133522c269f622119162"},
 ]
+azureml-automl-core = [
+    {file = "azureml_automl_core-1.42.0.post1-py3-none-any.whl", hash = "sha256:fc0a92a7c2a8a765ec22a0ccb897b4745f94dff090271f208b6feaa701092b11"},
+]
 azureml-core = [
     {file = "azureml_core-1.42.0-py3-none-any.whl", hash = "sha256:87f211e2054d18d7079b9eedca3e753aa914c0a333a62f5802059530a46de59c"},
+]
+azureml-dataprep = [
+    {file = "azureml_dataprep-4.0.3-py3-none-any.whl", hash = "sha256:d37a0004c9000270c1709376eb12be667ec25371c07a76fc0ddefb16e8ec44ca"},
+]
+azureml-dataprep-native = [
+    {file = "azureml_dataprep_native-38.0.0-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:6a94d05cd63d1c6c80e1891ee7b4fd4d57f3a783ece940443f1c7c0f262f5719"},
+    {file = "azureml_dataprep_native-38.0.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:41e9c9f52369a9f6c672838ff310731639c71a63f193840a4f9ef4b6d2d98400"},
+    {file = "azureml_dataprep_native-38.0.0-cp35-cp35m-win_amd64.whl", hash = "sha256:886ae563e2ca8f14396b3c4786e0258963cce85360423a3315920f2e85210f21"},
+    {file = "azureml_dataprep_native-38.0.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:48c7fee422ea9bc90ef6c820a6b54ed5e2dad9c45a839da358ee5b11e5a72bdb"},
+    {file = "azureml_dataprep_native-38.0.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:61010024ca654ffb344d14438126c466e635502b322e1605c91b9ee9a6ff2691"},
+    {file = "azureml_dataprep_native-38.0.0-cp36-cp36m-win_amd64.whl", hash = "sha256:a8859410c0345379e0cedf00b76caa256e102bc55181abaed760a2d0401bd60c"},
+    {file = "azureml_dataprep_native-38.0.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0005f938dcab0b655178d45ad89ce3cf2f429f94d2911486325a97bb4b28219d"},
+    {file = "azureml_dataprep_native-38.0.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:063a3116f87d5f539c6b3da349059a1818a47fcee99ecd72bec3db59d10d383c"},
+    {file = "azureml_dataprep_native-38.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:9b24bee5e9eedf6396ae800e4bb9758fd8bfe5d858f15590d406776bc5e7c7c2"},
+    {file = "azureml_dataprep_native-38.0.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:743b5d49d5019486138475d8301e211259f2ff8d4cdc78415ecb1a5307fb764a"},
+    {file = "azureml_dataprep_native-38.0.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:52c744acbd1c1b4c668297bdcfeb0cfe56d826b34f6c111c91eb8bff1644363d"},
+    {file = "azureml_dataprep_native-38.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:df07dddd7fe327fc9e8112d8640d15a8eacc4d648282a0560deec6e065e791d9"},
+    {file = "azureml_dataprep_native-38.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5fe847874f5f8b2173a42c20f42875437f9e35f9ac020f9eaf0c85025fa47dc4"},
+    {file = "azureml_dataprep_native-38.0.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:9d1161b11d5a1699deea0c72e6247b453e70d1bd3da4abd86d46ceed22e8aa76"},
+    {file = "azureml_dataprep_native-38.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:3af76556520141b168459055a8a3cbb0c28d8f6b8c4f4858c2dcb8afc92f6260"},
+]
+azureml-dataprep-rslex = [
+    {file = "azureml_dataprep_rslex-2.6.3-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:d9f33b5b6f4be7bf4a3b726de4440076d24495630237a045e3fd3023ddd3e358"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:6f9ea2074308eb3a666b57c668befe5977d3288391c219e9774be7419a80942a"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp35-cp35m-win_amd64.whl", hash = "sha256:9adcc29db4db84cd00c352d958dacbe43e1c3eb165cdffb793fefb77700fb65c"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:1609e737a5818bef08b62a7d04d137926d35ca8f67ee6fa36cb3e085a3a31256"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:8ccbe12630f64ac31bb6047833b2d8c9e7dc18efdc740d3fd90206ecb0fba6d5"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp36-cp36m-win_amd64.whl", hash = "sha256:73c20a988f98c8d9df90d370e0d49baf009da59ee032cbec8d73dff01d3c789b"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:bcbc4abc7d8426d9d8a169d55b4f6b05221252775654078c1ca98464f30ff966"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:24fe3939ab7d2dab60fe7f0efb2d7bfa59ede6d342020f83fd85de5e06139f73"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp37-cp37m-win_amd64.whl", hash = "sha256:ae5fa8d505aa991753457d6a018cf45c8344b2a11c0534021a2764c609583f03"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:efef49275dd946003b300924f5eadc847a75d16e780cb006c306f64c447647a4"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1b26a0c9db4d744306188303c402e836f7ccdfc15ad8c8e69f9faa5f207f9dbb"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp38-cp38-win_amd64.whl", hash = "sha256:03c14aa2350344766beae89f1549474e605f9ef0d4cd05d2ee8c3b4f913b2ba4"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:18e46d4c75c8141a123b2c25d219fb6c99e12d1b076525e03d4232c7c1211bc9"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:4e9c2185d25154963816c57f5ce171462f2e6c4858632a0a41498227df7db17a"},
+    {file = "azureml_dataprep_rslex-2.6.3-cp39-cp39-win_amd64.whl", hash = "sha256:dd0b44fd04b49ae2519b2126ca642dc615c26ea78bcac2865b9a23cb78b1c0e3"},
+]
+azureml-dataset-runtime = [
+    {file = "azureml_dataset_runtime-1.42.0-py3-none-any.whl", hash = "sha256:32ce71d6ea4336f85cb1ed7d9fe402f3d025b8651ddd44ca661e05c6eb73da73"},
+]
+azureml-pipeline = [
+    {file = "azureml_pipeline-1.42.0-py3-none-any.whl", hash = "sha256:72e3a4a1065a7977a5236e4bc9f213ed2512a3a4d925018c3fa431e8592e3d4d"},
+]
+azureml-pipeline-core = [
+    {file = "azureml_pipeline_core-1.42.0-py3-none-any.whl", hash = "sha256:629ee77d1b7cd4ff22b6adee84fc8c74e0266a97dcf0997bde61addba6d3ac5b"},
+]
+azureml-pipeline-steps = [
+    {file = "azureml_pipeline_steps-1.42.0-py3-none-any.whl", hash = "sha256:4d577a04cdf505d49ede7789fac9726619d3b3514ce02649204827d6e04ed0ae"},
+]
+azureml-telemetry = [
+    {file = "azureml_telemetry-1.42.0-py3-none-any.whl", hash = "sha256:1847ac66e6a200981c92241e3e8a566e0d7e5f8040ffcdf55b07c9c7dd7f4bf9"},
+]
+azureml-train-automl-client = [
+    {file = "azureml_train_automl_client-1.42.0.post1-py3-none-any.whl", hash = "sha256:ea545549316fe89393a9841de24aacbd914c332fcc474320f751b5092e08bad3"},
+]
+azureml-train-core = [
+    {file = "azureml_train_core-1.42.0-py3-none-any.whl", hash = "sha256:b1437cefaac5b00f36093149f52202ebe62de89dd64398309e509537d72818f7"},
+]
+azureml-train-restclients-hyperdrive = [
+    {file = "azureml_train_restclients_hyperdrive-1.42.0-py3-none-any.whl", hash = "sha256:e76e644a6fca3abfb17f82965ce567ecb2a816d86a046d033c033c7099d2e027"},
 ]
 backcall = [
     {file = "backcall-0.2.0-py2.py3-none-any.whl", hash = "sha256:fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"},
@@ -3084,6 +3353,10 @@ distlib = [
     {file = "distlib-0.3.4-py2.py3-none-any.whl", hash = "sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b"},
     {file = "distlib-0.3.4.zip", hash = "sha256:e4b58818180336dc9c529bfb9a0b58728ffc09ad92027a3f30b7cd91e3458579"},
 ]
+distro = [
+    {file = "distro-1.7.0-py3-none-any.whl", hash = "sha256:d596311d707e692c2160c37807f83e3820c5d539d5a83e87cfb6babd8ba3a06b"},
+    {file = "distro-1.7.0.tar.gz", hash = "sha256:151aeccf60c216402932b52e40ee477a939f8d58898927378a02abbe852c1c39"},
+]
 docker = [
     {file = "docker-5.0.3-py2.py3-none-any.whl", hash = "sha256:7a79bb439e3df59d0a72621775d600bc8bc8b422d285824cb37103eab91d1ce0"},
     {file = "docker-5.0.3.tar.gz", hash = "sha256:d916a26b62970e7c2f554110ed6af04c7ccff8e9f81ad17d0d40c75637e227fb"},
@@ -3094,6 +3367,12 @@ docopt = [
 docstring-parser = [
     {file = "docstring_parser-0.14.1-py3-none-any.whl", hash = "sha256:14ac6ec1f1ba6905c4d8cb90fd0bc55394f5678183752c90e44812bf28d7a515"},
     {file = "docstring_parser-0.14.1.tar.gz", hash = "sha256:2c77522e31b7c88b1ab457a1f3c9ae38947ad719732260ba77ee8a3deb58622a"},
+]
+dotnetcore2 = [
+    {file = "dotnetcore2-3.1.23-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:6b76db089fc40631ddcd63c1bb44f2297112beb0a034f024f30a2e7a8d63ba78"},
+    {file = "dotnetcore2-3.1.23-py3-none-manylinux1_x86_64.whl", hash = "sha256:5f076ddc39da0c685e7de20ecb91ee81185928918ec86fbeb3bffc55dd867ab5"},
+    {file = "dotnetcore2-3.1.23-py3-none-win32.whl", hash = "sha256:bfa7f4c1301bb8e6efaa231a9de9f427b8556947d6c9875cbfc6add5777edacc"},
+    {file = "dotnetcore2-3.1.23-py3-none-win_amd64.whl", hash = "sha256:e2528813677d7a080522336cb530442408d1e2aea76fa8657018fb532c03c252"},
 ]
 entrypoints = [
     {file = "entrypoints-0.4-py3-none-any.whl", hash = "sha256:f174b5ff827504fd3cd97cc3f8649f3693f51538c7e4bdf3ef002c8429d42f9f"},
@@ -3388,8 +3667,8 @@ msal = [
     {file = "msal-1.18.0.tar.gz", hash = "sha256:576af55866038b60edbcb31d831325a1bd8241ed272186e2832968fd4717d202"},
 ]
 msal-extensions = [
-    {file = "msal-extensions-1.0.0.tar.gz", hash = "sha256:c676aba56b0cce3783de1b5c5ecfe828db998167875126ca4b47dc6436451354"},
-    {file = "msal_extensions-1.0.0-py2.py3-none-any.whl", hash = "sha256:91e3db9620b822d0ed2b4d1850056a0f133cba04455e62f11612e40f5502f2ee"},
+    {file = "msal-extensions-0.3.1.tar.gz", hash = "sha256:d9029af70f2cbdc5ad7ecfed61cb432ebe900484843ccf72825445dbfe62d311"},
+    {file = "msal_extensions-0.3.1-py2.py3-none-any.whl", hash = "sha256:89df9c0237e1adf16938fa58575db59c2bb9de04a83ffb0452c8dfc79031f717"},
 ]
 msrest = [
     {file = "msrest-0.6.21-py2.py3-none-any.whl", hash = "sha256:c840511c845330e96886011a236440fafc2c9aff7b2df9c0a92041ee2dee3782"},
@@ -3626,6 +3905,29 @@ pure-eval = [
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
+]
+pyarrow = [
+    {file = "pyarrow-3.0.0-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:03e2435da817bc2b5d0fad6f2e53305eb36c24004ddfcb2b30e4217a1a80cf22"},
+    {file = "pyarrow-3.0.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:2be3a9eab4bfd00024dc3c83fa03de1c1d04a0f47ebaf3dc483cd100546eacbf"},
+    {file = "pyarrow-3.0.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:a76031ef19d11db2fef79a97cc69997c97bea35aa07efbe042a177c7e3b1a390"},
+    {file = "pyarrow-3.0.0-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:a07e286e81ceb20f8f0c45f69760d2ebc434fe83794d5f9b44f89fc2dc6dc24d"},
+    {file = "pyarrow-3.0.0-cp36-cp36m-win_amd64.whl", hash = "sha256:cfea99a01d844c3db5e25374a6cdcf3b5ba1698bfe95d41272c295a4581e884c"},
+    {file = "pyarrow-3.0.0-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:d5666a7fa2668f3ff95df028c2072d59e8b17e73d682068e8505dafa2688f3cc"},
+    {file = "pyarrow-3.0.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:3ea6574d1ae2d9bff7e6e1715f64c31bdc01b42387a5c78311a8ce9c09cfe135"},
+    {file = "pyarrow-3.0.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:2d5c95eb04a3d2e786e097b53534893eade6c8b3faf10f53a06143384b4446b1"},
+    {file = "pyarrow-3.0.0-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:31e6fc0868963aba4e6b8a3e218c9a5ff347bca870d622da0b3d58269d0c5398"},
+    {file = "pyarrow-3.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:960a9b0fd599601ddac42f16d5acf049637ec08957359c6741d6eb2bf0dbae97"},
+    {file = "pyarrow-3.0.0-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:2c3353d38d137f1158595b3b18dcef711f3d8fdb57cf7ae2d861d07235064bc1"},
+    {file = "pyarrow-3.0.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:72206cde1857d5420601feae75f53921cffab4326b42262a858c7b8be67982b7"},
+    {file = "pyarrow-3.0.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:dec007a0f7adba86bd170252140ede01646b45c3a470d5862ce00d8e40cd29bd"},
+    {file = "pyarrow-3.0.0-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:bf6684fe9e38f8ddb696e38901461eab783ec1d565974ebd5862270320b3e27f"},
+    {file = "pyarrow-3.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:3b46487c45faaea8d1a5aa65002e2832ae2e1c9e68ecb461cda4fa59891cf490"},
+    {file = "pyarrow-3.0.0-cp39-cp39-macosx_10_13_x86_64.whl", hash = "sha256:978bbe8ec9090d1133a25f00f32ed92600f9d315fbfa29a17952bee01f0d7fe5"},
+    {file = "pyarrow-3.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b7a8903f2b8a80498725ef5d4a35cd7dd5a98b74e080d42692545e61a6cbfbe4"},
+    {file = "pyarrow-3.0.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:b1cf92df9f336f31706249e543dc0ffce3c67a78204ce540f1173c6c07dfafec"},
+    {file = "pyarrow-3.0.0-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:b08c119cc2b9fcd1567797fedb245a2f4352a3084a22b7298272afe7cf7a4730"},
+    {file = "pyarrow-3.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:5faa2dc73444bdcf042f121383965a47362be1f946303d46e8fd80f8d26cd90c"},
+    {file = "pyarrow-3.0.0.tar.gz", hash = "sha256:4bf8cc43e1db1e0517466209ee8e8f459d9b5e1b4074863317f2a965cf59889e"},
 ]
 pyasn1 = [
     {file = "pyasn1-0.4.8-py2.4.egg", hash = "sha256:fec3e9d8e36808a28efb59b489e4528c10ad0f480e57dcc32b4de5c9d8c9fdf3"},
