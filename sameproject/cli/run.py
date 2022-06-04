@@ -53,7 +53,10 @@ def run(
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
     # Validate runtime options against the configured backend:
-    validate_options(target)
+    try:
+        validate_options(target)
+    except SyntaxError as e:
+        return
 
     # TODO: Make SAME config object immutable (frozen_box=True).
     config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
