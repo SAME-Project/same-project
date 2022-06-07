@@ -59,7 +59,12 @@ def run(
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
     # Validate runtime options against the configured backend:
-    validate_options(target)
+    
+    try:
+        validate_options(target)
+    except SyntaxError as e:
+        # Cerberus already prints out all the errors, so we just need to return if there's a Syntax Error
+        return
 
     # TODO: Make SAME config object immutable (frozen_box=True).
     same_run_config = SameConfig.from_yaml(same_file.read(), frozen_box=False)
@@ -68,5 +73,8 @@ def run(
 
     click.echo(f"Loading SAME config: {same_file.name}")
     base_path, root_file = notebooks.compile(config, target)
+    if persist_temp_files:
+        print(f"Temporary files persisted here: {base_path}")
+    
     if not no_deploy:
         backends.deploy(target, base_path, root_file, config)

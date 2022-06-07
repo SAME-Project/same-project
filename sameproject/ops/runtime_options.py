@@ -1,5 +1,7 @@
+from traceback import print_last
 from typing import Any, Callable, List, Optional
-from cerberus import Validator
+from cerberus import Validator, errors
+
 from box import Box
 import click
 import os
@@ -21,10 +23,9 @@ def runtime_options(fn) -> Callable:
 
 def runtime_schema() -> dict:
     """Returns a cerberus schema for validating runtime options."""
-    schema = {
-        "type": "dict",
-        "schema": {},
-    }
+
+    # TODO: #161 Not sure if this is correct (allowing unknown) - SHOULD work, since we validate elsewhere, but seems silly not to reuse the same validation rules. The reason I had to do this was in SameConfig, runtime_options does not get the same rules as we inject in options.py - it's just a dict.
+    schema = {"type": "dict", "schema": {}, "allow_unknown": True}
 
     for opt in list_options():
         opt_schema = _registry[opt].schema
@@ -71,6 +72,11 @@ def get_option_decorator(name: str) -> Callable:
     )
 
 
+class UserFriendlyMessagesErrorHandler(errors.BasicErrorHandler):
+    messages = errors.BasicErrorHandler.messages.copy()
+    messages[errors.NOT_NULLABLE.code] = "Value of variable is missing or empty."
+
+
 def validate_options(backend: str):
     """
     Raises if the runtime options are set incorrectly for the given backend.
@@ -81,8 +87,21 @@ def validate_options(backend: str):
     for name in list_options():
         opts[name] = get_option_value(name)
 
-    validator = Validator({"values": runtime_schema()})
+    validator = Validator({"values": runtime_schema()}, error_handler=UserFriendlyMessagesErrorHandler)
     if not validator.validate({"values": opts}):
+        print("The following environment variables had errors:")
+        error_values = validator.errors["values"][0]
+
+        left_col_width = len(max(error_values.keys())) + 5
+
+        for error_field_name, error_field_message_array in error_values.items():
+            lcol = error_field_name.upper()
+            val = f"'{opts[error_field_name] or ''}'"
+            for error_field_message in error_field_message_array:
+                print(f"  {lcol:<{left_col_width}}\t{val}\t{error_field_message.capitalize()}")
+                lcol = ""  # Empty lcol label if there's more than one error
+                val = ""
+
         raise SyntaxError(f"One or more runtime options is invalid: {validator.errors}")
 
     for name in list_options():
@@ -92,10 +111,12 @@ def validate_options(backend: str):
 
 def required_for_backend(backend: str) -> Callable:
     """Validator that marks an option as required for a given backend."""
+
     def _inner(_backend, name, opts):
         if _backend == backend:
             if opts[name] is None:
                 raise Exception(f"Option '{name}' must be set for backend '{backend}'.")
+
     return _inner
 
 
@@ -129,17 +150,19 @@ def register_option(
     if env in os.environ:
         value = type(os.environ[env])
 
-    _registry[name] = Box({
-        "name": name,
-        "desc": desc,
-        "flag": flag,
-        "env": env,
-        "type": type,
-        "value": value,
-        "schema": schema,
-        "validator": validator,
-        "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
-    })
+    _registry[name] = Box(
+        {
+            "name": name,
+            "desc": desc,
+            "flag": flag,
+            "env": env,
+            "type": type,
+            "value": value,
+            "schema": schema,
+            "validator": validator,
+            "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
+        }
+    )
 
 
 def _get_cerberus_type(name: str, type: Any) -> str:
