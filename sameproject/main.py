@@ -1,4 +1,4 @@
-from cli import run, version, init, verify
+from sameproject.cli import run, version, init, verify
 import click
 
 

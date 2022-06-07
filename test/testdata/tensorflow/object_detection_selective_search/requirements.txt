@@ -1,0 +1,6 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/tensorflow/object_detection_selective_search/object_detection_selective_search.ipynb:
+huggingface_hub==0.6.0
+imutils==0.5.4
+matplotlib==3.5.2
+numpy==1.22.3
+tensorflow==2.8.0

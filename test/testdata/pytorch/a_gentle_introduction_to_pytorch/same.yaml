@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+metadata:
+  labels: []
+  name: a_gentle_introduction_to_pytorch pipeline
+  version: 0.0.0
+notebook:
+  name: a_gentle_introduction_to_pytorch
+  path: a_gentle_introduction_to_pytorch.ipynb
+  requirements: requirements.txt
+run:
+  name: a_gentle_introduction_to_pytorch run

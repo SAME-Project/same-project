@@ -1,0 +1,8 @@
+# Dependencies for /Users/bubblyworld/Workspace/python/same-project/test/testdata/tensorflow/text_classification_attentional_positional_embeddings/text_classification_attentional_positional_embeddings.ipynb:
+keras==2.9.0
+matplotlib==3.5.2
+numpy==1.22.3
+pandas==1.4.2
+scikit_learn==1.1.0
+seaborn==0.11.2
+tensorflow==2.8.0

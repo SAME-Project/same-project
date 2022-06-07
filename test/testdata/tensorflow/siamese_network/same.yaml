@@ -1,0 +1,14 @@
+apiVersion: 0.1.16
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+metadata:
+  labels: []
+  name: siamese_network pipeline
+  version: 0.0.0
+notebook:
+  name: siamese_network
+  path: siamese_network.ipynb
+  requirements: requirements.txt
+run:
+  name: siamese_network run

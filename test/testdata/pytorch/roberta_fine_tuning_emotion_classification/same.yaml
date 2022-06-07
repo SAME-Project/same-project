@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+metadata:
+  labels: []
+  name: roberta_fine_tuning_emotion_classification pipeline
+  version: 0.0.0
+notebook:
+  name: roberta_fine_tuning_emotion_classification
+  path: roberta_fine_tuning_emotion_classification.ipynb
+  requirements: requirements.txt
+run:
+  name: roberta_fine_tuning_emotion_classification run

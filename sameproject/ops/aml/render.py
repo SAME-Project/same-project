@@ -46,7 +46,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
         "experiment_name_safe": "",
         "list_of_environments": {},
         "image_pull_secrets": {},
-        "aml_workspace_credentials": {},
+        "runtime_options": {},
         "compile_dir": "",
     }
 
@@ -69,7 +69,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     root_contract["root_parameters_as_string"] = ", ".join(params_to_merge)
 
     root_contract["list_of_environments"]["default"] = {}
-    root_contract["list_of_environments"]["default"]["image_tag"] = "library/python:3.9-slim-buster"
+    root_contract["list_of_environments"]["default"]["image_tag"] = "library/python:3.10-slim-buster"
     root_contract["list_of_environments"]["default"]["private_registry"] = False
 
     for name in same_config.environments:
@@ -104,16 +104,13 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
 
                 root_contract["secrets_to_create_as_dict"][name] = these_credentials
 
-    if same_config.get("aml"):
-        root_contract["aml_workspace_credentials"] = {
-            "AML_SP_PASSWORD_VALUE": same_config.aml.AML_SP_PASSWORD_VALUE,
-            "AML_SP_TENANT_ID": same_config.aml.AML_SP_TENANT_ID,
-            "AML_SP_APP_ID": same_config.aml.AML_SP_APP_ID,
-            "WORKSPACE_SUBSCRIPTION_ID": same_config.aml.WORKSPACE_SUBSCRIPTION_ID,
-            "WORKSPACE_RESOURCE_GROUP": same_config.aml.WORKSPACE_RESOURCE_GROUP,
-            "WORKSPACE_NAME": same_config.aml.WORKSPACE_NAME,
-            "AML_COMPUTE_NAME": same_config.aml.AML_COMPUTE_NAME,
-        }
+    root_contract["runtime_options"]["AML_SP_PASSWORD_VALUE"] = same_config.get("runtime_options").get("aml_sp_password_value", "")
+    root_contract["runtime_options"]["AML_SP_TENANT_ID"]= same_config.get("runtime_options").get("aml_sp_tenant_id", "")
+    root_contract["runtime_options"]["AML_SP_APP_ID"]= same_config.get("runtime_options").get("aml_sp_app_id", "")
+    root_contract["runtime_options"]["WORKSPACE_SUBSCRIPTION_ID"]= same_config.get("runtime_options").get("workspace_subscription_id", "")
+    root_contract["runtime_options"]["WORKSPACE_NAME"]= same_config.get("runtime_options").get("workspace_name", "")
+    root_contract["runtime_options"]["WORKSPACE_RESOURCE_GROUP"]= same_config.get("runtime_options").get("workspace_resource_group", "")
+    root_contract["runtime_options"]["AML_COMPUTE_NAME"]= same_config.get("runtime_options").get("aml_compute_name", "")
 
     # Until we get smarter, we're just going to combine inject EVERY package into every step.
     # This is not IDEAL, but it's not as bad as it sounds because it'll allow systems to cache

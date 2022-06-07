@@ -46,13 +46,13 @@ def root(
 
 
 	aml_workspace_credentials = {
-		"AML_SP_PASSWORD_VALUE": '{{ aml_workspace_credentials.AML_SP_PASSWORD_VALUE }}',
-		"AML_SP_TENANT_ID": '{{ aml_workspace_credentials.AML_SP_TENANT_ID }}',
-		"AML_SP_APP_ID": '{{ aml_workspace_credentials.AML_SP_APP_ID }}',
-		"WORKSPACE_SUBSCRIPTION_ID": '{{ aml_workspace_credentials.WORKSPACE_SUBSCRIPTION_ID }}',
-		"WORKSPACE_RESOURCE_GROUP": '{{ aml_workspace_credentials.WORKSPACE_RESOURCE_GROUP }}',
-		"WORKSPACE_NAME": '{{ aml_workspace_credentials.WORKSPACE_NAME }}',
-		"AML_COMPUTE_NAME": '{{ aml_workspace_credentials.AML_COMPUTE_NAME }}',
+		"AML_SP_PASSWORD_VALUE": '{{ runtime_options.AML_SP_PASSWORD_VALUE }}',
+		"AML_SP_TENANT_ID": '{{ runtime_options.AML_SP_TENANT_ID }}',
+		"AML_SP_APP_ID": '{{ runtime_options.AML_SP_APP_ID }}',
+		"WORKSPACE_SUBSCRIPTION_ID": '{{ runtime_options.WORKSPACE_SUBSCRIPTION_ID }}',
+		"WORKSPACE_RESOURCE_GROUP": '{{ runtime_options.WORKSPACE_RESOURCE_GROUP }}',
+		"WORKSPACE_NAME": '{{ runtime_options.WORKSPACE_NAME }}',
+		"AML_COMPUTE_NAME": '{{ runtime_options.AML_COMPUTE_NAME }}',
 	}
 
 	missing_fields = [
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
 	# execute only if run as a script
 	root(
-		context="gAR9lC4=", metadata_url="", aml_workspace_credentials=credentials_dict
+		context="gAR9lC4=", metadata_url="", runtime_options=credentials_dict
 	)
 
 {% endautoescape %}

@@ -4,6 +4,10 @@ import dill
 class BaseExplodingVariable:
     """Base class for ExplodingVariable."""
 
+    def __is_exploding_variable__(self):
+        """Allows detecting exploding variables without triggering them."""
+        return True
+
     def __setattr__(self, *args):
         raise self.err
 
@@ -283,10 +287,11 @@ class ExplodingVariable(BaseExplodingVariable):
 
     def __init__(self, err):
         self.err = err
+        self.mro = "ExplodingVariable"
 
-    # Patch to allow setting 'self.err' in the constructor.
+    # Patch to allow setting 'self.err' and 'self.mro' in the constructor.
     def __setattr__(self, attr, value):
-        if attr == "err":
+        if attr in ["err", "mro"]:
             self.__dict__[attr] = value
             return
 

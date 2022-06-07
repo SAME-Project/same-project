@@ -153,4 +153,7 @@ test.py
 config.json
 
 .vscode
+.azuremlsettings.local
 .azureml
+.terraform*
+*.tfplan

@@ -18,6 +18,7 @@ kubeflow_root_template = "root.jinja"
 kubeflow_step_template = "step.jinja"
 
 
+# TODO: make compile_path a Path, not a str
 def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateDir = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +28,7 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
 
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
-        step_file_string = _build_step_file(env, steps[step_name])
+        step_file_string = _build_step_file(env, steps[step_name], same_config)
         helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_name }.py", step_file_string)
 
     root_file_string = _build_root_file(env, steps, same_config)
@@ -82,7 +83,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     root_contract["root_parameters_as_string"] = ", ".join(params_to_merge)
 
     root_contract["list_of_environments"]["default"] = {}
-    root_contract["list_of_environments"]["default"]["image_tag"] = "library/python:3.9-slim-buster"
+    root_contract["list_of_environments"]["default"]["image_tag"] = "library/python:3.10-slim-buster"
     root_contract["list_of_environments"]["default"]["private_registry"] = False
 
     for name in same_config.environments:
@@ -178,7 +179,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     return template.render(root_contract)
 
 
-def _build_step_file(env: Environment, step: Step) -> str:
+def _build_step_file(env: Environment, step: Step, same_config) -> str:
     with open(sameproject.ops.explode.__file__, "r") as f:
         explode_code = f.read()
 
@@ -186,13 +187,25 @@ def _build_step_file(env: Environment, step: Step) -> str:
     if "requirements_file" in step:
         requirements_file = urlsafe_b64encode(bytes(step.requirements_file, "utf-8")).decode()
 
+    memory_limit = same_config.runtime_options.get(
+        "serialisation_memory_limit",
+        512 * 1024 * 1024,  # 512MB
+    )
+
+    same_env = same_config.runtime_options.get(
+        "same_env",
+        "default",
+    )
+
     step_contract = {
         "name": step.name,
+        "same_env": same_env,
+        "memory_limit": memory_limit,
         "unique_name": step.unique_name,
+        "requirements_file": requirements_file,
         "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
-        "requirements_file": requirements_file,
-        "memory_limit": 50 * 2**20,  # 50MB
+        "same_yaml": urlsafe_b64encode(bytes(same_config.to_yaml(), "utf-8")).decode(),
     }
 
     return env.get_template(kubeflow_step_template).render(step_contract)

@@ -10,9 +10,10 @@ import tempfile
 import logging
 import pytest
 import dotenv
+import sys
 
 
-same_config_file_path = "test/testdata/generic_notebook/same.yaml"
+same_config_file_path = "test/ops/testdata/same_notebooks/generic/same.yaml"
 
 
 @pytest.fixture
@@ -22,18 +23,15 @@ def same_config():
 
 
 @pytest.fixture(autouse=True)
-def run_before_and_after_tests():
-    """Fixture to execute asserts before and after a test is run"""
-    import sys
-
-    # We need to do this fixture because the pipeline modifies sys.modules (through imports) and therefore we need to clear it before/after each test.
-    # This is unlikely to be a problem when actually running.
-    original_sys_modules = sys.modules.copy()
-
+def reset_modules():
+    """
+    KFP modifies sys.modules by importing component modules, which we'd like
+    to reset after each test to simulate a clean environment.
+    """
+    modules_bkup = sys.modules.copy()
     yield
-
     sys.modules.clear()
-    sys.modules.update(original_sys_modules)
+    sys.modules.update(modules_bkup)
 
 
 @pytest.mark.kubeflow
@@ -61,7 +59,7 @@ def test_live_test_kubeflow(mocker, tmpdir, same_config):
     )
     assert result.exit_code == 0
 
-@pytest.mark.skip("Skipping until we mock or create AML account")
+
 def test_live_test_aml(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
@@ -86,9 +84,10 @@ def test_live_test_aml(mocker, tmpdir, same_config):
     )
     assert result.exit_code == 0
 
+
 @pytest.mark.kubeflow
 def test_kubeflow_same_program_run_with_secrets_e2e():
-    multi_env_same_config_file_path = "test/testdata/multienv_notebook/same.yaml"
+    multi_env_same_config_file_path = "test/ops/testdata/same_notebooks/multienv/same.yaml"
     same_file_path = Path(multi_env_same_config_file_path)
     assert same_file_path.exists()
 

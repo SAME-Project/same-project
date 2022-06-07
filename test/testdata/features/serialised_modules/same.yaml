@@ -1,0 +1,12 @@
+apiVersion: projectsame.io/v1alpha1
+metadata:
+  name: serialised_modules
+  version: 0.0.1
+notebook:
+  name: "serialised_modules"
+  path: serialised_modules.ipynb
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+run:
+  name: "serialised_modules"

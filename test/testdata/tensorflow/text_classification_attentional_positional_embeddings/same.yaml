@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+metadata:
+  labels: []
+  name: text_classification_attentional_positional_embeddings pipeline
+  version: 0.0.0
+notebook:
+  name: text_classification_attentional_positional_embeddings
+  path: text_classification_attentional_positional_embeddings.ipynb
+  requirements: requirements.txt
+run:
+  name: text_classification_attentional_positional_embeddings run

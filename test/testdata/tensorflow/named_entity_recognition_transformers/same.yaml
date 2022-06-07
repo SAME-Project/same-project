@@ -1,0 +1,14 @@
+apiVersion: 0.1.16
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+metadata:
+  labels: []
+  name: named_entity_recognition_transformers pipeline
+  version: 0.0.0
+notebook:
+  name: named_entity_recognition_transformers
+  path: named_entity_recognition_transformers.ipynb
+  requirements: requirements.txt
+run:
+  name: named_entity_recognition_transformers run

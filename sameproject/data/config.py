@@ -61,6 +61,7 @@ schema = {
     },
     "notebook": {
         "type": "dict",
+        "required": True,
         "schema": {
             "name": {"type": "string", "required": True},
             "path": {"type": "string", "required": True},

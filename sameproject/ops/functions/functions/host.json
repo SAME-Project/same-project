@@ -1,0 +1,20 @@
+{
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "default": "Error",
+      "Function.initiator.User": "Information",
+      "Function.orchestrator.User": "Information",
+      "Function.executor.User": "Information"
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": false
+      }
+    }
+  },
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[2.*, 3.0.0)"
+  }
+}

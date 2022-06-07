@@ -1,5 +1,5 @@
 from sameproject.ops.notebooks import read_notebook, get_code
-from sameproject.ops.code import get_imported_modules
+from sameproject.ops.code import get_imported_modules, remove_magic_lines
 from sameproject.data.config import SameConfig
 from io import BufferedReader
 from tempfile import mkdtemp
@@ -35,7 +35,8 @@ def verify(same_file: BufferedReader):
         config = config.resolve(Path(same_file.name).parent)
 
         notebook = read_notebook(config.notebook.path)
-        modules = get_imported_modules(get_code(notebook))
+        code = remove_magic_lines(get_code(notebook))
+        modules = get_imported_modules(code)
 
     except Exception as err:
         click.echo(f"Error during 'same verify' initialisation: {err}", err=True)
@@ -87,7 +88,7 @@ def _verify(config: SameConfig, env: str, modules: List[str]) -> bool:
         )
 
         if res.exit_code != 0:
-            raise Exception(f"'pip install' returned non-zero exit code '{res.exit_code}' when installing requirements")
+            raise Exception(f"'pip install' returned non-zero exit code '{res.exit_code}' when installing requirements:\n{res.output.decode('utf-8')}\n\nTry updating ./requirements.txt to fix the above error and run 'same verify' again.")
 
     # Check the user's module imports to see which ones succeed:
     click.echo("\t* checking notebook imports to see whether they resolve...")

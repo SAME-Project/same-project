@@ -2,13 +2,13 @@ from sameproject.data.config import SameConfig, SameValidator
 import pytest
 
 # An example of a well-formed, complete SAME config file.
-good_config = "test/testdata/sample_same_configs/good_same.yaml"
+good_config = "test/data/testdata/same_configs/good_same.yaml"
 
 # List of SAME config files that are broken in various ways:
 #   name, path
 bad_configs = [
-    ("no api version", "test/testdata/sample_same_configs/no_apiVersion.yaml"),
-    ("no default environment", "test/testdata/sample_same_configs/no_default_for_environments.yaml"),
+    ("no api version", "test/data/testdata/same_configs/no_apiVersion.yaml"),
+    ("no default environment", "test/data/testdata/same_configs/no_default_for_environments.yaml"),
 ]
 
 
