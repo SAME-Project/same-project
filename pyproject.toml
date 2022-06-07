@@ -31,11 +31,32 @@ Pympler = "^1.0.1"
 docker = "^5.0.3"
 docopt = "^0.6.2"
 yarg = "^0.1.9"
-azure-mgmt-web = "^6.1.0"
-azure-mgmt-resource = "^21.1.0"
-azure-identity = "^1.10.0"
-azure-mgmt-storage = "^20.0.0"
-azure-mgmt-applicationinsights = "^3.0.0"
+pipreqs = "^0.4.11"
+
+# AzureML
+azureml-core = {version = "^1.22.1", optional = true }
+azure-mgmt-applicationinsights = {version = "^3.1.0", optional = true }
+azure-mgmt-web = { version = "6.1.0", optional = true }
+azureml-pipeline = { version = "^1.42.0", optional = true }
+
+# Dev
+PyJWT = { version = "^2.4.0", optional = true }
+pip-tools = {version = "^6.6.2", optional = true}
+pytest = {version = "^7.1.2", optional = true}
+pytest-cov = {version = "^3.0.0", optional = true}
+flake8 = { version = "^3.9.2", optional = true }
+ipython = {version = "^8.4.0", optional = true}
+mock = {version = "^4.0.3", optional = true}
+pytest-virtualenv = {version = "^1.7.0", optional = true}
+build = { version = "^0.6.1", optional = true }
+pip = { version ="^22.1.2", optional = true}
+ipykernel = {version = "^6.13.0", optional = true}
+pytest-mock = { version = "^3.6.1", optional = true }
+setuptools = { version = "^62.3.2", optional = true }
+wheel = {version = "^0.37.1", optional = true}
+python-dotenv = {version = "^0.20.0", optional = true}
+pytest-xdist = { version = "^2.5.0", optional = true }
+black = { version = "^22.3.0", optional = true }
 
 [tool.poetry.extras]
 azureml = [
@@ -44,25 +65,25 @@ azureml = [
     "azure-mgmt-applicationinsights",
     "azure-mgmt-web",
 ]
-
-[tool.poetry.dev-dependencies]
-pip-tools = "^6.2.0"
-pytest = "^6.2.5"
-pytest-cov = "^2.12.1"
-black = {version = "^21.8b0", allow-prereleases = true}
-flake8 = "^3.9.2"
-ipython = "^7.27.0"
-mock = "^4.0.3"
-pytest-virtualenv = "^1.7.0"
-johnnydep = "^1.8"
-build = "^0.6.1"
-pip = "^21.2.4"
-ipykernel = "^6.4.1"
-pytest-mock = "^3.6.1"
-setuptools = "^58.0.4"
-wheel = "^0.37.0"
-python-dotenv = "^0.19.0"
-pytest-xdist = "^2.5.0"
+dev = [
+"PyJWT",
+"pip-tools",
+"pytest",
+"pytest-cov",
+"flake8",
+"ipython",
+"mock",
+"pytest-virtualenv",
+"johnnydep",
+"build",
+"pip",
+"ipykernel",
+"pytest-mock",
+"setuptools",
+"wheel",
+"python-dotenv",
+"pytest-xdist",
+"black"]
 
 [tool.black]
 line-length = 119

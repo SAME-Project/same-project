@@ -34,4 +34,4 @@ def genstr(params: Mapping[str, int], dp: float = 0.05) -> str:
 
 
 def _genchar(params: Mapping[str, int]) -> str:
-    return sample(sample(params.keys(), 1, counts=params.values())[0], 1)[0]
+    return sample(sample(params.keys(), 1)[0], 1)[0]
