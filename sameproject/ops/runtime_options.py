@@ -1,6 +1,7 @@
 from traceback import print_last
 from typing import Any, Callable, List, Optional
 from cerberus import Validator, errors
+
 from box import Box
 import click
 import os
@@ -29,7 +30,13 @@ def runtime_schema() -> dict:
     for opt in list_options():
         opt_schema = _registry[opt].schema
         if opt_schema is None:
-            opt_schema = {"nullable": True, "type": _get_cerberus_type(_registry[opt].name, _registry[opt].type)}
+            opt_schema = {
+                "nullable": True,
+                "type": _get_cerberus_type(
+                    _registry[opt].name,
+                    _registry[opt].type
+                )
+            }
         schema["schema"][opt] = opt_schema
 
     return schema

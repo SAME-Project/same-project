@@ -53,6 +53,7 @@ def run(
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
     # Validate runtime options against the configured backend:
+    
     try:
         validate_options(target)
     except SyntaxError as e:
