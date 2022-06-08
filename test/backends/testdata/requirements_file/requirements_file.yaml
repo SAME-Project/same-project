@@ -1,0 +1,13 @@
+apiVersion: projectsame.io/v1alpha1
+metadata:
+  name: requirements_file
+  version: 0.0.1
+notebook:
+  name: "requirements_file"
+  path: requirements_file.ipynb
+  requirements: requirements.txt
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+run:
+  name: "requirements_file"

@@ -59,7 +59,14 @@ def test_live_test_kubeflow(mocker, tmpdir, same_config):
     )
     assert result.exit_code == 0
 
+<<<<<<< HEAD
 
+||||||| parent of e679c3e (Clean up test suite. (#138))
+@pytest.mark.skip("Skipping until we mock or create AML account")
+=======
+
+@pytest.mark.skip("Skipping until we mock or create AML account")
+>>>>>>> e679c3e (Clean up test suite. (#138))
 def test_live_test_aml(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir

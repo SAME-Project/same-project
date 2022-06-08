@@ -1,0 +1,12 @@
+apiVersion: projectsame.io/v1alpha1
+metadata:
+  name: multistep
+  version: 0.0.1
+notebook:
+  name: "multistep"
+  path: multistep.ipynb
+environments:
+  default:
+    image_tag: library/python:3.10-slim-buster
+run:
+  name: "multistep"
