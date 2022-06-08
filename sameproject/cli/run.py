@@ -26,7 +26,7 @@ import click
     "-t",
     "--target",
     default="kubeflow",
-    type=click.Choice(["aml", "kubeflow", "functions", "ocean"]),
+    type=click.Choice(["aml", "kubeflow", "functions", "python_ocean"]),
 )
 @click.option(
     "--persist-temp-files",

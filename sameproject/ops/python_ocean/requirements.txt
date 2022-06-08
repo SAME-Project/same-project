@@ -1,6 +1,0 @@
-# Dependencies for /Users/jakubsmekal/Development/Algovera/core_dev/c2d/same-project/sameproject/ops/python_ocean/dcgan.ipynb:
-matplotlib==3.5.2
-numpy==1.22.4
-Pillow==9.1.1
-torch==1.11.0
-torchvision==0.12.0
