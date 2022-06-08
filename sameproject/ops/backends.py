@@ -5,6 +5,7 @@ from typing import Tuple
 import sameproject.ops.functions as functions
 import sameproject.ops.kubeflow as kubeflow
 import sameproject.ops.aml as aml
+import sameproject.ops.ocean as ocean
 import sameproject.ops.helpers
 import tempfile
 import click
@@ -15,6 +16,7 @@ def render(target: str, steps: list, config: SameConfig, compile_path: str = Non
         "aml": aml.render,
         "kubeflow": kubeflow.render,
         "functions": functions.render,
+        "ocean": ocean.render
     }
 
     render_function = target_renderers.get(target, None)
