@@ -189,12 +189,7 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
 
     memory_limit = same_config.runtime_options.get(
         "serialisation_memory_limit",
-        512 * 1024 * 1024,  # 512MB
-    )
-
-    same_env = same_config.runtime_options.get(
-        "same_env",
-        "default",
+        250 * 1024 * 1024,  # 250MB
     )
 
     step_contract = {
@@ -207,7 +202,7 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
         "same_yaml": urlsafe_b64encode(bytes(same_config.to_yaml(), "utf-8")).decode(),
         "requirements_file": requirements_file,
-        "memory_limit": 250 * 2**20,  # 250MB
+        "memory_limit": memory_limit,
     }
 
     return env.get_template(kubeflow_step_template).render(step_contract)
