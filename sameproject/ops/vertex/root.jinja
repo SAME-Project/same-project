@@ -36,7 +36,7 @@ run_info_comp = kfp.v2.dsl.component(
 )
 {% endfor %}
 
-@kfp.dsl.pipeline(pipeline_root="", name="root_pipeline_compilation",)
+@kfp.dsl.pipeline(pipeline_root="gs://{{ bucket_name }}", name="root-pipeline-compilation",)
 def root(
     context: str='', metadata_url: str='',
 ):

@@ -61,7 +61,7 @@ def compile_vertex(compiled_directory: os.strerror):
 
     package_json_path.unlink() if package_json_path.exists() else 0
 
-    compiler.Compiler().compile(pipeline_func=root_module.root_function, package_path=str(package_json_path))
+    compiler.Compiler().compile(pipeline_func=root_module.root, package_path=str(package_json_path))
 
 
 @click.command(

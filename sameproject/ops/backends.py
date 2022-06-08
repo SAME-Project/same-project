@@ -12,14 +12,16 @@ import tempfile
 import click
 
 
-def render(target: str, steps: list, config: SameConfig, compile_path: str = None) -> Tuple[Path, str]:
+def render(execution_target: str, steps: list, same_run_config: SameConfig, compile_path: str = None) -> Tuple[Path, str]:
     target_renderers = {
         "aml": aml.render,
         "kubeflow": kubeflow.render,
         "functions": functions.render,
+        "vertex": vertex.render,
+        "kubeflowv1": kubeflowv1.render,
     }
 
-    render_function = target_renderers.get(target, None)
+    render_function = target_renderers.get(execution_target, None)
     if render_function is None:
         raise ValueError(f"Unknown backend: {execution_target}")
 
@@ -30,26 +32,20 @@ def render(target: str, steps: list, config: SameConfig, compile_path: str = Non
     return (compile_path, root_module_name)
 
 
-<<<<<<< HEAD
-def deploy(target: str, root_file_absolute_path: str, root_module_name: str, persist_temp_files: bool = False):
-    target_deployers = {"kubeflow": kubeflow.deploy, "aml": aml.deploy, "vertex": vertex.deploy, "kubeflowv1": kubeflowv1.deploy}
-||||||| parent of 9c36313 (Prototype implementation of durable functions backend. (#154))
-def deploy(target: str, root_file_absolute_path: str, root_module_name: str, persist_temp_files: bool = False):
-    target_deployers = {"kubeflow": kubeflow.deploy, "aml": aml.deploy}
-=======
-def deploy(target: str, base_path: Path, root_file: str, config: SameConfig):
+def deploy(execution_target: str, base_path: Path, root_file: str, same_run_config: SameConfig):
     target_deployers = {
         "aml": aml.deploy,
         "kubeflow": kubeflow.deploy,
         "functions": functions.deploy,
+        "vertex": vertex.deploy,
+        "kubeflowv1": kubeflowv1.deploy,
     }
 
->>>>>>> 9c36313 (Prototype implementation of durable functions backend. (#154))
-    deploy_function = target_deployers.get(target, None)
+    deploy_function = target_deployers.get(execution_target, None)
     if deploy_function is None:
-        raise ValueError(f"Unknown backend: {target}")
+        raise ValueError(f"Unknown backend: {execution_target}")
 
     click.echo(f"Files persisted in: {base_path}")
-    deploy_return = deploy_function(base_path, root_file, config)
+    deploy_return = deploy_function(base_path, root_file, same_run_config)
 
     return deploy_return

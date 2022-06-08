@@ -26,13 +26,7 @@ import click
     "-t",
     "--target",
     default="kubeflow",
-<<<<<<< HEAD
-    type=click.Choice(["kubeflow", "aml", "vertex", "kubeflowv1"]),
-||||||| parent of 9c36313 (Prototype implementation of durable functions backend. (#154))
-    type=click.Choice(["kubeflow", "aml"]),
-=======
-    type=click.Choice(["aml", "kubeflow", "functions"]),
->>>>>>> 9c36313 (Prototype implementation of durable functions backend. (#154))
+    type=click.Choice(["aml", "kubeflow", "functions", "kubeflowv1", "vertex"]),
 )
 @click.option(
     "--persist-temp-files",
@@ -59,7 +53,7 @@ def run(
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
     # Validate runtime options against the configured backend:
-    
+
     try:
         validate_options(target)
     except SyntaxError as e:
@@ -72,9 +66,9 @@ def run(
     same_run_config = same_run_config.inject_runtime_options()
 
     click.echo(f"Loading SAME config: {same_file.name}")
-    base_path, root_file = notebooks.compile(config, target)
+    base_path, root_file = notebooks.compile(same_run_config, target)
     if persist_temp_files:
         print(f"Temporary files persisted here: {base_path}")
-    
+
     if not no_deploy:
-        backends.deploy(target, base_path, root_file, config)
+        backends.deploy(target, base_path, root_file, same_run_config)

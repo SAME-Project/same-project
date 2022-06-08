@@ -10,6 +10,7 @@ import os
 
 from sameproject.data.step import Step
 from sameproject.ops import helpers
+import sameproject.ops.explode
 
 
 vertex_run_info_template = "run_info.jinja"
@@ -23,9 +24,6 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     templateLoader = FileSystemLoader(templateDir)
     print(f"Template dir {templateDir}")
     env = Environment(trim_blocks=True, loader=templateLoader)
-
-    if "gs_bucket_name" not in same_config["runtime_options"]:
-        raise ValueError("Need to set the environment variable BUCKET_NAME for the gs:// bucket that will be used for the Pipeline Run.")
 
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
@@ -178,10 +176,27 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     # create the comma delim list of steps (which we need for DAG description) in python as well.
     root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([name for name in all_steps])
 
+    # Need to build the bucket name into the template
+    root_contract["bucket_name"] = same_config.run.bucket_name
+
     return template.render(root_contract)
 
 
 def _build_step_file(env: Environment, step: Step) -> str:
-    step_contract = {"name": step.name, "unique_name": step.unique_name, "inner_code": urlsafe_b64encode(dill.dumps(step.code)).decode()}
+    with open(sameproject.ops.explode.__file__, "r") as f:
+        explode_code = f.read()
+
+    requirements_file = None
+    if "requirements_file" in step:
+        requirements_file = urlsafe_b64encode(bytes(step.requirements_file, "utf-8")).decode()
+
+    step_contract = {
+        "name": step.name,
+        "unique_name": step.unique_name,
+        "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
+        "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
+        "requirements_file": requirements_file,
+        "memory_limit": 50 * 2**20,  # 50MB
+    }
 
     return env.get_template(vertex_step_template).render(step_contract)
