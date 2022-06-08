@@ -58,7 +58,7 @@ jobs:
           python -m pip install poetry
       - name: Install dependencies
         run: |
-          poetry install --no-root
+          poetry install -E dev --no-root
       - name: Authenticate with google cloud
         uses: "google-github-actions/auth@v0"
         with:
