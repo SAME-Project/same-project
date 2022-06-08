@@ -66,24 +66,25 @@ azureml = [
     "azure-mgmt-web",
 ]
 dev = [
-"PyJWT",
-"pip-tools",
-"pytest",
-"pytest-cov",
-"flake8",
-"ipython",
-"mock",
-"pytest-virtualenv",
-"johnnydep",
-"build",
-"pip",
-"ipykernel",
-"pytest-mock",
-"setuptools",
-"wheel",
-"python-dotenv",
-"pytest-xdist",
-"black"]
+    "PyJWT",
+    "pip-tools",
+    "pytest",
+    "pytest-cov",
+    "flake8",
+    "ipython",
+    "mock",
+    "pytest-virtualenv",
+    "johnnydep",
+    "build",
+    "pip",
+    "ipykernel",
+    "pytest-mock",
+    "setuptools",
+    "wheel",
+    "python-dotenv",
+    "pytest-xdist",
+    "black"
+]
 
 [tool.black]
 line-length = 119
