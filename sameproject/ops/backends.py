@@ -5,7 +5,6 @@ from typing import Tuple
 import sameproject.ops.functions as functions
 import sameproject.ops.kubeflow as kubeflow
 import sameproject.ops.aml as aml
-import sameproject.ops.python_ocean as python_ocean
 import sameproject.ops.helpers
 import tempfile
 import click
@@ -16,7 +15,6 @@ def render(target: str, steps: list, config: SameConfig, compile_path: str = Non
         "aml": aml.render,
         "kubeflow": kubeflow.render,
         "functions": functions.render,
-        "ocean": python_ocean.render
     }
 
     render_function = target_renderers.get(target, None)
@@ -35,7 +33,6 @@ def deploy(target: str, base_path: Path, root_file: str, config: SameConfig):
         "aml": aml.deploy,
         "kubeflow": kubeflow.deploy,
         "functions": functions.deploy,
-        "ocean": python_ocean.deploy
     }
 
     deploy_function = target_deployers.get(target, None)
