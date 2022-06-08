@@ -118,13 +118,8 @@ def get_sorted_list_of_steps(notebook: dict, config: SameConfig) -> list:
 
 def get_code(notebook: dict) -> str:
     """Combines and returns all python code in the given notebook."""
-    if "cells" not in notebook:
-        return ""
-
     code = []
     for cell in notebook["cells"]:
-        code.append("\n".join(
-            jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source
-        ))
+        code.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
 
     return "\n".join(code)

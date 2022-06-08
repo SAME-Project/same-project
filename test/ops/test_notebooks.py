@@ -47,39 +47,3 @@ def test_notebooks_get_code(notebook):
     # Code should not break when parsed:
     modules = get_imported_modules(code)
     assert len(modules) > 0
-
-
-def test_read_notebooks_nonexistent():
-    with pytest.raises(SystemExit):
-        read_notebook("BAD_PATH")
-
-
-@test.testdata.notebooks("tagged")
-def test_read_notebooks_tagged(
-    config,
-    notebook,
-    requirements,
-    validation_fn,
-):
-    assert "cells" in notebook
-    steps = get_steps(notebook, config)
-
-    assert validation_fn({
-        "cells": len(notebook["cells"]),
-        "steps": len(steps),
-    })
-
-
-@pytest.mark.parametrize("name, path, expect_err", magic_line_testcases)
-def test_read_notebooks_magic_lines(name, path, expect_err, config):
-    """
-    Tests magic line parsing in notebooks, with edge-cases like
-    multiline strings containing what appear to be multiline strings.
-    """
-    notebook_dict = read_notebook(path)
-
-    if expect_err:
-        with pytest.raises(SyntaxError):
-            assert get_steps(notebook_dict, config)
-    else:
-        assert get_steps(notebook_dict, config)
