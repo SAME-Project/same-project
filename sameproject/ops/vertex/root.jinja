@@ -30,13 +30,14 @@ run_info_comp = kfp.v2.dsl.component(
     packages_to_install=[
         "dill",
         "requests",
+        "validator_collection",
         "pympler==1.0.1",
         {{ step.package_string }} # TODO: make this a loop
     ],
 )
 {% endfor %}
 
-@kfp.dsl.pipeline(pipeline_root="gs://{{ bucket_name }}", name="root-pipeline-compilation",)
+@kfp.dsl.pipeline(pipeline_root="gs://{{ bucket_name }}", name="{{ pipeline_name_safe }}",)
 def root(
     context: str='', metadata_url: str='',
 ):
@@ -47,11 +48,14 @@ def root(
     config.load_kube_config()
     v1 = client.CoreV1Api()
     namespace = "kubeflow"
-    name = "{{ experiment_name_safe }}"
+    pipeline_name = "{{ pipeline_name_safe }}"
     metadata = {"name": name, "namespace": "kubeflow"}
     api_version = "v1"
     kind = "Secret"
     type = "kubernetes.io/dockerconfigjson"
+
+    TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    job_id = f"{pipeline_name}-{TIMESTAMP}"
 
     cred_payload = {
         "auths": {
@@ -101,15 +105,14 @@ def root(
     env_vars = {
     }
 
-    run_info = run_info_comp(run_id=kfp.dsl.RUN_ID_PLACEHOLDER)
-
+    run_info = run_info_comp(
+        name=pipeline_name, endpoint=endpoint, kfp_run_id=kfp.dsl.RUN_ID_PLACEHOLDER, kfp_execution_id=kfp.dsl.EXECUTION_ID_PLACEHOLDER, job_id=job_id
+    )
 
 {% for step in list_of_steps %}
     {{ step.unique_name }} = {{ step.unique_name }}_comp(
 {% if step.previous_step_name %}
         input_context_path={{ step.previous_step_name }}.outputs["output_context_path"],
-{% else %}
-        input_context_path="",
 {% endif %}
         run_info=run_info.outputs["run_info"],
         metadata_url=metadata_url

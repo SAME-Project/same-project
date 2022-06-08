@@ -8,22 +8,20 @@ alphanum = {
     "type": "string",
     "regex": r"^[\d\w ]+",
 }
-dockertag = {
-    "nullable": True,
-    "type": "string",
-    "regex": ".*/.*"
-}
+dockertag = {"nullable": True, "type": "string", "regex": ".*/.*"}
 
 
 # Runtime options for testing schemas and validation:
 opts.register_option(
-    "test_one_alphanum", "",
+    "test_one_alphanum",
+    "",
     type=str,
     schema=alphanum,
     backend="one",
 )
 opts.register_option(
-    "test_one_dockertag", "",
+    "test_one_dockertag",
+    "",
     type=str,
     schema=dockertag,
 )

@@ -293,7 +293,7 @@ azureml-telemetry = ">=1.42.0,<1.43.0"
 
 [[package]]
 name = "azureml-core"
-version = "1.42.0"
+version = "1.42.0.post1"
 description = "Azure Machine Learning core packages, modules, and classes"
 category = "main"
 optional = true
@@ -320,7 +320,7 @@ jsonpickle = "<3.0.0"
 knack = ">=0.9.0,<0.10.0"
 msal = ">=1.15.0,<2.0.0"
 msal-extensions = ">=0.3.0,<=1.0.0"
-msrest = ">=0.5.1,<1.0.0"
+msrest = ">=0.5.1,<0.7.0"
 msrestazure = ">=0.4.33,<=0.6.4"
 ndg-httpsclient = "<=0.5.1"
 packaging = ">=20.0,<22.0"
@@ -3037,7 +3037,7 @@ azureml-automl-core = [
     {file = "azureml_automl_core-1.42.0.post1-py3-none-any.whl", hash = "sha256:fc0a92a7c2a8a765ec22a0ccb897b4745f94dff090271f208b6feaa701092b11"},
 ]
 azureml-core = [
-    {file = "azureml_core-1.42.0-py3-none-any.whl", hash = "sha256:87f211e2054d18d7079b9eedca3e753aa914c0a333a62f5802059530a46de59c"},
+    {file = "azureml_core-1.42.0.post1-py3-none-any.whl", hash = "sha256:05aaf50155aacbad4e0fd166f2d3671cf1bb438fad3cb67026e5cf1aecee114b"},
 ]
 azureml-dataprep = [
     {file = "azureml_dataprep-4.0.3-py3-none-any.whl", hash = "sha256:d37a0004c9000270c1709376eb12be667ec25371c07a76fc0ddefb16e8ec44ca"},

@@ -3,7 +3,9 @@ from kfp.v2.dsl import component, Artifact, Input, InputPath, Output, OutputPath
 from typing import NamedTuple
 
 def {{ unique_name }}_fn(
+{% if not_first %}
     input_context_path: InputPath(str),
+{% endif %}
     output_context_path: OutputPath(str),
     run_info: str = "gAR9lC4=",
     metadata_url: str = "",
@@ -15,14 +17,18 @@ def {{ unique_name }}_fn(
     import tempfile
     import dill
     import os
+    from validator_collection import validators, checkers
 
-    input_context = None
+    input_context = ""
+    {% if not_first %}
     with Path(input_context_path).open("rb") as reader:
         input_context = reader.read()
+    {% endif %}
 
     # Helper function for posting metadata to mlflow.
     def post_metadata(json):
-        if metadata_url == "":
+        if not checkers.is_url(metadata_url):
+            print(f"Cannot post metadata - URL is invalid: {metadata_url}")
             return
 
         try:
@@ -41,14 +47,18 @@ def {{ unique_name }}_fn(
     # Post session context to mlflow.
     if len(input_context) > 0:
             input_context_str = urlsafe_b64encode(input_context)
-            post_metadata({
-                "experiment_id": run_info["experiment_id"],
-                "run_id": run_info["run_id"],
-                "step_id": "{{ name }}",
-                "metadata_type": "input",
-                "metadata_value": input_context_str,
-                "metadata_time": datetime.datetime.now().isoformat(),
-            })
+            post_metadata(
+                {
+                    "run_id": run_info["run_id"],
+                    "kfp_run_id": run_info["kfp_run_id"],
+                    "kfp_execution_id": run_info["kfp_execution_id"],
+                    "name": run_info["name"],
+                    "step_id": {{ name }},
+                    "metadata_type": "input",
+                    "metadata_value": input_context_str,
+                    "metadata_time": datetime.datetime.now().isoformat(),
+                }
+            )
 
     # User code for step, which we run in its own execution frame.
     user_code = f"""
@@ -108,12 +118,17 @@ dill.dump_session("{output_context_path}")
     # Post new session context to mlflow:
     with Path(output_context_path).open("rb") as reader:
         context = urlsafe_b64encode(reader.read())
-        post_metadata({
-            "experiment_id": run_info["experiment_id"],
-            "run_id": run_info["run_id"],
-            "step_id": "{{ name }}",
-            "metadata_type": "output",
-            "metadata_value": context,
-            "metadata_time": datetime.datetime.now().isoformat(),
-        })
+        post_metadata(
+            {
+                "run_id": run_info["run_id"],
+                "kfp_run_id": run_info["kfp_run_id"],
+                "kfp_execution_id": run_info["kfp_execution_id"],
+                "pipeline_name": run_info["name"],
+                "step_id": "{{ name }}",
+                "metadata_type": "output",
+                "metadata_value": context,
+                "metadata_time": datetime.datetime.now().isoformat(),
+            }
+        )
+
 {% endautoescape %}

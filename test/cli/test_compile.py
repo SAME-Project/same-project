@@ -8,7 +8,7 @@ from pathlib import Path
 import logging
 import pytest
 
-same_config_file_path = Path("test/testdata/generic_notebook/same.yaml")
+same_config_file_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
 
 # Permutations of notebooks
 # | Code | Tag | Code | Tag | Code |
@@ -25,17 +25,17 @@ same_config_file_path = Path("test/testdata/generic_notebook/same.yaml")
 # | X    | X   | X    | X   | X    |
 # Test Name, Notebook Path, number of steps, number of total cells
 test_notebooks = [
-    ("Code", "test/testdata/sample_notebooks/code.ipynb", 1, 3),
-    ("Code Tag", "test/testdata/sample_notebooks/code_tag.ipynb", 2, 2),
-    ("Code Tag Code", "test/testdata/sample_notebooks/code_tag_code.ipynb", 2, 2),
-    ("Tag", "test/testdata/sample_notebooks/tag.ipynb", 2, 2),
-    ("Tag Code", "test/testdata/sample_notebooks/tag_code.ipynb", 1, 1),
-    ("Tag Code Tag", "test/testdata/sample_notebooks/tag_code_tag.ipynb", 2, 2),
-    ("Tag Code Tag Code", "test/testdata/sample_notebooks/tag_code_tag_code.ipynb", 2, 2),
-    ("Tag Tag", "test/testdata/sample_notebooks/tag_tag.ipynb", 2, 2),
-    ("Tag Tag Code", "test/testdata/sample_notebooks/tag_tag_code.ipynb", 2, 2),
-    ("Code Tag Code Tag Code", "test/testdata/sample_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
-    ("Code Code Tag Code Code Tag Code Code", "test/testdata/sample_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
+    ("Code", "test/testdata/tagged/code.ipynb", 1, 3),
+    ("Code Tag", "test/testdata/tagged/code_tag.ipynb", 2, 2),
+    ("Code Tag Code", "test/testdata/tagged/code_tag_code.ipynb", 2, 2),
+    ("Tag", "test/testdata/tagged/tag.ipynb", 2, 2),
+    ("Tag Code", "test/testdata/tagged/tag_code.ipynb", 1, 1),
+    ("Tag Code Tag", "test/testdata/tagged/tag_code_tag.ipynb", 2, 2),
+    ("Tag Code Tag Code", "test/testdata/tagged/tag_code_tag_code.ipynb", 2, 2),
+    ("Tag Tag", "test/testdata/tagged/tag_tag.ipynb", 2, 2),
+    ("Tag Tag Code", "test/testdata/tagged/tag_tag_code.ipynb", 2, 2),
+    ("Code Tag Code Tag Code", "test/testdata/tagged/code_tag_code_tag_code.ipynb", 3, 3),
+    ("Code Code Tag Code Code Tag Code Code", "test/testdata/tagged/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
 ]
 
 # Test Name, String to detect
@@ -86,17 +86,15 @@ def test_parse_notebook(same_config, test_name, notebook_path, number_of_steps, 
 
 @pytest.mark.parametrize("test_name, error_string", magic_strings_to_detect, ids=[p[0] for p in magic_strings_to_detect])
 def test_detect_bad_python_strings(same_config, caplog, test_name, error_string):
-    notebook_path = "test/testdata/notebook_edge_cases/bad_python_lines.ipynb"
+    notebook_path = "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb"
     notebook_dict = notebooks.read_notebook(notebook_path)
-    with pytest.raises(SyntaxError) as e:
-        with caplog.at_level(logging.INFO):
-            notebooks.get_steps(notebook_dict, same_config)
-            assert error_string in caplog.text
-    assert e.type == SyntaxError
+    with caplog.at_level(logging.INFO):
+        notebooks.get_steps(notebook_dict, same_config)
+        assert error_string in caplog.text
 
 
 def test_e2e_full_notebook(same_config):
-    notebook_path = "test/testdata/generic_notebook/sample_notebook.ipynb"
+    notebook_path = "test/ops/testdata/same_notebooks/generic/sample_notebook.ipynb"
     number_of_steps = 3
     number_of_total_cells = 13
     test_name = "E2E 'sample_notebook'"

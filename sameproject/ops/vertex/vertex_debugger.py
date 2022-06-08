@@ -11,6 +11,7 @@ from kfp.v2 import dsl
 from kfp.v2.dsl import component, Output, HTML
 from google.cloud import aiplatform
 import dotenv
+import datetime
 
 import os
 
@@ -109,6 +110,8 @@ def deploy_vertex(compiled_pipeline_path: str, project_id: str, service_account_
     BUCKET_URI = f"gs://{BUCKET_NAME}"
     PIPELINE_ROOT = f"{BUCKET_URI}/{uuid.uuid4()}/pipeline_root"
 
+    TIMESTAMP = datetime.now().strftime("%Y%m%d%H%M%S")
+
     job = aiplatform.PipelineJob(
         display_name="MY_DISPLAY_JOB",
         template_path=compiled_pipeline_path,
@@ -116,6 +119,7 @@ def deploy_vertex(compiled_pipeline_path: str, project_id: str, service_account_
         credentials=credentials,
         location=location,
         pipeline_root=f"{PIPELINE_ROOT}",
+        job_id="MY_DISPLAY_JOB-{0}".format(TIMESTAMP),
     )
 
     # job = aiplatform.PipelineJob(

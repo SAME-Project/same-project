@@ -2,7 +2,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from kubernetes import client, config
 from base64 import urlsafe_b64encode
 from pathlib import Path
-from typing import Tuple
+from typing import Mapping, Tuple
 from uuid import uuid4
 import logging
 import dill
@@ -11,6 +11,7 @@ import os
 from sameproject.data.step import Step
 from sameproject.ops import helpers
 import sameproject.ops.explode
+from sameproject.data.config import SameConfig
 
 
 vertex_run_info_template = "run_info.jinja"
@@ -18,7 +19,7 @@ vertex_root_template = "root.jinja"
 vertex_step_template = "step.jinja"
 
 
-def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
+def render(path: str, steps: Mapping[str, Step], config: SameConfig) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
     templateDir = os.path.dirname(os.path.abspath(__file__))
     templateLoader = FileSystemLoader(templateDir)
@@ -26,21 +27,21 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     env = Environment(trim_blocks=True, loader=templateLoader)
 
     # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
-    for step_name in steps:
-        step_file_string = _build_step_file(env, steps[step_name])
-        helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_name }.py", step_file_string)
+    for step_number, step_name in enumerate(steps):
+        step_file_string = _build_step_file(env, steps[step_name], step_number != 0)
+        helpers.write_file(Path(path) / f"{steps[step_name].unique_name }.py", step_file_string)
 
-    root_file_string = _build_root_file(env, steps, same_config)
+    root_file_string = _build_root_file(env, steps, config)
 
     root_pipeline_name = f"root_pipeline_{uuid4().hex.lower()}"
-    root_path = Path(compile_path) / f"{root_pipeline_name}.py"
+    root_path = Path(path) / f"{root_pipeline_name}.py"
     helpers.write_file(root_path, root_file_string)
 
-    run_info_path = Path(compile_path) / "run_info.py"
+    run_info_path = Path(path) / "run_info.py"
     run_info_file_string = _build_run_info_file(env)
     helpers.write_file(run_info_path, run_info_file_string)
 
-    return (compile_path, root_pipeline_name)
+    return (path, root_pipeline_name)
 
 
 def _build_run_info_file(env: Environment) -> str:
@@ -57,11 +58,11 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
         "list_of_steps": [],
         "comma_delim_list_of_step_names_as_str": "",
         "secrets_to_create_as_dict": {},
-        "experiment_name": "",
-        "experiment_name_safe": "",
         "list_of_environments": {},
         "image_pull_secrets": {},
         "bucket_name": "",
+        "pipeline_name": "",
+        "pipeline_name_safe": "",
     }
 
     params_to_merge = []
@@ -166,11 +167,11 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     # Text manipulation in jinja is pretty weak, we'll do both of these cleanings in python.
 
     # experiment_name is often displayed to the user, so try to keep it as close to the original as possible
-    root_contract["experiment_name"] = helpers.removeIllegalExperimentNameCharacters(same_config.metadata.name)
+    root_contract["pipeline_name"] = helpers.removeIllegalExperimentNameCharacters(same_config.metadata.name)
 
     # However, often there's a backup, internal only name that needs much stricter character restrictions
     # We'll create that here.
-    root_contract["experiment_name_safe"] = helpers.lowerAlphaNumericOnly(same_config.metadata.name)
+    root_contract["pipeline_name_safe"] = helpers.lowerAlphaNumericOnly(same_config.metadata.name)
 
     # List manipulation is also pretty weak in jinja (plus I like views being very non-functional). We'll
     # create the comma delim list of steps (which we need for DAG description) in python as well.
@@ -182,7 +183,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     return template.render(root_contract)
 
 
-def _build_step_file(env: Environment, step: Step) -> str:
+def _build_step_file(env: Environment, step: Step, not_first: bool) -> str:
     with open(sameproject.ops.explode.__file__, "r") as f:
         explode_code = f.read()
 
@@ -195,6 +196,7 @@ def _build_step_file(env: Environment, step: Step) -> str:
         "unique_name": step.unique_name,
         "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
+        "not_first": not_first,
         "requirements_file": requirements_file,
         "memory_limit": 50 * 2**20,  # 50MB
     }

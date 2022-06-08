@@ -6,7 +6,6 @@ from pathlib import Path
 import test.testdata
 import pytest
 
-@pytest.mark.skip("Due to fuzzing, this doesn't work")
 def test_init():
     for i in range(50):
         runner = CliRunner()
