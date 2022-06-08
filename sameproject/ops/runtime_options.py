@@ -1,7 +1,5 @@
-from traceback import print_last
 from typing import Any, Callable, List, Optional
 from cerberus import Validator, errors
-
 from box import Box
 import click
 import os
@@ -21,23 +19,24 @@ def runtime_options(fn) -> Callable:
     )
 
 
-def runtime_schema() -> dict:
-    """Returns a cerberus schema for validating runtime options."""
-
-    # TODO: #161 Not sure if this is correct (allowing unknown) - SHOULD work, since we validate elsewhere, but seems silly not to reuse the same validation rules. The reason I had to do this was in SameConfig, runtime_options does not get the same rules as we inject in options.py - it's just a dict.
-    schema = {"type": "dict", "schema": {}, "allow_unknown": True}
-
+def runtime_schema(backend: str) -> dict:
+    """
+    Returns a cerberus schema for validating runtime options for a
+    specific backend.
+    """
+    schema = {"type": "dict", "schema": {}}
     for opt in list_options():
-        opt_schema = _registry[opt].schema
-        if opt_schema is None:
-            opt_schema = {
-                "nullable": True,
-                "type": _get_cerberus_type(
-                    _registry[opt].name,
-                    _registry[opt].type
-                )
-            }
-        schema["schema"][opt] = opt_schema
+        if _registry[opt].backend is None or _registry[opt].backend == backend:
+            opt_schema = _registry[opt].schema
+            if opt_schema is None:
+                opt_schema = {
+                    "nullable": True,
+                    "type": _get_cerberus_type(
+                        _registry[opt].name,
+                        _registry[opt].type
+                    )
+                }
+            schema["schema"][opt] = opt_schema
 
     return schema
 
@@ -80,14 +79,16 @@ class UserFriendlyMessagesErrorHandler(errors.BasicErrorHandler):
 def validate_options(backend: str):
     """
     Raises if the runtime options are set incorrectly for the given backend.
-    Doing it with 'validator' functions allows us to have options that are
-    conditionally dependent on each other for a particular backend.
     """
     opts = {}
-    for name in list_options():
-        opts[name] = get_option_value(name)
+    for opt in list_options():
+        if _registry[opt].backend is None or _registry[opt].backend == backend:
+            opts[opt] = get_option_value(opt)
 
-    validator = Validator({"values": runtime_schema()}, error_handler=UserFriendlyMessagesErrorHandler)
+    validator = Validator(
+        {"values": runtime_schema(backend)},
+        error_handler=UserFriendlyMessagesErrorHandler,
+    )
     if not validator.validate({"values": opts}):
         print("The following environment variables had errors:")
         error_values = validator.errors["values"][0]
@@ -104,21 +105,6 @@ def validate_options(backend: str):
 
         raise SyntaxError(f"One or more runtime options is invalid: {validator.errors}")
 
-    for name in list_options():
-        if _registry[name].validator is not None:
-            _registry[name].validator(backend, name, opts)
-
-
-def required_for_backend(backend: str) -> Callable:
-    """Validator that marks an option as required for a given backend."""
-
-    def _inner(_backend, name, opts):
-        if _backend == backend:
-            if opts[name] is None:
-                raise Exception(f"Option '{name}' must be set for backend '{backend}'.")
-
-    return _inner
-
 
 def register_option(
     name: str,
@@ -127,7 +113,7 @@ def register_option(
     flag: Optional[str] = None,
     env: Optional[str] = None,
     schema: Optional[dict] = None,
-    validator: Callable[[str, str, dict], None] = None,
+    backend: Optional[str] = None,
 ):
     """
     Registers a runtime option with the given metadata.
@@ -138,7 +124,7 @@ def register_option(
     :param flag: Command line flag used to set the option. Defaults to a kebab-case translation of 'name', e.g. 'my_opt' ==> '--my-opt'.
     :param env: Environment variable used to set the option. Defaults to an upper-case translation of 'name', e.g. 'my_opt' ==> 'MY_OPT'.
     :param schema: Cerberus schema used to validate the option once it's been set. Defaults to checking that the input matches 'type'.
-    :param validator: Function that receives the current backend, option name and bag of options and raises if the option has been set incorrectly.
+    :param backend: The backend this option is for - "None" signifies it is for all backends.
     """
     if flag is None:
         flag = "--" + name.replace("_", "-")
@@ -159,7 +145,7 @@ def register_option(
             "type": type,
             "value": value,
             "schema": schema,
-            "validator": validator,
+            "backend": backend,
             "callback": lambda ctx, param, value: setattr(_registry[name], "value", value),
         }
     )

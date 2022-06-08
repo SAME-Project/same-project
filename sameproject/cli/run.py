@@ -53,7 +53,6 @@ def run(
 ):
     """Compiles and deploys a pipeline from a SAME config file."""
     # Validate runtime options against the configured backend:
-    
     try:
         validate_options(target)
     except SyntaxError as e:
@@ -69,6 +68,6 @@ def run(
     base_path, root_file = notebooks.compile(config, target)
     if persist_temp_files:
         print(f"Temporary files persisted here: {base_path}")
-    
+
     if not no_deploy:
         backends.deploy(target, base_path, root_file, config)

@@ -1,4 +1,4 @@
-from sameproject.ops.runtime_options import list_options, get_option_value, runtime_schema
+from sameproject.ops.runtime_options import list_options, get_option_value
 from ruamel.yaml.parser import ParserError
 from cerberus import Validator
 from io import BufferedReader
@@ -87,7 +87,9 @@ schema = {
     # Injected by SAME automatically based on environment variables and
     # command-line flags. This also lets users specify runtime options in
     # their SAME config file if they like:
-    "runtime_options": runtime_schema(),
+    "runtime_options": {
+        "type": "dict",
+    },
 }
 
 
