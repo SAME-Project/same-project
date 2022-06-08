@@ -14,3 +14,9 @@ del Path
 del sys
 del conda_path
 del pipreqs_path
+
+# Imports and registers all backend runtime options:
+import sameproject.ops.runtime_options
+import sameproject.ops.aml.options
+import sameproject.ops.functions.options
+import sameproject.ops.kubeflow.options
