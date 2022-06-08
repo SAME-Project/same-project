@@ -293,7 +293,7 @@ azureml-telemetry = ">=1.42.0,<1.43.0"
 
 [[package]]
 name = "azureml-core"
-version = "1.42.0"
+version = "1.42.0.post1"
 description = "Azure Machine Learning core packages, modules, and classes"
 category = "main"
 optional = true
@@ -320,7 +320,7 @@ jsonpickle = "<3.0.0"
 knack = ">=0.9.0,<0.10.0"
 msal = ">=1.15.0,<2.0.0"
 msal-extensions = ">=0.3.0,<=1.0.0"
-msrest = ">=0.5.1,<1.0.0"
+msrest = ">=0.5.1,<0.7.0"
 msrestazure = ">=0.4.33,<=0.6.4"
 ndg-httpsclient = "<=0.5.1"
 packaging = ">=20.0,<22.0"
@@ -1305,7 +1305,7 @@ qtconsole = "*"
 
 [[package]]
 name = "jupyter-client"
-version = "7.3.3"
+version = "7.3.4"
 description = "Jupyter protocol implementation and client libraries"
 category = "main"
 optional = false
@@ -1982,14 +1982,14 @@ yarg = "*"
 
 [[package]]
 name = "pkginfo"
-version = "1.8.2"
+version = "1.8.3"
 description = "Query metadatdata from sdists / bdists / installed packages."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [package.extras]
-testing = ["coverage", "nose"]
+testing = ["nose", "coverage"]
 
 [[package]]
 name = "platformdirs"
@@ -2913,13 +2913,14 @@ python-versions = "*"
 requests = "*"
 
 [extras]
-azureml = ["azureml-core", "azureml-pipeline", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
+aml = ["azureml-core", "azureml-pipeline", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
 dev = ["PyJWT", "pip-tools", "pytest", "pytest-cov", "flake8", "ipython", "mock", "pytest-virtualenv", "johnnydep", "build", "pip", "ipykernel", "pytest-mock", "setuptools", "wheel", "python-dotenv", "pytest-xdist", "black"]
+functions = ["azure-identity", "azure-mgmt-storage", "azure-mgmt-resource", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "~3.8"
-content-hash = "b32caf6a5e03e0ceb797738607b669d0faa44f26b56b6708700fa33367ce054f"
+python-versions = ">=3.8,<3.9"
+content-hash = "f49bffe6d7348e240b444e9cdcc34aedf2eb69d54a5e843d258a324b70521505"
 
 [metadata.files]
 absl-py = [
@@ -3037,7 +3038,7 @@ azureml-automl-core = [
     {file = "azureml_automl_core-1.42.0.post1-py3-none-any.whl", hash = "sha256:fc0a92a7c2a8a765ec22a0ccb897b4745f94dff090271f208b6feaa701092b11"},
 ]
 azureml-core = [
-    {file = "azureml_core-1.42.0-py3-none-any.whl", hash = "sha256:87f211e2054d18d7079b9eedca3e753aa914c0a333a62f5802059530a46de59c"},
+    {file = "azureml_core-1.42.0.post1-py3-none-any.whl", hash = "sha256:05aaf50155aacbad4e0fd166f2d3671cf1bb438fad3cb67026e5cf1aecee114b"},
 ]
 azureml-dataprep = [
     {file = "azureml_dataprep-4.0.3-py3-none-any.whl", hash = "sha256:d37a0004c9000270c1709376eb12be667ec25371c07a76fc0ddefb16e8ec44ca"},
@@ -3548,8 +3549,8 @@ jupyter = [
     {file = "jupyter-1.0.0.zip", hash = "sha256:3e1f86076bbb7c8c207829390305a2b1fe836d471ed54be66a3b8c41e7f46cc7"},
 ]
 jupyter-client = [
-    {file = "jupyter_client-7.3.3-py3-none-any.whl", hash = "sha256:5b4f5bb9f9c3b5466ba84761312ed75f487bf3b8b0e1eeeec4bb2d0f9d855c70"},
-    {file = "jupyter_client-7.3.3.tar.gz", hash = "sha256:9e80defc0058712bf2b30327bad582f9734668aa85e90256dcba116325ce3060"},
+    {file = "jupyter_client-7.3.4-py3-none-any.whl", hash = "sha256:17d74b0d0a7b24f1c8c527b24fcf4607c56bee542ffe8e3418e50b21e514b621"},
+    {file = "jupyter_client-7.3.4.tar.gz", hash = "sha256:aa9a6c32054b290374f95f73bb0cae91455c58dfb84f65c8591912b8f65e6d56"},
 ]
 jupyter-console = [
     {file = "jupyter_console-6.4.3-py3-none-any.whl", hash = "sha256:e630bcb682c0088dda45688ad7c2424d4a825c8acf494cb036ced03ed0424841"},
@@ -3811,8 +3812,8 @@ pipreqs = [
     {file = "pipreqs-0.4.11.tar.gz", hash = "sha256:c793b4e147ac437871b3a962c5ce467e129c859ece5ba79aca83c20f4d9c3aef"},
 ]
 pkginfo = [
-    {file = "pkginfo-1.8.2-py2.py3-none-any.whl", hash = "sha256:c24c487c6a7f72c66e816ab1796b96ac6c3d14d49338293d2141664330b55ffc"},
-    {file = "pkginfo-1.8.2.tar.gz", hash = "sha256:542e0d0b6750e2e21c20179803e40ab50598d8066d51097a0e382cba9eb02bff"},
+    {file = "pkginfo-1.8.3-py2.py3-none-any.whl", hash = "sha256:848865108ec99d4901b2f7e84058b6e7660aae8ae10164e015a6dcf5b242a594"},
+    {file = "pkginfo-1.8.3.tar.gz", hash = "sha256:a84da4318dd86f870a9447a8c98340aa06216bfc6f2b7bdc4b8766984ae1867c"},
 ]
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
@@ -4512,7 +4513,6 @@ widgetsnbextension = [
 ]
 wimpy = [
     {file = "wimpy-0.6-py2.py3-none-any.whl", hash = "sha256:86aec5008c4bb88a4e81c262dcbe00df1acd4d1cc293b35237b630149c5f6ef7"},
-    {file = "wimpy-0.6.tar.gz", hash = "sha256:5d82b60648861e81cab0a1868ae6396f678d7eeb077efbd7c91524de340844b3"},
 ]
 wrapt = [
     {file = "wrapt-1.14.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:1b376b3f4896e7930f1f772ac4b064ac12598d1c38d04907e696cc4d794b43d3"},
