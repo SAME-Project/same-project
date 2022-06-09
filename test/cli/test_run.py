@@ -60,6 +60,7 @@ def test_live_test_kubeflow(mocker, tmpdir, same_config):
     assert result.exit_code == 0
 
 
+@pytest.mark.aml
 def test_live_test_aml(mocker, tmpdir, same_config):
     temp_dir_mock = mocker.patch.object(tempfile, "mkdtemp")
     temp_dir_mock.return_value = tmpdir
