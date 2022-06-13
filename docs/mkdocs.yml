@@ -66,6 +66,9 @@ extra:
     - icon: fontawesome/brands/slack
       link: https://join.slack.com/t/thesameproject/shared_invite/zt-lq9rk2g6-Jyfv3AXu_qnX9LqWCmV7HA
       name: Slack
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCCqjbL-bVfnsEV3aJvpD1bg
+      name: YouTube  
   version_warning: !ENV [VERSION_WARNING]
   same_version: !ENV [SAME_VERSION]
   branch: !ENV [SAMPLES_BRANCH, "mkdocs"]
