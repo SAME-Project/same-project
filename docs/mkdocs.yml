@@ -8,9 +8,9 @@ nav:
       - Changing Environment: getting-started/changing-environment.md
       - Working with Datasets: getting-started/working-with-datasets.md
       - Developer Guide: getting-started/dev-build.md
-      - Blog:
-            - Articles:
-              - SAME testblog: docs/blog/articles/2022-06-13-SAME-Porject-blog-test.md
+  - Blog:
+        - Articles:
+          - SAME testblog: blog/articles/2022-06-13-SAME-Porject-blog-test.md
 
 theme:
   name: material
