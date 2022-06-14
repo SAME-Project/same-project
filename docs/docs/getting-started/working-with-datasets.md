@@ -2,7 +2,6 @@
 type: docs
 title: "Working with Datasets"
 description: "Working with environment-specific datasets."
-weight: 40
 ---
 
 You may wish to use different datasets in your notebook depending on which environment it is deployed to. The [`sameproject` SDK](https://pypi.org/project/sameproject/) allows you to configure [environment](changing-environment.md)-specific datasets in your SAME config file, and load them in a uniform way inside your notebook.
