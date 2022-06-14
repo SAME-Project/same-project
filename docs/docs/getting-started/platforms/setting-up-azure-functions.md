@@ -4,26 +4,94 @@ title: "Setting up Azure Functions"
 description: "How to set up Azure Functions for SAME."
 ---
 
-First, you will need a Kubernetes setup. You can test this by executing a simple command:
+The `functions` backend is an [Azure Durable Functions](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview) app that can execute SAME runs. In order to use it, you will first need to deploy the app to an Azure subscription that you own, and then configure SAME to send requests to it.
+
+
+## Prerequisites
+
+You will need the following tools to deploy the `functions` backend:
+
+1. [`az`](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli), the Azure CLI tool.
+2. [`func`](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools), the Azure Functions CLI tool.
+3. [`terraform`](https://learn.hashicorp.com/tutorials/terraform/install-cli), the Terraform CLI tool.
+
+## Initial Setup
+
+First, clone the [`same-project`](https://github.com/SAME-Project/same-project) git repository:
 
 ```bash
-kubectl get nodes
+git clone https://github.com/SAME-Project/same-project.git
+cd same-project
 ```
 
-Next, you will need to setup the default Kubeflow installation. We are following the [manifests](https://github.com/kubeflow/manifests/tree/master/apps/pipeline/upstream) effort in Kubeflow (as of June 2022).
+Next, you will need to authorise `terraform` to deploy resources to your Azure account. This can either be done using your personal [_user account_](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/azure_cli), or by using a [_service principal_](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret) you have created for this purpose. Once you have authenticated, take note of the [Azure subscription ID](https://docs.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id) you wish to deploy the `functions` backend into:
 
 ```bash
-KFP_ENV=platform-agnostic
-kubectl apply -k cluster-scoped-resources/
-kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
-kubectl apply -k "env/${KFP_ENV}/"
-kubectl wait pods -l application-crd-id=kubeflow-pipelines -n kubeflow --for condition=Ready --timeout=1800s
+export FUNCTIONS_SUBSCRIPTION_ID="<azure subscription id>"
 ```
 
-You can test your installation is working properly by executing the following:
+A list of Azure subscription IDs available to you can be queried from the command line:
 
 ```bash
-kubectl port-forward -n kubeflow svc/ml-pipeline-ui 8080:80
+az account list --query "[].id"
 ```
 
-From this point, the SAME project should be up and ready to go!
+
+## Apply the Terraform
+
+The `functions` backend provides Terraform scripts for provisioning the Azure resources it needs:
+
+```bash
+cd sameproject/ops/functions/terraform
+terraform init
+terraform apply
+```
+
+Once `terraform` has finished provisioning the resources, take note of the name and hostname of the function app that was created:
+
+```bash
+export FUNCTIONS_APP_NAME=$(terraform output -raw app_name)
+export FUNCTIONS_HOST_NAME=$(terraform output -raw host_name)
+```
+
+
+## Deploy the Functions App
+
+Next, you will need to deploy the SAME `functions` backend to your newly provisioned resources:
+
+```bash
+cd - && cd sameproject/ops/functions/functions
+func azure functionapp publish $FUNCTIONS_APP_NAME
+```
+
+Once the deployment has finished you should be able to see the functions in the [Azure Functions portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.Web%2Fsites/kind/functionapp):
+
+<div style="text-align: center;">
+  <img src="/images/functions-root-portal.png" width="600px" />
+</div>
+
+The portal allows you to see which functions are active in the function app:
+
+<div style="text-align: center;">
+  <img src="/images/functions-function-list.png" width="600px" />
+</div>
+
+Clicking on one of these functions will bring up some useful tools for debugging and monitoring the app:
+
+<div style="text-align: center;">
+  <img src="/images/functions-monitoring.png" width="600px" />
+</div>
+
+
+## Test the Deployment
+
+You are now ready to execute SAME runs on Azure Functions!
+
+To test your deployment, you can run one of the test suite notebooks in the `same-project` repository:
+
+```bash
+cd - && cd test/testdata/features/singlestep
+same run -t functions -f same.yaml \
+  --functions-subscription-id "${FUNCTIONS_SUBSCRIPTION_ID}" \
+  --functions-host-name "${FUNCTIONS_HOST_NAME}"
+```
