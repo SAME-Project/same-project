@@ -73,7 +73,6 @@ def init():
     nb_dict = read_notebook(nb_path)
     nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
-
     # Docker image data:
     image = click.prompt(
         "Default docker image",

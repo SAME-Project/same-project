@@ -320,7 +320,7 @@ jsonpickle = "<3.0.0"
 knack = ">=0.9.0,<0.10.0"
 msal = ">=1.15.0,<2.0.0"
 msal-extensions = ">=0.3.0,<=1.0.0"
-msrest = ">=0.5.1,<1.0.0"
+msrest = ">=0.5.1,<0.7.0"
 msrestazure = ">=0.4.33,<=0.6.4"
 ndg-httpsclient = "<=0.5.1"
 packaging = ">=20.0,<22.0"
@@ -372,7 +372,7 @@ name = "azureml-dataprep-rslex"
 version = "2.6.3"
 description = "Azure ML Data Preparation RustLex"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -982,7 +982,7 @@ six = "*"
 
 [[package]]
 name = "google-cloud-core"
-version = "2.3.0"
+version = "2.3.1"
 description = "Google Cloud API client core library"
 category = "main"
 optional = false
@@ -1092,7 +1092,7 @@ python-versions = "*"
 
 [[package]]
 name = "ipykernel"
-version = "6.13.1"
+version = "6.14.0"
 description = "IPython Kernel for Jupyter"
 category = "main"
 optional = false
@@ -1441,7 +1441,7 @@ protobuf = ">=3.13.0,<4"
 
 [[package]]
 name = "kfp-server-api"
-version = "1.8.1"
+version = "1.8.2"
 description = "Kubeflow Pipelines API"
 category = "main"
 optional = false
@@ -2525,21 +2525,21 @@ python-versions = "*"
 
 [[package]]
 name = "requests"
-version = "2.27.1"
+version = "2.28.0"
 description = "Python HTTP for Humans."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+python-versions = ">=3.7, <4"
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-charset-normalizer = {version = ">=2.0.0,<2.1.0", markers = "python_version >= \"3\""}
-idna = {version = ">=2.5,<4", markers = "python_version >= \"3\""}
+charset-normalizer = ">=2.0.0,<2.1.0"
+idna = ">=2.5,<4"
 PySocks = {version = ">=1.5.6,<1.5.7 || >1.5.7", optional = true, markers = "extra == \"socks\""}
 urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
-socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
@@ -2913,14 +2913,13 @@ python-versions = "*"
 requests = "*"
 
 [extras]
-aml = ["azureml-core", "azureml-pipeline", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
+azureml = ["azureml-core", "azureml-pipeline", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
 dev = ["PyJWT", "pip-tools", "pytest", "pytest-cov", "flake8", "ipython", "mock", "pytest-virtualenv", "johnnydep", "build", "pip", "ipykernel", "pytest-mock", "setuptools", "wheel", "python-dotenv", "pytest-xdist", "black"]
-functions = ["azure-identity", "azure-mgmt-storage", "azure-mgmt-resource", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.8,<3.9"
-content-hash = "f49bffe6d7348e240b444e9cdcc34aedf2eb69d54a5e843d258a324b70521505"
+python-versions = "~3.8"
+content-hash = "77d79fcc3f3053ecfcbf84dac91ed91ac6da7bb73eda1ed3db59bd6fcfd91ce4"
 
 [metadata.files]
 absl-py = [
@@ -3419,8 +3418,8 @@ google-auth-httplib2 = [
     {file = "google_auth_httplib2-0.1.0-py2.py3-none-any.whl", hash = "sha256:31e49c36c6b5643b57e82617cb3e021e3e1d2df9da63af67252c02fa9c1f4a10"},
 ]
 google-cloud-core = [
-    {file = "google-cloud-core-2.3.0.tar.gz", hash = "sha256:fdaa629e6174b4177c2d56eb8ab1ddd87661064d0a3e9bb06b62e4d7e2344669"},
-    {file = "google_cloud_core-2.3.0-py2.py3-none-any.whl", hash = "sha256:35900f614045a33d5208e1d50f0d7945df98ce088388ce7237e7a2db12d5656e"},
+    {file = "google-cloud-core-2.3.1.tar.gz", hash = "sha256:34334359cb04187bdc80ddcf613e462dfd7a3aabbc3fe4d118517ab4b9303d53"},
+    {file = "google_cloud_core-2.3.1-py2.py3-none-any.whl", hash = "sha256:113ba4f492467d5bd442c8d724c1a25ad7384045c3178369038840ecdd19346c"},
 ]
 google-cloud-storage = [
     {file = "google-cloud-storage-1.44.0.tar.gz", hash = "sha256:29edbfeedd157d853049302bf5d104055c6f0cb7ef283537da3ce3f730073001"},
@@ -3496,8 +3495,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 ipykernel = [
-    {file = "ipykernel-6.13.1-py3-none-any.whl", hash = "sha256:fedc79bebd8a438162d056e0c7662d5ac8a47d1f6ef33a702e8460248dc4517f"},
-    {file = "ipykernel-6.13.1.tar.gz", hash = "sha256:6f42070a5d87ecbf4a2fc27a7faae8d690fd3794825a090ddf6b00b9678a5b69"},
+    {file = "ipykernel-6.14.0-py3-none-any.whl", hash = "sha256:cbf50ed3dc9998d4077d8cd263275f232cbe67dbd2e79cd6d2644f3a4418148b"},
+    {file = "ipykernel-6.14.0.tar.gz", hash = "sha256:720f2a07aadf70ca05b034f2cdd0590a8bd56581ddf3b7ec4a37075366270e89"},
 ]
 ipython = [
     {file = "ipython-8.4.0-py3-none-any.whl", hash = "sha256:7ca74052a38fa25fe9bedf52da0be7d3fdd2fb027c3b778ea78dfe8c212937d1"},
@@ -3579,7 +3578,7 @@ kfp-pipeline-spec = [
     {file = "kfp_pipeline_spec-0.1.16-py3-none-any.whl", hash = "sha256:4cefae00ac50145cf862127202a8b8a783ed7504c773d7d7c517bd115283be25"},
 ]
 kfp-server-api = [
-    {file = "kfp-server-api-1.8.1.tar.gz", hash = "sha256:8057c4835a1685598cf3077f86b711a02dc5085f0d87f96a49b43c1fbfc263ec"},
+    {file = "kfp-server-api-1.8.2.tar.gz", hash = "sha256:4881dfaa565199f8b796c81cbd894403d3b938f0fbba37cf97cfaeb463758f3e"},
 ]
 knack = [
     {file = "knack-0.9.0-py3-none-any.whl", hash = "sha256:d609abcca2604086b2e41935f7ffade2f83b709891af87df5088d23240ecbecc"},
@@ -4323,8 +4322,8 @@ regex = [
     {file = "regex-2021.11.10.tar.gz", hash = "sha256:f341ee2df0999bfdf7a95e448075effe0db212a59387de1a70690e4acb03d4c6"},
 ]
 requests = [
-    {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
-    {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
+    {file = "requests-2.28.0-py3-none-any.whl", hash = "sha256:bc7861137fbce630f17b03d3ad02ad0bf978c844f3536d0edda6499dafce2b6f"},
+    {file = "requests-2.28.0.tar.gz", hash = "sha256:d568723a7ebd25875d8d1eaf5dfa068cd2fc8194b2e483d7b1f7c81918dbec6b"},
 ]
 requests-oauthlib = [
     {file = "requests-oauthlib-1.3.1.tar.gz", hash = "sha256:75beac4a47881eeb94d5ea5d6ad31ef88856affe2332b9aafb52c6452ccf0d7a"},
