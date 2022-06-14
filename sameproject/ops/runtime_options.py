@@ -90,18 +90,20 @@ def validate_options(backend: str):
         error_handler=UserFriendlyMessagesErrorHandler,
     )
     if not validator.validate({"values": opts}):
-        print("The following environment variables had errors:")
+        print("The following runtime options had errors:")
         error_values = validator.errors["values"][0]
 
         left_col_width = len(max(error_values.keys())) + 5
-
         for error_field_name, error_field_message_array in error_values.items():
-            lcol = error_field_name.upper()
+            lcol = error_field_name
             val = f"'{opts[error_field_name] or ''}'"
             for error_field_message in error_field_message_array:
                 print(f"  {lcol:<{left_col_width}}\t{val}\t{error_field_message.capitalize()}")
                 lcol = ""  # Empty lcol label if there's more than one error
                 val = ""
+
+        # TODO: point to docs on setting runtime options
+        # print("\nSee https://sameproject.ml/?")
 
         raise SyntaxError(f"One or more runtime options is invalid: {validator.errors}")
 

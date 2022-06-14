@@ -11,7 +11,12 @@ import dill
 
 @pytest.mark.functions
 @test.testdata.notebooks("features")
-def test_kubeflow_features(config, notebook, requirements, validation_fn):
+def test_functions_features(config, notebook, requirements, validation_fn):
+    """
+    Tests the Azure Functions backend against the feature test suite. This
+    requires the following enviroment variables to be set:
+      FUNCTIONS_SUBSCRIPTION_ID = "<azure subscription id>"
+    """
     base_path, root_file = compile(config, "functions")
     data = deploy("functions", base_path, root_file, config)
 
