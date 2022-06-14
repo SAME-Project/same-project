@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sameproject"
-version = "0.2.2"
+version = "0.2.3"
 description = "Notebooks to Pipelines, reproducible data science, oh my."
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
 
@@ -59,31 +59,34 @@ pytest-xdist = { version = "^2.5.0", optional = true }
 black = { version = "^22.3.0", optional = true }
 
 [tool.poetry.extras]
+
 azureml = [
     "azureml-core",
     "azureml-pipeline",
     "azure-mgmt-applicationinsights",
     "azure-mgmt-web",
 ]
+
 dev = [
-"PyJWT",
-"pip-tools",
-"pytest",
-"pytest-cov",
-"flake8",
-"ipython",
-"mock",
-"pytest-virtualenv",
-"johnnydep",
-"build",
-"pip",
-"ipykernel",
-"pytest-mock",
-"setuptools",
-"wheel",
-"python-dotenv",
-"pytest-xdist",
-"black"]
+    "PyJWT",
+    "pip-tools",
+    "pytest",
+    "pytest-cov",
+    "flake8",
+    "ipython",
+    "mock",
+    "pytest-virtualenv",
+    "johnnydep",
+    "build",
+    "pip",
+    "ipykernel",
+    "pytest-mock",
+    "setuptools",
+    "wheel",
+    "python-dotenv",
+    "pytest-xdist",
+    "black"
+]
 
 [tool.black]
 line-length = 119

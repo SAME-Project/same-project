@@ -22,14 +22,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: "3.8"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
       - name: Install packages
         run: |
-          poetry install --no-root
+          poetry install -E dev --no-root
       - name: Lint Python Files
         run: |
           poetry run flake8 **/*.py
@@ -51,14 +51,14 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: "3.8"
       - name: Install python tools
         run: |
           python -m pip install --upgrade pip
           python -m pip install poetry
       - name: Install dependencies
         run: |
-          poetry install --no-root
+          poetry install -E dev --no-root
       - name: Authenticate with google cloud
         uses: "google-github-actions/auth@v0"
         with:

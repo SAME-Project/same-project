@@ -2,7 +2,6 @@
 type: docs
 title: "Adding Steps"
 description: "Breaking a single notebook into many steps."
-weight: 30
 ---
 
 In order to split a notebook into multiple pipeline steps, we add cell tags in the notebook.

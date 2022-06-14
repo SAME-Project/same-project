@@ -15,7 +15,6 @@ def test_init():
             path = Path(test.testdata.__file__).parent / "features/singlestep/singlestep.ipynb"
             data = path.read_text()
             Path("a" + genstr(example_params) + ".ipynb").write_text(data)
-
             # Run `same init` with randomly generated input data:
             res = runner.invoke(init, input=_geninput())
 

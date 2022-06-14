@@ -2,11 +2,42 @@ from sameproject.ops.files import find_same_config, find_notebook, find_requirem
 from sameproject.ops.requirements import get_package_info, render_package_info
 from sameproject.ops.notebooks import get_code, read_notebook
 from sameproject.ops.code import get_imported_modules, remove_magic_lines
-from sameproject.data.config import SameValidator
+from sameproject.data.config import SameValidator, name_schema, image_schema
+from cerberus import Validator
 from pathlib import Path
 from box import Box
 import pkg_resources
 import click
+
+
+def _click_type(name, schema):
+    """Returns a click ParamType subclass that validates input."""
+    class ParamType(click.ParamType):
+        name = "name"
+        schema = "schema"
+
+        def __call__(self, value, param=None, ctx=None):
+            if value is not None:
+                validator = Validator({"value": schema})
+                if not validator.validate({"value": value}):
+                    regex = schema["regex"]
+                    self.fail(f"input is invalid, should satisfy regex '{regex}'")
+                return value
+
+    return ParamType()
+
+
+# Click types for prompts that perform validation:
+name_type = _click_type("name", name_schema)
+image_type = _click_type("docker_image", image_schema)
+file_type = click.Path(
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    resolve_path=True,
+    path_type=Path,
+)
 
 
 @click.command()
@@ -18,23 +49,37 @@ def init():
     if cfg is not None:
         click.echo("An existing SAME config file was found at the following path:")
         click.echo(f"\t{cfg}")
-        if not click.confirm("Do you want to replace it?"):
+        if not click.confirm("Do you want to replace it?", default=False):
             exit(0)
     else:
         cfg = Path("./same.yaml")
 
+    # Name of the pipeline:
+    pl_name = click.prompt(
+        "Name of this config:",
+        default="default_config",
+        type=name_type
+    )
+
     # Notebook data:
-    nb_path = click.prompt("Notebook path", default=find_notebook(recurse=True), type=Path)
+    nb_path = click.prompt(
+        "Notebook path",
+        default=find_notebook(recurse=True),
+        type=file_type,
+    )
     if not nb_path.exists():
         click.echo(f"No such file found: {nb_path}", err=True)
         exit(1)
-
     nb_dict = read_notebook(nb_path)
-    nb_name = str(nb_path).replace(".ipynb", "")
     nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
+
     # Docker image data:
-    image = click.prompt("Default docker image", default="combinatorml/jupyterlab-tensorflow-opencv:0.9", type=str)
+    image = click.prompt(
+        "Default docker image",
+        default="combinatorml/jupyterlab-tensorflow-opencv:0.9",
+        type=image_type
+    )
 
     # Requirements.txt data:
     req = find_requirements(recurse=False)
@@ -66,15 +111,19 @@ def init():
             else:
                 click.echo(f"Wrote empty requirements file to {req.resolve()}.")
     else:
-        req = click.prompt("Requirements.txt", default=req, type=Path)
+        req = click.prompt(
+            "Requirements.txt",
+            default=req,
+            type=file_type,
+        )
         if req == "":
-            req = None  # TODO: handle optional with click
+            req = None
 
     # Construct, validate and save the SAME config file!
     same_config = Box({
         "apiVersion": _get_api_version(),
         "metadata": {
-            "name": f"{nb_name} pipeline",
+            "name": f"{pl_name}",
             "labels": [],
             "version": "0.0.0",
         },
@@ -88,7 +137,7 @@ def init():
             "path": str(nb_path),
         },
         "run": {
-            "name": f"{nb_name} run",
+            "name": f"{pl_name} run",
         },
     })
 
@@ -108,6 +157,20 @@ def init():
 configured backend (e.g. Kubeflow Pipelines in a Kubernetes cluster file pointed
 to by ~/.kube/config or set in the KUBECONFIG environment variable).
 """)
+
+
+def _prompt(msg, default=None, type=None, validation_fn=None):
+    """Wraps a `click.prompt` call with retries and validation."""
+    res = None
+    while True:
+        res = click.prompt(msg, default=default, type=type)
+        if validation_fn is not None:
+            is_valid, errors = validation_fn(res)
+            if not is_valid:
+                click.echo(f"invalid input: {errors}")
+                continue
+        break
+    return res
 
 
 def _get_api_version():

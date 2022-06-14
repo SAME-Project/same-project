@@ -19,7 +19,6 @@ def runtime_options(fn) -> Callable:
         map(get_option_decorator, list_options()),
     )
 
-
 def runtime_schema() -> dict:
     """Returns a cerberus schema for validating runtime options."""
 
@@ -68,7 +67,6 @@ def get_option_decorator(name: str) -> Callable:
 class UserFriendlyMessagesErrorHandler(errors.BasicErrorHandler):
     messages = errors.BasicErrorHandler.messages.copy()
     messages[errors.NOT_NULLABLE.code] = "Value of variable is missing or empty."
-
 
 def validate_options(backend: str):
     """

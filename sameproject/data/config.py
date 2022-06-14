@@ -1,4 +1,4 @@
-from sameproject.ops.runtime_options import list_options, get_option_value, runtime_schema
+from sameproject.ops.runtime_options import list_options, get_option_value
 from ruamel.yaml.parser import ParserError
 from cerberus import Validator
 from io import BufferedReader
@@ -7,6 +7,11 @@ from pathlib import Path
 from box import Box
 import logging
 
+# Subschemas used for validating input to `same init`.
+name_schema = {"type": "string", "required": True, "regex": r"^[\d\w ]+"}
+image_schema = {"type": "string", "required": True, "regex": ".*/.*"}
+datasets_schema = {"type": "string", "regex": r"^[\d\w]+"}
+environment_schema = {"type": "string", "regex": r"^[\d\w]+"}
 
 # Schema for validating SAME config files.
 schema = {
@@ -17,13 +22,13 @@ schema = {
             "version": {"type": "string", "required": True},
             "labels": {"type": "list"},
             "sha": {"type": "string"},
-            "name": {"type": "string", "required": True, "regex": r"^[\d\w ]+"},
+            "name": name_schema,
         },
         "required": True,
     },
     "datasets": {
         "type": "dict",
-        "keysrules": {"type": "string", "regex": r"^[\d\w]+"},
+        "keysrules": datasets_schema,
         "valuesrules": {
             "type": "dict",
             "schema": {
@@ -40,11 +45,11 @@ schema = {
     "environments": {
         "type": "dict",
         "must_have_default": True,
-        "keysrules": {"type": "string", "regex": r"^[\d\w]+"},
+        "keysrules": environment_schema,
         "valuesrules": {
             "type": "dict",
             "schema": {
-                "image_tag": {"type": "string", "required": True, "regex": ".*/.*"},
+                "image_tag": image_schema,
                 "private_registry": {"type": "boolean"},
                 "credentials": {
                     "type": "dict",
@@ -82,7 +87,9 @@ schema = {
     # Injected by SAME automatically based on environment variables and
     # command-line flags. This also lets users specify runtime options in
     # their SAME config file if they like:
-    "runtime_options": runtime_schema(),
+    "runtime_options": {
+        "type": "dict",
+    },
 }
 
 

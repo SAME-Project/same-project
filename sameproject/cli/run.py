@@ -68,6 +68,6 @@ def run(
     base_path, root_file = notebooks.compile(config, target)
     if persist_temp_files:
         print(f"Temporary files persisted here: {base_path}")
-    
+
     if not no_deploy:
         backends.deploy(target, base_path, root_file, config)

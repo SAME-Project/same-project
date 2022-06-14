@@ -67,7 +67,7 @@ def _register_notebook(
     desc: str,
     group: str,
     config_path: Path,
-    validation_fn: Optional[Callable[dict, bool]] = None,
+    validation_fn: Optional[Callable[[], bool]] = None,
 ):
     """Registers a notebook with the given name, path and callback function."""
     if not config_path.exists():
