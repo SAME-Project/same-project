@@ -1,9 +1,9 @@
-from sameproject.ops.runtime_options import register_option
+from sameproject.ops.runtime_options import register_option, required_for_backend
 
 register_option(
     "functions_subscription_id",
     "Azure subscription ID in which to provision backend functions.",
-    backend="functions",
+    validator=required_for_backend("functions"),
     schema={
         "nullable": True,
         "type": "string",
@@ -14,6 +14,5 @@ register_option(
 register_option(
     "functions_skip_provisioning",
     "Skip provisioning of azure functions resources, to be used only if they already exist.",
-    backend="functions",
     type=bool,
 )

@@ -1,5 +1,5 @@
 from sameproject.data.config import SameConfig
-from .fuzzer import genstr, file, std
+from .fuzzer import genstr, example_params
 from sameproject.cli.init import init
 from click.testing import CliRunner
 from pathlib import Path
@@ -7,16 +7,14 @@ import test.testdata
 import pytest
 
 
-@pytest.mark.skip("Enable to run a fuzz tester on `same init` inputs.")
 def test_init():
-    for i in range(1000):
+    for i in range(100):
         runner = CliRunner()
         with runner.isolated_filesystem():
             # Copy over a notebook for the test:
             path = Path(test.testdata.__file__).parent / "features/singlestep/singlestep.ipynb"
             data = path.read_text()
-            Path(genstr(file, minlen=1) + ".ipynb").write_text(data)
-
+            Path("a" + genstr(example_params) + ".ipynb").write_text(data)
             # Run `same init` with randomly generated input data:
             res = runner.invoke(init, input=_geninput())
 
@@ -44,5 +42,5 @@ def test_init():
 
 def _geninput():
     return "\n".join([
-        genstr(std) for _ in range(20)
+        genstr(example_params) for _ in range(50)
     ])

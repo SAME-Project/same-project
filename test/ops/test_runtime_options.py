@@ -4,7 +4,7 @@ import pytest
 
 # Cerberus schemas for testing validation:
 alphanum = {
-    "nullable": False,  # required
+    "nullable": True,
     "type": "string",
     "regex": r"^[\d\w ]+",
 }
@@ -20,7 +20,7 @@ opts.register_option(
     "test_one_alphanum", "",
     type=str,
     schema=alphanum,
-    backend="one",
+    validator=opts.required_for_backend("one"),
 )
 opts.register_option(
     "test_one_dockertag", "",
