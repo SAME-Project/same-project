@@ -3,12 +3,11 @@ on:
   pull_request_target:
     branches:
       - main
-
 jobs:
   label:
     runs-on: ubuntu-latest
-
+    if: ${{ github.event.pull_request.head.repo.fork }}
     steps:
     - uses: actions/labeler@v4
       with:
-        repo-token: ${{github.token}}
+        repo-token: ${{ github.token }}
