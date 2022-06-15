@@ -11,7 +11,7 @@ name = "adal"
 version = "1.2.7"
 description = "Note: This library is already replaced by MSAL Python, available here: https://pypi.org/project/msal/ .ADAL Python remains available here as a legacy. The ADAL for Python library makes it easy for python application to authenticate to Azure Active Directory (AAD) in order to access AAD protected web resources."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -40,7 +40,7 @@ name = "applicationinsights"
 version = "0.11.10"
 description = "This project extends the Application Insights API surface to support Python."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -56,7 +56,7 @@ name = "argcomplete"
 version = "2.0.0"
 description = "Bash tab completion for argparse"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.extras]
@@ -134,7 +134,7 @@ name = "azure-common"
 version = "1.1.28"
 description = "Microsoft Azure Client Library for Python (Common)"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -142,7 +142,7 @@ name = "azure-core"
 version = "1.22.1"
 description = "Microsoft Azure Core Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -154,7 +154,7 @@ name = "azure-graphrbac"
 version = "0.61.1"
 description = "Microsoft Azure Graph RBAC Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -167,7 +167,7 @@ name = "azure-identity"
 version = "1.7.0"
 description = "Microsoft Azure Identity Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -182,7 +182,7 @@ name = "azure-mgmt-applicationinsights"
 version = "3.1.0"
 description = "Microsoft Azure Application Insights Management Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -195,7 +195,7 @@ name = "azure-mgmt-authorization"
 version = "2.0.0"
 description = "Microsoft Azure Authorization Management Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -208,7 +208,7 @@ name = "azure-mgmt-containerregistry"
 version = "9.1.0"
 description = "Microsoft Azure Container Registry Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -221,7 +221,7 @@ name = "azure-mgmt-core"
 version = "1.3.0"
 description = "Microsoft Azure Management Core Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -232,7 +232,7 @@ name = "azure-mgmt-keyvault"
 version = "9.3.0"
 description = "Microsoft Azure Keyvault Management Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -245,7 +245,7 @@ name = "azure-mgmt-resource"
 version = "21.0.0"
 description = "Microsoft Azure Resource Management Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -258,7 +258,7 @@ name = "azure-mgmt-storage"
 version = "20.0.0"
 description = "Microsoft Azure Storage Management Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -271,7 +271,7 @@ name = "azure-mgmt-web"
 version = "6.1.0"
 description = "Microsoft Azure Web Apps Management Client Library for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -284,7 +284,7 @@ name = "azureml-automl-core"
 version = "1.42.0.post1"
 description = "Contains the non-ML non-Azure specific common code associated with running AutoML."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,<3.9"
 
 [package.dependencies]
@@ -296,7 +296,7 @@ name = "azureml-core"
 version = "1.42.0.post1"
 description = "Azure Machine Learning core packages, modules, and classes"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,< 4.0"
 
 [package.dependencies]
@@ -340,7 +340,7 @@ name = "azureml-dataprep"
 version = "4.0.3"
 description = "Azure ML Data Preparation SDK is used to load, transform,     and write data for machine learning workflows"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -364,7 +364,7 @@ name = "azureml-dataprep-native"
 version = "38.0.0"
 description = "Python Package for AzureML DataPrep specific native extensions."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -380,7 +380,7 @@ name = "azureml-dataset-runtime"
 version = "1.42.0"
 description = "The package is to coordinate dependencies within AzureML packages.     This package is internal, and is not intended to be used directly."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -402,7 +402,7 @@ name = "azureml-pipeline"
 version = "1.42.0"
 description = "Used to build, optimize, and manage their machine learning workflows."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -414,7 +414,7 @@ name = "azureml-pipeline-core"
 version = "1.42.0"
 description = "Contains core functionality for Azure Machine Learning pipelines, which are configurable machine learning workflows."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,<4"
 
 [package.dependencies]
@@ -425,7 +425,7 @@ name = "azureml-pipeline-steps"
 version = "1.42.0"
 description = "Aeva : represents a unit of computation in azureml-pipeline"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -438,7 +438,7 @@ name = "azureml-telemetry"
 version = "1.42.0"
 description = "Used to collect telemetry data like Log messages,     metrics, events, and activity messages"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,<4"
 
 [package.dependencies]
@@ -450,7 +450,7 @@ name = "azureml-train-automl-client"
 version = "1.42.0.post1"
 description = "Used for automatically finding the best machine learning model and its parameters."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,<3.9"
 
 [package.dependencies]
@@ -465,7 +465,7 @@ name = "azureml-train-core"
 version = "1.42.0"
 description = "Provides estimators for training models."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,<4"
 
 [package.dependencies]
@@ -478,7 +478,7 @@ name = "azureml-train-restclients-hyperdrive"
 version = "1.42.0"
 description = "Contains classes needed to create HyperDriveRuns with azureml-train-core."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6,<4"
 
 [package.dependencies]
@@ -499,7 +499,7 @@ name = "backports.tempfile"
 version = "1.0"
 description = "Backport of new features in Python's tempfile module"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -510,7 +510,7 @@ name = "backports.weakref"
 version = "1.0.post1"
 description = "Backport of new features in Python's weakref module"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -518,7 +518,7 @@ name = "bcrypt"
 version = "3.2.2"
 description = "Modern password hashing for your software and your servers"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -679,7 +679,7 @@ name = "contextlib2"
 version = "21.6.0"
 description = "Backports and enhancements for the contextlib module"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [[package]]
@@ -701,7 +701,7 @@ name = "cryptography"
 version = "36.0.2"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -791,7 +791,7 @@ name = "distro"
 version = "1.7.0"
 description = "Distro - an OS platform information API"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [[package]]
@@ -832,7 +832,7 @@ name = "dotnetcore2"
 version = "3.1.23"
 description = ".Net Core 3.1 runtime"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1068,7 +1068,7 @@ name = "humanfriendly"
 version = "10.0"
 description = "Human friendly output for text interfaces using Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
@@ -1181,7 +1181,7 @@ name = "isodate"
 version = "0.6.1"
 description = "An ISO 8601 date/time/duration parser and formatter"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1207,7 +1207,7 @@ name = "jeepney"
 version = "0.8.0"
 description = "Low-level, pure Python DBus protocol wrapper."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 
 [package.extras]
@@ -1233,7 +1233,7 @@ name = "jmespath"
 version = "1.0.0"
 description = "JSON Matching Expressions"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 
 [[package]]
@@ -1262,7 +1262,7 @@ name = "jsonpickle"
 version = "2.2.0"
 description = "Python library for serializing any arbitrary object graph into JSON"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=2.7"
 
 [package.extras]
@@ -1458,7 +1458,7 @@ name = "knack"
 version = "0.9.0"
 description = "A Command-Line Interface framework"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1605,7 +1605,7 @@ name = "msal"
 version = "1.18.0"
 description = "The Microsoft Authentication Library (MSAL) for Python library enables your app to access the Microsoft Cloud by supporting authentication of users with Microsoft Azure Active Directory accounts (AAD) and Microsoft Accounts (MSA) using industry standard OAuth2 and OpenID Connect."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1618,7 +1618,7 @@ name = "msal-extensions"
 version = "0.3.1"
 description = ""
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1633,7 +1633,7 @@ name = "msrest"
 version = "0.6.21"
 description = "AutoRest swagger generator Python client runtime."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1650,7 +1650,7 @@ name = "msrestazure"
 version = "0.6.4"
 description = "AutoRest swagger generator Python client runtime. Azure-specific module."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1739,7 +1739,7 @@ name = "ndg-httpsclient"
 version = "0.5.1"
 description = "Provides enhanced HTTPS support for httplib and urllib2 using PyOpenSSL"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
@@ -1860,7 +1860,7 @@ name = "paramiko"
 version = "2.11.0"
 description = "SSH2 protocol library"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -1919,7 +1919,7 @@ name = "pathspec"
 version = "0.9.0"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "main"
-optional = true
+optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [[package]]
@@ -2020,7 +2020,7 @@ name = "portalocker"
 version = "2.4.0"
 description = "Wraps the portalocker recipe for easy usage"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.5"
 
 [package.dependencies]
@@ -2104,7 +2104,7 @@ name = "pyarrow"
 version = "3.0.0"
 description = "Python library for Apache Arrow"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2181,7 +2181,7 @@ name = "pyjwt"
 version = "2.4.0"
 description = "JSON Web Token implementation in Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2206,7 +2206,7 @@ name = "pynacl"
 version = "1.5.0"
 description = "Python binding to the Networking and Cryptography (NaCl) library"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2221,7 +2221,7 @@ name = "pyopenssl"
 version = "22.0.0"
 description = "Python wrapper module around the OpenSSL library"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -2247,7 +2247,7 @@ name = "pyreadline3"
 version = "3.4.1"
 description = "A python implementation of GNU readline."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -2263,7 +2263,7 @@ name = "pysocks"
 version = "1.7.1"
 description = "A Python SOCKS client module. See https://github.com/Anorov/PySocks for more information."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
@@ -2607,7 +2607,7 @@ name = "secretstorage"
 version = "3.3.2"
 description = "Python bindings to FreeDesktop.org Secret Service API"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
