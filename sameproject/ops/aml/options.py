@@ -4,13 +4,7 @@ register_option(
     "aml_compute_name",
     "Azure compute name for the pre-provisioned compute cluster.",
     backend="aml",
-    schema={
-        "nullable": False,
-        "type": "string",
-        "regex": r"^[\d\w-]+",
-        "maxlength": 24,
-        "minlength": 3
-    },
+    schema={"nullable": False, "type": "string", "regex": r"^[\d\w-]+", "maxlength": 24, "minlength": 3},
 )
 
 register_option(

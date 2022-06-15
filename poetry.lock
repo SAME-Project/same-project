@@ -2913,12 +2913,13 @@ python-versions = "*"
 requests = "*"
 
 [extras]
+azureml = ["azureml-core", "azureml-pipeline", "azure-mgmt-applicationinsights", "azure-mgmt-web"]
 dev = ["PyJWT", "pip-tools", "pytest", "pytest-cov", "flake8", "ipython", "mock", "pytest-virtualenv", "johnnydep", "build", "pip", "ipykernel", "pytest-mock", "setuptools", "wheel", "python-dotenv", "pytest-xdist", "black"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.8,<3.9"
-content-hash = "d294713bf6c4b4d1a1d4696ae7448941948481ddbb6fad0b933742fea716c920"
+python-versions = "~3.8"
+content-hash = "77d79fcc3f3053ecfcbf84dac91ed91ac6da7bb73eda1ed3db59bd6fcfd91ce4"
 
 [metadata.files]
 absl-py = [
