@@ -1,6 +1,7 @@
 from sameproject.cli import run, version, init, verify
 import click
 
+print("random")
 
 @click.group()
 def main():
