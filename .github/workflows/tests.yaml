@@ -2,10 +2,10 @@ name: Tests
 on:
   workflow_call:
     inputs:
-      git-token:
+      token:
         type: string
         required: true
-      git-sha:
+      sha:
         type: string
         required: true
 jobs:
@@ -15,8 +15,8 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.git-sha }}
-          token: ${{ inputs.git-token }}
+          ref: ${{ inputs.sha }}
+          token: ${{ inputs.token }}
           submodules: recursive
             
       - name: Set up python
