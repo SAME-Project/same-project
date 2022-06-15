@@ -5,14 +5,13 @@ on:
       sha:
         type: string
         required: true
+    secrets:
+      kubeflow_gcp_key:
+        required: true
 jobs:
-  test:
+  Test:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug
-        run: echo $SHA
-        env:
-          SHA: ${{ inputs.sha }}
       - name: Checkout branch
         uses: actions/checkout@v3
         with:
@@ -36,7 +35,7 @@ jobs:
       - name: Authenticate with google cloud
         uses: "google-github-actions/auth@v0"
         with:
-          credentials_json: "${{ secrets.KUBEFLOW_V181_GCP_KEY }}"
+          credentials_json: ${{ secrets.kubeflow_gcp_key }}
 
       - name: Fetch k8s cluster credentials
         uses: "google-github-actions/get-gke-credentials@v0"

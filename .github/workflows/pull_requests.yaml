@@ -8,7 +8,7 @@ on:
     branches:
       - main
 
-  # external PRs need a label to trigger them:
+  # external PRs are triggered when labeled:
   pull_request_target:
     branches:
       - main
@@ -20,11 +20,15 @@ jobs:
     uses: ./.github/workflows/tests.yaml
     with:
       sha: ${{ github.ref }}
+    secrets:
+      kubeflow_gcp_key: ${{ secrets.KUBEFLOW_V181_GCP_KEY }}
     if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && ! github.event.pull_request.head.repo.fork) }}
 
-  # only runs for forked pull requests
+  # only runs for forked pull requests, with 'ok-to-test' label
   External:
     uses: ./.github/workflows/tests.yaml
     with:
       sha: ${{ github.event.pull_request.head.sha }}
+    secrets:
+      kubeflow_gcp_key: ${{ secrets.KUBEFLOW_V181_GCP_KEY }}
     if: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork && contains(github.event.pull_request.labels.*.name, 'ok-to-test') }}

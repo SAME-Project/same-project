@@ -4,7 +4,10 @@ on:
     branches:
       - main
 jobs:
-  label:
+  # PRs from forked repos are labelled with 'needs-ok-to-test', so that a
+  # maintainer can manually trigger test execution to protect against
+  # potentially malicious code.
+  Label:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.head.repo.fork }}
     steps:
