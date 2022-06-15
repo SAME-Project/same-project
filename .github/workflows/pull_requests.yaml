@@ -16,21 +16,21 @@ on:
       - labeled
 jobs:
   # only runs for pushes and non-fork pull requests
-  pr_internal:
+  Internal:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && ! github.event.pull_request.head.repo.fork) }}
     steps:
-      - uses: ./.github/workflows/tests
+      - uses: ./.github/workflows/tests.yaml
         with:
           git-token: ${{ github.token }}
           git-sha: ${{ github.ref }}
 
   # only runs for forked pull requests
-  pr_external:
+  External:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork && contains(github.event.pull_request.labels.*.name, 'ok-to-test') }}
     steps:
-      - uses: ./.github/workflows/tests
+      - uses: ./.github/workflows/tests.yaml
         with:
           git-token: ${{ github.token }}
           git-sha: ${{ github.event.pull_request.head.sha }}
