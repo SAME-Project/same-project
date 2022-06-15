@@ -6,22 +6,6 @@
       "name": "input",
       "type": "activityTrigger",
       "direction": "in"
-    },
-    {
-      "name": "inputCtx",
-      "type": "blob",
-      "direction": "in",
-      "path": "same/content-env",
-      "connection":"AzureWebJobsStorage",
-      "dataType": "binary"
-    },
-    {
-      "name": "outputCtx",
-      "type": "blob",
-      "direction": "out",
-      "path": "same/content-env",
-      "connection":"AzureWebJobsStorage",
-      "dataType": "binary"
     }
   ]
 }

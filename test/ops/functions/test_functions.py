@@ -35,7 +35,7 @@ def test_functions_features(config, notebook, requirements, validation_fn):
         if time.time() - start_secs > 600:  # 10 minutes
             raise RuntimeError(f"Notebook execution took too long to complete: {res}")
 
-    # Decode the output context and validate the results:
-    ctx = dill.loads(urlsafe_b64decode(res["output"]["context"]))
+    # Decode the output namespace and validate the results:
+    ctx = dill.loads(urlsafe_b64decode(res["output"]["namespace"]))
     if validation_fn is not None:
         assert validation_fn(ctx)

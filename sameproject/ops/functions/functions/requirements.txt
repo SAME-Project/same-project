@@ -4,4 +4,5 @@
 
 azure-functions-durable
 azure-functions
+cerberus
 dill

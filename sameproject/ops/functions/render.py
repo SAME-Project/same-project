@@ -7,15 +7,15 @@ import json
 
 
 def render(path: str, steps: Mapping[str, Step], config: SameConfig) -> Tuple[Path, str]:
-    if len(steps) > 1:  # TODO: support multistep notebooks
-        raise NotImplementedError("The 'functions' backend does not support multi-step notebooks.")
-
     path = Path(path)
     body_path = path / "body.json"
-    code = list(steps.values())[0].code.encode("utf-8")
+    codes = [step.code.encode("utf-8") for step in steps.values()]
     with body_path.open("w") as writer:
         json.dump({
-            "code": urlsafe_b64encode(code).decode("utf-8"),
+            "steps": [
+                urlsafe_b64encode(code).decode("utf-8")
+                for code in codes
+            ],
         }, writer)
 
     return (path, "body.json")

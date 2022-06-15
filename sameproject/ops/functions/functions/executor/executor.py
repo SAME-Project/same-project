@@ -1,9 +1,12 @@
-from base64 import urlsafe_b64encode
+from base64 import urlsafe_b64encode, urlsafe_b64decode
 import azure.functions.blob as blob
 import azure.functions as fn
 import logging
 import time
 import dill
+
+
+empty_namespace = urlsafe_b64encode(dill.dumps({})).decode("utf-8")
 
 
 def info(msg: str):
@@ -12,8 +15,6 @@ def info(msg: str):
 
 def executor(
     input: dict,
-    inputCtx: blob.InputStream,  # TODO: load pickle into user namespace.
-    outputCtx: fn.Out[bytes]  # TODO: dump pickle into output context.
 ) -> str:
     """Executes a single SAME step in a pipeline."""
     start_secs = time.time()
@@ -21,9 +22,10 @@ def executor(
     try:
         # Executes the step's code in a new execution frame, with a single
         # local/global namespace to simulate top-level execution.
-        namespace = {}
         code = input["code"]
-        exec(code, namespace, namespace) 
+        encoded_namespace = input.get("namespace", empty_namespace)
+        namespace = dill.loads(urlsafe_b64decode(encoded_namespace))
+        exec(code, namespace, namespace)
 
         # Prune out anything that can't be serialised in the user's namespace:
         keys = list(namespace.keys())
@@ -35,7 +37,7 @@ def executor(
         pickle = dill.dumps(namespace)
 
         return {
-            "context": urlsafe_b64encode(pickle).decode("utf-8"),
+            "namespace": urlsafe_b64encode(pickle).decode("utf-8"),
         }
     finally:
         info(f"total time taken: {1000 * (time.time() - start_secs)}ms")
