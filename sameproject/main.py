@@ -2,6 +2,9 @@ from sameproject.cli import run, version, init, verify
 import click
 
 
+print("Random change")
+
+
 @click.group()
 def main():
     """
