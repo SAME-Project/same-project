@@ -2,9 +2,6 @@ name: Tests
 on:
   workflow_call:
     inputs:
-      token:
-        type: string
-        required: true
       sha:
         type: string
         required: true
@@ -12,11 +9,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug
+        run: echo $SHA
+        env:
+          SHA: ${{ inputs.sha }}
       - name: Checkout branch
         uses: actions/checkout@v3
         with:
           ref: ${{ inputs.sha }}
-          token: ${{ inputs.token }}
           submodules: recursive
             
       - name: Set up python

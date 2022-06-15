@@ -19,7 +19,6 @@ jobs:
   Internal:
     uses: ./.github/workflows/tests.yaml
     with:
-      token: ${{ github.token }}
       sha: ${{ github.ref }}
     if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && ! github.event.pull_request.head.repo.fork) }}
 
@@ -27,6 +26,5 @@ jobs:
   External:
     uses: ./.github/workflows/tests.yaml
     with:
-      token: ${{ github.token }}
       sha: ${{ github.event.pull_request.head.sha }}
     if: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork && contains(github.event.pull_request.labels.*.name, 'ok-to-test') }}
