@@ -1,24 +1,3 @@
-nav:
-  - Home: index.md
-  - Getting started:
-      # - SAME Quickstart: getting-started/_index.md
-      - Installing: getting-started/installing.md
-      - Example Notebook: getting-started/example-notebook.md
-      - Adding Steps: getting-started/adding-steps.md
-      - Changing Environment: getting-started/changing-environment.md
-      - Working with Datasets: getting-started/working-with-datasets.md
-      - Developer Guide: getting-started/dev-build.md
-#     - Developer Guide:
-#           - How to contribute: developer/developer.md
-#           - Debugging guide: developer/debug.md
-#     - Blog:
-#           - Releases:
-
-#           - Articles:
-#     - Community:
-#         - Adopters: community/adopters.md
-#         - Demos and Presentations: community/presentations.md
-
 theme:
   name: material
   logo: images/logo/SAME.png
@@ -26,7 +5,8 @@ theme:
   custom_dir: overrides
   nav_style: dark
   features:
-    - navigation.expand
+    - navigation.indexes # really user-friendly feature
+    - navigation.top
 
 markdown_extensions:
   # - mdx_include:
@@ -73,6 +53,15 @@ extra:
     - icon: fontawesome/brands/slack
       link: https://join.slack.com/t/thesameproject/shared_invite/zt-lq9rk2g6-Jyfv3AXu_qnX9LqWCmV7HA
       name: Slack
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCCqjbL-bVfnsEV3aJvpD1bg
+      name: YouTube
   version_warning: !ENV [VERSION_WARNING]
   same_version: !ENV [SAME_VERSION]
   branch: !ENV [SAMPLES_BRANCH, "mkdocs"]
+
+plugins:
+  - search
+  - awesome-pages # order items in navbar using .pages
+  # check out gitworkflow for automated scripts
+  # external extensions

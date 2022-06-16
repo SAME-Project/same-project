@@ -130,6 +130,8 @@ def get_code(notebook: dict) -> str:
         if cell["cell_type"] != "code":
             continue
 
-        code.append("\n".join(jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source))
+        code.append("\n".join(
+            jupytext.cell_to_text.LightScriptCellExporter(cell, "py").source
+        ))
 
     return "\n".join(code)

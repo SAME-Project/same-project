@@ -4,27 +4,12 @@ from sameproject.data.config import SameConfig
 from pathlib import Path
 import test.testdata
 import logging
-import logging
 import pytest
 
 
 config_path = Path("test/ops/testdata/same_notebooks/generic/same.yaml")
 notebook_path = Path("test/ops/testdata/same_notebooks/generic/sample_notebook.ipynb")
 requirements_path = Path("test/ops/testdata/same_notebooks/generic/requirements.txt")
-
-tagged_notebooks = [
-    ("Code", "test/ops/testdata/tagged_notebooks/code.ipynb", 1, 3),
-    ("Code Tag", "test/ops/testdata/tagged_notebooks/code_tag.ipynb", 2, 2),
-    ("Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code.ipynb", 2, 2),
-    ("Tag", "test/ops/testdata/tagged_notebooks/tag.ipynb", 2, 2),
-    ("Tag Code", "test/ops/testdata/tagged_notebooks/tag_code.ipynb", 1, 1),
-    ("Tag Code Tag", "test/ops/testdata/tagged_notebooks/tag_code_tag.ipynb", 2, 2),
-    ("Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/tag_code_tag_code.ipynb", 2, 2),
-    ("Tag Tag", "test/ops/testdata/tagged_notebooks/tag_tag.ipynb", 2, 2),
-    ("Tag Tag Code", "test/ops/testdata/tagged_notebooks/tag_tag_code.ipynb", 2, 2),
-    ("Code Tag Code Tag Code", "test/ops/testdata/tagged_notebooks/code_tag_code_tag_code.ipynb", 3, 3),
-    ("Code Code Tag Code Code Tag Code Code", "test/ops/testdata/tagged_notebooks/code_code_tag_code_code_tag_code_code.ipynb", 3, 6),
-]
 
 magic_line_testcases = [
     ("bad_python_lines", "test/ops/testdata/edgecase_notebooks/bad_python_lines.ipynb", False),

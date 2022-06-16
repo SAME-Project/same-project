@@ -1,8 +1,7 @@
 ---
 type: docs
-title: "Setting up dev"
+title: "Setting Up a Development Environment"
 description: "How to set up your environment for running tests and building SAME."
-weight: 02
 ---
 
 ## Prerequisites

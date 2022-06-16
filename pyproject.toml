@@ -34,7 +34,7 @@ yarg = "^0.1.9"
 pipreqs = "^0.4.11"
 
 # AzureML
-azureml-core = {version = "^1.22.1", optional = true }
+azureml-core = {version = "^1.42.0", optional = true }
 azure-mgmt-applicationinsights = {version = "^3.1.0", optional = true }
 azure-mgmt-web = { version = "6.1.0", optional = true }
 azureml-pipeline = { version = "^1.42.0", optional = true }
@@ -65,6 +65,7 @@ azureml = [
     "azure-mgmt-applicationinsights",
     "azure-mgmt-web",
 ]
+
 dev = [
     "PyJWT",
     "pip-tools",

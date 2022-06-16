@@ -3,7 +3,6 @@ type: docs
 title: "Hello World Notebook"
 linkTitle: "Hello World"
 description: "Deploying An Example Notebook"
-weight: 20
 ---
 ## Clone the Sample Repo
 

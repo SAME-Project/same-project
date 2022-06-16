@@ -29,13 +29,7 @@ def runtime_schema(backend: str) -> dict:
         if _registry[opt].backend is None or _registry[opt].backend == backend:
             opt_schema = _registry[opt].schema
             if opt_schema is None:
-                opt_schema = {
-                    "nullable": True,
-                    "type": _get_cerberus_type(
-                        _registry[opt].name,
-                        _registry[opt].type
-                    )
-                }
+                opt_schema = {"nullable": True, "type": _get_cerberus_type(_registry[opt].name, _registry[opt].type)}
             schema["schema"][opt] = opt_schema
 
     return schema
