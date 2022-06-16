@@ -20,10 +20,10 @@ def {{ unique_name }}_fn(
     from validator_collection import validators, checkers
 
     input_context = ""
-    {% if not_first %}
+{% if not_first %}
     with Path(input_context_path).open("rb") as reader:
         input_context = reader.read()
-    {% endif %}
+{% endif %}
 
     # Helper function for posting metadata to mlflow.
     def post_metadata(json):
@@ -49,10 +49,10 @@ def {{ unique_name }}_fn(
             input_context_str = urlsafe_b64encode(input_context)
             post_metadata(
                 {
-                    "run_id": run_info["run_id"],
-                    "kfp_run_id": run_info["kfp_run_id"],
-                    "kfp_execution_id": run_info["kfp_execution_id"],
-                    "name": run_info["name"],
+                    "run_id": run_info.get("run_id", ""),
+                    "kfp_run_id": run_info.get("kfp_run_id", ""),
+                    "kfp_execution_id": run_info.get("kfp_execution_id",""),
+                    "name": run_info.get("name", ""),
                     "step_id": {{ name }},
                     "metadata_type": "input",
                     "metadata_value": input_context_str,
@@ -79,9 +79,11 @@ os.system("pip install -r " + _req_file)
 # Load the exploding variables module:
 {urlsafe_b64decode("{{ explode_code }}").decode()}
 
+{% if not_first %}
 # Load session context into global namespace:
 if { len(input_context) } > 0:
     dill.load_session("{ input_context_path }")
+{% endif %}
 
 # Run the user's notebook code:
 {urlsafe_b64decode("{{ user_code }}").decode()}
@@ -120,10 +122,10 @@ dill.dump_session("{output_context_path}")
         context = urlsafe_b64encode(reader.read())
         post_metadata(
             {
-                "run_id": run_info["run_id"],
-                "kfp_run_id": run_info["kfp_run_id"],
-                "kfp_execution_id": run_info["kfp_execution_id"],
-                "pipeline_name": run_info["name"],
+                "run_id": run_info.get("run_id", ""),
+                "kfp_run_id": run_info.get("kfp_run_id", ""),
+                "kfp_execution_id": run_info.get("kfp_execution_id",""),
+                "name": run_info.get("name", ""),
                 "step_id": "{{ name }}",
                 "metadata_type": "output",
                 "metadata_value": context,

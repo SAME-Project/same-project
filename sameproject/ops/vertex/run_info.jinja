@@ -6,7 +6,10 @@ from typing import NamedTuple
 
 
 def run_info_fn(
-    run_id: str,
+    name: str,
+    job_id: str,
+    kfp_run_id: str, 
+    kfp_execution_id: str, 
 ) -> NamedTuple("RunInfoOutput", [("run_info", str),]):
     from base64 import urlsafe_b64encode
     from collections import namedtuple
@@ -17,15 +20,16 @@ def run_info_fn(
     import uuid
 
     run_info_dict = {
-        "run_id": str(uuid.uuid4()), 
-        "name": "TEMP_NAME",
+        "run_id": job_id,
+        "kfp_run_id": kfp_run_id, 
+        "kfp_execution_id": kfp_execution_id,
+        "name": name,
         "created_at": datetime.datetime.now().isoformat(),
-        "pipeline_id": str(uuid.uuid4()),
     }
 
     # Track kubernetes resources associated wth the run.
-    for r in run_info.run.resource_references:
-        run_info_dict[f"{r.key.type.lower()}_id"] = r.key.id
+    # for r in run_info.run.resource_references:
+    #   run_info_dict[f"{r.key.type.lower()}_id"] = r.key.id
 
     # Base64-encoded as value is visible in kubeflow ui.
     output = urlsafe_b64encode(dill.dumps(run_info_dict))

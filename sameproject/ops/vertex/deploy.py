@@ -32,29 +32,40 @@ def deploy(base_path: str, root_name: str, config: SameConfig):
 
         compiler.Compiler().compile(pipeline_func=root_module.root, package_path=str(package_json_path))
 
-        project_id = os.environ.get("PROJECT_ID", project_id)
-        service_account_credentials_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", service_account_credentials_file)
-        location = "northamerica-northeast1"
+        project_id = config.runtime_options.project_id
+        service_account_credentials_file = config.runtime_options.service_account_credentials_file
+        location = config.runtime_options.location
 
         credentials = service_account.Credentials.from_service_account_file(service_account_credentials_file)
 
         # aiplatform.init(project=project_id, location=location, credentials=credentials)
+        TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        display_name = helpers.lowerAlphaNumericOnly(config.metadata.name)
+        job_id = f"{display_name}-{TIMESTAMP}"
 
-        BUCKET_NAME = os.environ.get("BUCKET_NAME")
+        BUCKET_NAME = config.runtime_options.bucket_name
         BUCKET_URI = f"gs://{BUCKET_NAME}"
-        PIPELINE_ROOT = f"{BUCKET_URI}/{config['runtime_options']}/pipeline_root"
-
-        TIMESTAMP = datetime.now().strftime("%Y%m%d%H%M%S")
+        PIPELINE_ROOT = f"{BUCKET_URI}/{job_id}/"
 
         job = aiplatform.PipelineJob(
-            display_name="MY_DISPLAY_JOB",
-            template_path=compiled_path,
+            display_name=display_name,
+            template_path=str(package_json_path),
             project=project_id,
             credentials=credentials,
             location=location,
             pipeline_root=f"{PIPELINE_ROOT}",
-            job_id="MY_DISPLAY_JOB-{0}".format(TIMESTAMP),
+            job_id=job_id,
+            parameter_values={
+                "job_id": job_id,
+            },
         )
+
+        print("\n"*3)
+        import pprint
+        pprint.pprint(f"PIPELINE JOB: {job.project}")
+        print("\n"*3)
+
+        job.submit(service_account=credentials.service_account_email)
 
         # job = aiplatform.PipelineJob(
         #     display_name="MY_DISPLAY_JOB",
@@ -69,5 +80,3 @@ def deploy(base_path: str, root_name: str, config: SameConfig):
         #     project=PROJECT_ID,
         #     location=LOCATION,
         # )
-
-        job.submit(service_account=credentials.service_account_email)

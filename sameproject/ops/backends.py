@@ -16,7 +16,9 @@ def render(target: str, steps: list, config: SameConfig, compile_path: str = Non
     target_renderers = {
         "aml": aml.render,
         "kubeflow": kubeflow.render,
+        "kubeflowv1": kubeflowv1.render,
         "functions": functions.render,
+        "vertex": vertex.render,
     }
 
     render_function = target_renderers.get(target, None)
@@ -34,7 +36,9 @@ def deploy(target: str, base_path: Path, root_file: str, config: SameConfig):
     target_deployers = {
         "aml": aml.deploy,
         "kubeflow": kubeflow.deploy,
+        "kubeflowv1": kubeflowv1.deploy,
         "functions": functions.deploy,
+        "vertex": vertex.deploy,
     }
 
     deploy_function = target_deployers.get(target, None)

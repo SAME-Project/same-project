@@ -178,7 +178,7 @@ def _build_root_file(env: Environment, all_steps: list, same_config: dict) -> st
     root_contract["comma_delim_list_of_step_names_as_str"] = ", ".join([name for name in all_steps])
 
     # Need to build the bucket name into the template
-    root_contract["bucket_name"] = same_config.run.bucket_name
+    root_contract["bucket_name"] = same_config.runtime_options.bucket_name
 
     return template.render(root_contract)
 

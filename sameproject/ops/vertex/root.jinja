@@ -21,6 +21,7 @@ run_info_comp = kfp.v2.dsl.component(
         "kfp",
         "dill",
     ],
+    base_image="library/python:3.10-slim-buster",
 )
 
 {% for step in list_of_steps %}
@@ -37,9 +38,9 @@ run_info_comp = kfp.v2.dsl.component(
 )
 {% endfor %}
 
-@kfp.dsl.pipeline(pipeline_root="gs://{{ bucket_name }}", name="{{ pipeline_name_safe }}",)
+@kfp.dsl.pipeline(pipeline_root="gs://{{ bucket_name }}/*", name="{{ pipeline_name_safe }}",)
 def root(
-    context: str='', metadata_url: str='',
+    job_id: str ='', context: str='', metadata_url: str='', 
 ):
     # Generate secrets (if not already created)
     secrets_by_env = {}
@@ -53,9 +54,6 @@ def root(
     api_version = "v1"
     kind = "Secret"
     type = "kubernetes.io/dockerconfigjson"
-
-    TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    job_id = f"{pipeline_name}-{TIMESTAMP}"
 
     cred_payload = {
         "auths": {
@@ -106,7 +104,7 @@ def root(
     }
 
     run_info = run_info_comp(
-        name=pipeline_name, endpoint=endpoint, kfp_run_id=kfp.dsl.RUN_ID_PLACEHOLDER, kfp_execution_id=kfp.dsl.EXECUTION_ID_PLACEHOLDER, job_id=job_id
+        name="{{ pipeline_name_safe }}", kfp_run_id=kfp.dsl.RUN_ID_PLACEHOLDER, kfp_execution_id=kfp.dsl.EXECUTION_ID_PLACEHOLDER, job_id=job_id
     )
 
 {% for step in list_of_steps %}
