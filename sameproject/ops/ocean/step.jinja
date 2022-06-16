@@ -1,0 +1,9 @@
+{% autoescape off %}
+
+# User code for step, which we run in its own execution frame.
+user_code = f"""
+# Run the user's notebook code:
+{urlsafe_b64decode("{{ user_code }}").decode()}
+"""
+
+{% endautoescape %}
