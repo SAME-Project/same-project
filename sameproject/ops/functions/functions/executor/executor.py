@@ -6,7 +6,8 @@ import time
 import dill
 
 
-empty_namespace = urlsafe_b64encode(dill.dumps({})).decode("utf-8")
+# Encodes a session
+empty_context = urlsafe_b64encode(dill.dumps({})).decode("utf-8")
 
 
 def info(msg: str):
@@ -21,23 +22,23 @@ def executor(
 
     try:
         # Executes the step's code in a new execution frame, with a single
-        # local/global namespace to simulate top-level execution.
+        # local/global session_context to simulate top-level execution.
         code = input["code"]
-        encoded_namespace = input.get("namespace", empty_namespace)
-        namespace = dill.loads(urlsafe_b64decode(encoded_namespace))
-        exec(code, namespace, namespace)
+        session_context_enc = input.get("session_context", empty_context)
+        session_context = dill.loads(urlsafe_b64decode(session_context_enc))
+        exec(code, session_context, session_context)
 
-        # Prune out anything that can't be serialised in the user's namespace:
-        keys = list(namespace.keys())
+        # Prune out anything that can't be serialised in the user's session_context:
+        keys = list(session_context.keys())
         for key in keys:
             try:
-                dill.dumps(namespace[key])
+                dill.dumps(session_context[key])
             except TypeError:
-                del namespace[key]
-        pickle = dill.dumps(namespace)
+                del session_context[key]
+        pickle = dill.dumps(session_context)
 
         return {
-            "namespace": urlsafe_b64encode(pickle).decode("utf-8"),
+            "session_context": urlsafe_b64encode(pickle).decode("utf-8"),
         }
     finally:
         info(f"total time taken: {1000 * (time.time() - start_secs)}ms")

@@ -12,7 +12,26 @@ schema = {
         "type": "list",
         "required": True,
         "schema": {
-            "type": "string",
+            "type": "dict",
+            "schema": {
+                "name": {
+                    "type": "string",
+                    "required": True,
+                },
+                "code": {
+                    "type": "string",
+                    "required": True,
+                },
+                "config": {
+                    "type": "string",
+                    "required": True,
+                },
+                "requirements": {
+                    "type": "string",
+                    "required": True,
+                    "nullable": True,
+                }
+            },
         },
     },
 }
@@ -34,23 +53,20 @@ def _orchestrator(context: df.DurableOrchestrationContext):
         raise SyntaxError(f"input is invalid: {validator.errors}")
 
     # TODO: handle multiple steps, requirements, docker image etc.
-    namespace = None
+    session_context = None
     for step in input["steps"]:
         try:
-            code = urlsafe_b64decode(step).decode("utf-8")
+            code = urlsafe_b64decode(step["code"]).decode("utf-8")
         except Exception as err:
             raise Exception(
                 f"'code' field of input should be urlsafe_b64encoded string: {err}")
 
-        req = {"code": code}
-        if namespace is not None:
-            req["namespace"] = namespace
+        data = {"code": code}
+        if session_context is not None:
+            data["session_context"] = session_context
 
-        info("passing code to executor...")
-        result = yield context.call_activity("executor", req)
-
-        info(f"code successfully executed: {result}")
-        namespace = result["namespace"]
+        result = yield context.call_activity("executor", data)
+        session_context = result["session_context"]
 
     return result
 
