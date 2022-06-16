@@ -53,7 +53,7 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
         "memory_limit": memory_limit,
         "unique_name": step.unique_name,
         "requirements_file": requirements_file,
-        "user_code": urlsafe_b64encode(bytes(step.code, "utf-8")).decode(),
+        "user_code": step.code,
         "explode_code": urlsafe_b64encode(bytes(explode_code, "utf-8")).decode(),
         "same_yaml": urlsafe_b64encode(bytes(same_config.to_yaml(), "utf-8")).decode(),
     }
