@@ -35,6 +35,7 @@ def deploy(target: str, base_path: Path, root_file: str, config: SameConfig):
         "aml": aml.deploy,
         "kubeflow": kubeflow.deploy,
         "functions": functions.deploy,
+        "ocean": ocean.deploy
     }
 
     deploy_function = target_deployers.get(target, None)
