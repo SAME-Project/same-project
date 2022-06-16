@@ -1,0 +1,6 @@
+{% autoescape off %}
+
+# Run the user's notebook code:
+{urlsafe_b64decode("{{ user_code }}").decode()}
+
+{% endautoescape %}
