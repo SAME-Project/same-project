@@ -25,6 +25,16 @@ schema = {
                 "sources": {
                     "type": "dict",
                     "required": True,
+                    "schema": {
+                        "same.yaml": {
+                            "type": "string",
+                            "required": True,
+                        },
+                        "requirements.txt": {
+                            "type": "string",
+                            "required": False,
+                        }
+                    }
                 },
             },
         },

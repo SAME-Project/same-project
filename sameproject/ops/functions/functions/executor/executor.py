@@ -5,6 +5,7 @@ from tempfile import mktemp
 import logging
 import time
 import dill
+import os
 
 
 def info(msg: str):
@@ -35,6 +36,10 @@ def executor(
     for name, source in input["step"]["sources"].items():
         with open(name, "w") as file:
             file.write(decode_str(source))
+
+    # Install requirements, if necessary:
+    if "requirements.txt" in input["step"]["sources"]:
+        os.system("pip install -r requirements.txt")
 
     # Execute the step's code in a fresh execution frame:
     try:
