@@ -84,3 +84,7 @@ cd - && cd test/testdata/features/singlestep
 same run -t functions -f same.yaml \
   --functions-host-name "${FUNCTIONS_HOST_NAME}"
 ```
+
+## Limitations
+
+The Azure Functions backend does not support custom Docker images in SAME config files. All python dependencies must be specified using a `requirements.txt`, and non-python dependencies are not currently supported.
