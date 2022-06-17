@@ -241,6 +241,6 @@ python3 /home/daaronch/code/same-project/sameproject/ops/vertex/vertex_debugger.
 # export $(cat .env | xargs)
 
 # gcloud iam service-accounts add-iam-policy-binding \
-#         $SERVICE_ACCOUNT_ID@$PROJECT_ID.iam.gserviceaccount.com \
-#         --member="user:$USER_EMAIL" \
-#         --role="
+#     vertex-runner-sp@same-project-vertex.iam.gserviceaccount.com \
+#     --member="user:aronchick@busted.dev" \
+#     --role="roles/iam.serviceAccountUser"
