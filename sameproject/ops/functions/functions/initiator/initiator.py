@@ -20,8 +20,6 @@ async def initiator(req: fn.HttpRequest, client: str) -> fn.HttpResponse:
             body="error: a json request body is required"
         )
 
-    info(f"body of request: {json_data}")
-
     try:
         instance_id = await client.start_new("orchestrator", None, json_data)
     except Exception as err:

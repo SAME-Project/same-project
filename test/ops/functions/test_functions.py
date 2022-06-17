@@ -1,5 +1,6 @@
 from sameproject.ops.notebooks import compile
 from sameproject.ops.backends import deploy
+from sameproject.ops.execution import load
 from base64 import urlsafe_b64decode
 import test.testdata
 import requests
@@ -10,7 +11,7 @@ import dill
 
 
 @pytest.mark.functions
-@test.testdata.notebook("features_multistep")
+@test.testdata.notebooks("features")
 def test_functions_features(config, notebook, requirements, validation_fn):
     """
     Tests the Azure Functions backend against the feature test suite. This
@@ -36,6 +37,7 @@ def test_functions_features(config, notebook, requirements, validation_fn):
             raise RuntimeError(f"Notebook execution took too long to complete: {res}")
 
     # Decode the output namespace and validate the results:
-    ctx = dill.loads(urlsafe_b64decode(res["output"]["session_context"]))
+    module = load(urlsafe_b64decode(res["output"]["session_context"]))
+    attrs = dict(map(lambda k: (k, getattr(module, k)), dir(module)))
     if validation_fn is not None:
-        assert validation_fn(ctx)
+        assert validation_fn(attrs)

@@ -1,17 +1,28 @@
 from base64 import urlsafe_b64encode, urlsafe_b64decode
-import azure.functions.blob as blob
-import azure.functions as fn
+from sameproject.ops.execution import execute
+from typing import Optional
+from tempfile import mktemp
 import logging
 import time
 import dill
 
 
-# Encodes a session
-empty_context = urlsafe_b64encode(dill.dumps({})).decode("utf-8")
-
-
 def info(msg: str):
     logging.info(f"executor: {msg}")
+
+
+def decode_str(data: Optional[str]) -> Optional[str]:
+    if data is None:
+        return None
+
+    return urlsafe_b64decode(data).decode("utf-8")
+
+
+def decode_bytes(data: Optional[str]) -> Optional[bytes]:
+    if data is None:
+        return None
+
+    return urlsafe_b64decode(data)
 
 
 def executor(
@@ -20,25 +31,21 @@ def executor(
     """Executes a single SAME step in a pipeline."""
     start_secs = time.time()
 
-    try:
-        # Executes the step's code in a new execution frame, with a single
-        # local/global session_context to simulate top-level execution.
-        code = input["code"]
-        session_context_enc = input.get("session_context", empty_context)
-        session_context = dill.loads(urlsafe_b64decode(session_context_enc))
-        exec(code, session_context, session_context)
+    # Write sources from input into local directory:
+    for name, source in input["step"]["sources"].items():
+        with open(name, "w") as file:
+            file.write(decode_str(source))
 
-        # Prune out anything that can't be serialised in the user's session_context:
-        keys = list(session_context.keys())
-        for key in keys:
-            try:
-                dill.dumps(session_context[key])
-            except TypeError:
-                del session_context[key]
-        pickle = dill.dumps(session_context)
+    # Execute the step's code in a fresh execution frame:
+    try:
+        code = decode_str(input["step"]["code"])
+        input_context = decode_bytes(input["session_context"])
+        output_context = execute(code, input_context)
 
         return {
-            "session_context": urlsafe_b64encode(pickle).decode("utf-8"),
+            "session_context": urlsafe_b64encode(
+                output_context
+            ).decode("utf-8"),
         }
     finally:
         info(f"total time taken: {1000 * (time.time() - start_secs)}ms")

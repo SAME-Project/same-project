@@ -12,17 +12,15 @@ def render(path: str, steps: Mapping[str, Step], config: SameConfig) -> Tuple[Pa
 
     step_data = []
     for name, step in steps.items():
-        code_enc = _encode(step.code)
-        config_enc = _encode(config.to_yaml())
-        requirements_enc = None
+        sources = {}
+        sources["same.yaml"] = _encode(config.to_yaml())
         if "requirements_file" in step:
-            requirements_enc = _encode(step.requirements_file)
+            sources["requirements.txt"] = _encode(step.requirements_file)
 
         step_data.append({
             "name": name,
-            "code": code_enc,
-            "config": config_enc,
-            "requirements": requirements_enc,
+            "code": _encode(step.code),
+            "sources": sources,
         })
 
     with body_path.open("w") as writer:
