@@ -110,6 +110,7 @@ def register_option(
     env: Optional[str] = None,
     schema: Optional[dict] = None,
     backend: Optional[str] = None,
+    default_value: Optional[Any] = None,
 ):
     """
     Registers a runtime option with the given metadata.
@@ -128,7 +129,7 @@ def register_option(
     if env is None:
         env = name.upper()
 
-    value = None
+    value = default_value
     if env in os.environ:
         value = type(os.environ[env])
 

@@ -49,7 +49,7 @@ def {{ unique_name }}_fn(
                 "metadata_time": datetime.datetime.now().isoformat(),
             })
 
-    # User code for step, which we run in its own execution frame.
+    # User code for step, which we run in its own execution frame:
     user_code = f"""
 from base64 import urlsafe_b64decode
 from pympler import asizeof

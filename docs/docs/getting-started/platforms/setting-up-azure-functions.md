@@ -24,17 +24,7 @@ git clone https://github.com/SAME-Project/same-project.git
 cd same-project
 ```
 
-Next, you will need to authorise `terraform` to deploy resources to your Azure account. This can either be done using your personal [_user account_](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/azure_cli), or by using a [_service principal_](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret) you have created for this purpose. Once you have authenticated, take note of the [Azure subscription ID](https://docs.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id) you wish to deploy the `functions` backend into:
-
-```bash
-export FUNCTIONS_SUBSCRIPTION_ID="<azure subscription id>"
-```
-
-A list of Azure subscription IDs available to you can be queried from the command line:
-
-```bash
-az account list --query "[].id"
-```
+Next, you will need to authorise `terraform` to deploy resources to your Azure account. This can either be done using your personal [_user account_](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/azure_cli), or by using a [_service principal_](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/guides/service_principal_client_secret) you have created for this purpose.
 
 
 ## Apply the Terraform
@@ -92,6 +82,9 @@ To test your deployment, you can run one of the test suite notebooks in the `sam
 ```bash
 cd - && cd test/testdata/features/singlestep
 same run -t functions -f same.yaml \
-  --functions-subscription-id "${FUNCTIONS_SUBSCRIPTION_ID}" \
   --functions-host-name "${FUNCTIONS_HOST_NAME}"
 ```
+
+## Limitations
+
+The Azure Functions backend does not support custom Docker images in SAME config files. All python dependencies must be specified using a `requirements.txt`, and non-python dependencies are not currently supported.

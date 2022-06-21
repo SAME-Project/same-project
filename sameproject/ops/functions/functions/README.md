@@ -37,3 +37,12 @@ Finally, you can host the functions locally with the following command:
 ```bash
 func host start
 ```
+
+You can execute SAME runs against the local function app by setting the
+`functions_host_name` runtime option to point to `localhost`:
+
+```bash
+same run -t functions -f same.yaml \
+  --functions-host-name "localhost:7071" \
+  --functions-use-http
+```
