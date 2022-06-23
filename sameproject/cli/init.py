@@ -71,7 +71,7 @@ def init():
         click.echo(f"No such file found: {nb_path}", err=True)
         exit(1)
     nb_dict = read_notebook(nb_path)
-    nb_name = str(nb_path).replace(".ipynb", "")
+    nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
     # Docker image data:
     image = click.prompt(

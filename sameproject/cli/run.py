@@ -67,7 +67,11 @@ def run(
     click.echo(f"Loading SAME config: {same_file.name}")
     base_path, root_file = notebooks.compile(config, target)
     if persist_temp_files:
-        print(f"Temporary files persisted here: {base_path}")
+        click.echo(f"Temporary files persisted here: {base_path}")
 
     if not no_deploy:
-        backends.deploy(target, base_path, root_file, config)
+        try:
+            backends.deploy(target, base_path, root_file, config)
+        except Exception as err:
+            click.echo(err, err=True)
+            exit(1)

@@ -13,6 +13,10 @@ fontawesome-markdown = "^0.2.6"
 PyGithub = "^1.54.1"
 ipython = "^8.0.1"
 regex = "^2021.3.17"
+mkdocs-material-extensions = "^1.0.3"
+mkdocs-awesome-pages-plugin = "^2.7.0"
+mkdocs-same-dir = "^0.1.1"
+mkdocs-section-index = "^0.3.4"
 
 [tool.poetry.dev-dependencies]
 

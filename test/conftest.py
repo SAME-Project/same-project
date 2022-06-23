@@ -13,6 +13,11 @@ additional_flags = [
         "default": False,
         "help": "run functions backend tests, requires azure authentication",
     }],
+    ["aml", {
+        "action": "store_true",
+        "default": False,
+        "help": "run aml backend tests, requires azure authentication",
+    }],
     ["external", {
         "action": "store_true",
         "default": False,
