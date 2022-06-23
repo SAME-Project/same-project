@@ -1,0 +1,9 @@
+nav:
+
+- installing.md
+- example-notebook.md
+- adding-steps.md
+- changing-environment.md
+- dev-build.md
+- working-with-datasets.md
+- platforms

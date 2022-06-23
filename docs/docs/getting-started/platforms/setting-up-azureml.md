@@ -2,8 +2,9 @@
 type: docs
 title: "Setting up Azure ML"
 description: "How to set up Azure ML for SAME."
-weight: 30
 ---
+
+We recommend starting on Azure with the [Azure ML Terraform setup](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/machine_learning_workspace)
 
 In order to use AzureML, you need to have environment variables named the following:
 
@@ -20,20 +21,13 @@ export AML_COMPUTE_NAME=
 To set the workspace variables, follow this instruction:
 https://docs.microsoft.com/en-us/azure/machine-learning/how-to-configure-environment#workspace
 
-
-Create a service principal account: 
+Create a service principal account:
 https://docs.microsoft.com/en-us/azure/machine-learning/how-to-setup-authentication
 
 ```bash
 az ad sp create-for-rbac --sdk-auth --name same-project-aml-auth --role Contributor --scopes /subscriptions/72ac7288-fb92-4ad6-83bc-5cfd361f47ef
 ```
+
 AML_SP_APP_ID => clientId
 AML_SP_PASSWORD_VALUE => clientSecret
 AML_SP_TENANT_ID => tenantId
-
-Create a compute cluster
-
-```bash
-az extension add -n azure-cli-ml
-az ml computetarget create amlcompute -n cpu --min-nodes 2 --max-nodes 3 -s STANDARD_D3_V2 --location koreacentral
-```

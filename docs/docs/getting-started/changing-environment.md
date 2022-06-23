@@ -2,7 +2,6 @@
 type: docs
 title: "Changing Environment"
 description: "Requiring that certain steps use different base images."
-weight: 40
 ---
 
 Often times, a specific step will require a particular base container image to execute inside of. This may be because the image was pre-built with particular dependencies (packages, libraries, drivers, etc) which Jupyter does not need to execute, but may be necessary on the back end. This feature allows to specify the base image required to execute a given step.

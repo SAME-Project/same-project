@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sameproject"
-version = "0.2.3"
+version = "0.2.4"
 description = "Notebooks to Pipelines, reproducible data science, oh my."
 authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsden.net>"]
 
@@ -34,7 +34,7 @@ yarg = "^0.1.9"
 pipreqs = "^0.4.11"
 
 # AzureML
-azureml-core = {version = "^1.22.1", optional = true }
+azureml-core = {version = "^1.42.0", optional = true }
 azure-mgmt-applicationinsights = {version = "^3.1.0", optional = true }
 azure-mgmt-web = { version = "6.1.0", optional = true }
 azureml-pipeline = { version = "^1.42.0", optional = true }
@@ -59,12 +59,14 @@ pytest-xdist = { version = "^2.5.0", optional = true }
 black = { version = "^22.3.0", optional = true }
 
 [tool.poetry.extras]
+
 azureml = [
     "azureml-core",
     "azureml-pipeline",
     "azure-mgmt-applicationinsights",
     "azure-mgmt-web",
 ]
+
 dev = [
     "PyJWT",
     "pip-tools",

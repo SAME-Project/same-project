@@ -3,7 +3,6 @@ type: docs
 title: "Installing SAME"
 linkTitle: "Installing SAME"
 description: "How to install the SAME project"
-weight: 10
 ---
 
 ## Installing SAME

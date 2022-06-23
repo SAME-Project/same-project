@@ -6,9 +6,10 @@ from pathlib import Path
 import test.testdata
 import pytest
 
-@pytest.mark.skip("Due to fuzzing, this doesn't work")
+
+@pytest.mark.skip("Enable to run a fuzz tester on `same init` inputs.")
 def test_init():
-    for i in range(50):
+    for i in range(1000):
         runner = CliRunner()
         with runner.isolated_filesystem():
             # Copy over a notebook for the test:
