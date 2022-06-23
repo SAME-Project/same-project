@@ -146,7 +146,6 @@ class SameConfig(Box):
             data.runtime_options = {}
 
         for opt in list_options():
-            print(f"OPT IS {get_option_value(opt)}")
             if get_option_value(opt) is not None:
                 data.runtime_options[opt] = get_option_value(opt)
 
