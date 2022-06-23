@@ -15,10 +15,10 @@ from ocean_lib.web3_internal.wallet import Wallet
 from ocean_lib.services.service import Service
 from ocean_lib.models.btoken import BTokenBase #BToken is ERC20
 from ocean_lib.ocean.ocean import Ocean
-from ocean_lib.config import Config
 
 
 def deploy(base_path: Path, root_file: str, config: SameConfig):
+    print(f'Config is {config}')
     with helpers.add_path(str(base_path)):
         root_module = importlib.import_module(root_file)  # python module
         print(f"Root module is {root_module.root}")
@@ -48,7 +48,7 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     - model metadata (name, date, compute, etc.)
     """
 
-    wallet = Wallet(ocean.web3, config.runtime_options.get("wallet_private_key"), transaction_timeout=20, block_confirmations=config.block_confirmations)
+    wallet = Wallet(ocean.web3, config.runtime_options.get("wallet_private_key"), transaction_timeout=20, block_confirmations=0)
     print(f"wallet.address = '{wallet.address}'")
     assert wallet.web3.eth.get_balance(wallet.address) > 0, "need ETH"
 
