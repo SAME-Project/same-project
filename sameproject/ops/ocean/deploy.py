@@ -5,15 +5,15 @@ import importlib
 """Boilerplate Ocean publishing and running c2d"""
 
 import os
-import _init_paths
 from ocean_lib.data_provider.data_service_provider import DataServiceProvider
-from ocean_lib.common.agreements.service_types import ServiceTypes
+from ocean_lib.agreements.service_types import ServiceTypes
+from ocean_lib.web3_internal.currency import pretty_ether_and_wei
 from ocean_lib.web3_internal.constants import ZERO_ADDRESS
+from ocean_lib.models.compute_input import ComputeInput
 from ocean_lib.web3_internal.currency import to_wei
 from ocean_lib.web3_internal.wallet import Wallet
-from ocean_lib.assets import trusted_algorithms
 from ocean_lib.services.service import Service
-from ocean_lib.models.btoken import BToken #BToken is ERC20
+from ocean_lib.models.btoken import BTokenBase #BToken is ERC20
 from ocean_lib.ocean.ocean import Ocean
 from ocean_lib.config import Config
 
@@ -23,9 +23,17 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
         root_module = importlib.import_module(root_file)  # python module
         print(f"Root module is {root_module.root}")
         
-    config = Config('config.ini') # Ocean requires a config file with network, metadata, block, and provider info
-    ocean = Ocean(config)
-    OCEAN_token = BToken(ocean.web3, ocean.OCEAN_address)
+    d = {
+    'network' : 'https://rinkeby.infura.io/v3/d163c48816434b0bbb3ac3925d6c6c80' if config.runtime_options.get("network") is None else config.runtime_options.get("network"),
+    'BLOCK_CONFIRMATIONS': 0,
+    'metadataCacheUri' : 'https://aquarius.oceanprotocol.com',
+    'providerUri' : 'https://provider.rinkeby.oceanprotocol.com',
+    'PROVIDER_ADDRESS': '0x00bd138abd70e2f00903268f3db08f2d25677c9e' if config.runtime_options.get("provider_address") is None else config.runtime_options.get("provider_address"),
+    'downloads.path': 'consume-downloads',
+    }
+
+    ocean = Ocean(d)
+    OCEAN_token = BTokenBase(ocean.web3, ocean.OCEAN_address)
     provider_url = DataServiceProvider.get_url(ocean.config)
 
 
@@ -100,7 +108,15 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     services=[ALG_access_service],
     data_token_address=ALG_datatoken.address)
 
-    trusted_algorithms.add_publisher_trusted_algorithm('DATA_ddo', ALG_ddo.did, config.metadata_cache_uri) # project-specific
+    DATA_did = config.DATA_ddo.did  # for convenience
+    ALG_did = ALG_ddo.did
+    DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
+    ALG_DDO = ocean.assets.resolve(ALG_did)
+
+    compute_service = DATA_DDO.get_service('compute')
+    algo_service = ALG_DDO.get_service('access')
+
+    compute_service.add_publisher_trusted_algorithm(ALG_ddo)
     ocean.assets.update('DATA_ddo', publisher_wallet=wallet) # project-specific
 
     """
@@ -114,7 +130,7 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     did = 'SPECIFY'
     pool_address = 'SPECIFY'
 
-    wallet = Wallet(ocean.web3, private_key=private_key, transaction_timeout=20, block_confirmations=0)
+    wallet = Wallet(ocean.web3, private_key=os.getenv('PRIVATE_KEY'), transaction_timeout=20, block_confirmations=0)
     assert wallet is not None, "Wallet error, initialize app again"
     # Get asset, datatoken_address
     asset = ocean.assets.resolve(did)
@@ -148,17 +164,6 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     """
     Running C2D
     """
-
-    DATA_did = DATA_ddo.did  # for convenience
-    ALG_did = ALG_ddo.did
-    DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
-    ALG_DDO = ocean.assets.resolve(ALG_did)
-
-    compute_service = DATA_DDO.get_service('compute')
-    algo_service = ALG_DDO.get_service('access')
-
-    from ocean_lib.web3_internal.constants import ZERO_ADDRESS
-    from ocean_lib.models.compute_input import ComputeInput
 
     # order & pay for dataset
     dataset_order_requirements = ocean.assets.order(
