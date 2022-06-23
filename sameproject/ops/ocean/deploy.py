@@ -48,7 +48,7 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     - model metadata (name, date, compute, etc.)
     """
 
-    wallet = Wallet(ocean.web3, os.getenv('TEST_PRIVATE_KEY1'), transaction_timeout=20, block_confirmations=config.block_confirmations)
+    wallet = Wallet(ocean.web3, config.runtime_options.get("wallet_private_key"), transaction_timeout=20, block_confirmations=config.block_confirmations)
     print(f"wallet.address = '{wallet.address}'")
     assert wallet.web3.eth.get_balance(wallet.address) > 0, "need ETH"
 
@@ -66,22 +66,22 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
             "algorithm": {
                 "language": "python",
                 "format": "docker-image",
-                "version": "0.1", # project-specific
+                "version": config.runtime_options.get("algo_version"), # project-specific
                 "container": {
                 "entrypoint": "python $ALGO",
                 "image": "oceanprotocol/algo_dockers",
-                "tag": "python-branin" # project-specific
+                "tag": config.runtime_options.get("algo_tag") # project-specific
                 }
             },
             "files": [
         {
-            "url": "https://raw.githubusercontent.com/trentmc/branin/main/gpr.py", # project-specific
+            "url": config.runtime_options.get("algo_url"), # project-specific
             "index": 0,
             "contentType": "text/text",
         }
         ],
-        "name": "gpr", "author": "Trent", "license": "CC0", # project-specific
-        "dateCreated": "2020-01-28T10:55:11Z" # project-specific
+        "name": config.runtime_options.get("algo_name"), "author": config.runtime_options.get("author"), "license": config.runtime_options.get("licence"), 
+        "dateCreated": "2022" # project-specific
         }
     }
     ALG_service_attributes = {
@@ -108,7 +108,7 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     services=[ALG_access_service],
     data_token_address=ALG_datatoken.address)
 
-    DATA_did = config.DATA_ddo.did  # for convenience
+    DATA_did = config.runtime_options.get("dt_did")
     ALG_did = ALG_ddo.did
     DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
     ALG_DDO = ocean.assets.resolve(ALG_did)
@@ -127,14 +127,12 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     - datatoken DID and pool address
     """
 
-    did = 'SPECIFY'
-    pool_address = 'SPECIFY'
+    pool_address = config.runtime_options.get("dt_pool")
 
-    wallet = Wallet(ocean.web3, private_key=os.getenv('PRIVATE_KEY'), transaction_timeout=20, block_confirmations=0)
     assert wallet is not None, "Wallet error, initialize app again"
     # Get asset, datatoken_address
-    asset = ocean.assets.resolve(did)
-    data_token_address = f'0x{did[7:]}'
+    asset = ocean.assets.resolve(DATA_did)
+    data_token_address = f'0x{DATA_did[7:]}'
 
     print('Executing Transaction')
     #my wallet
@@ -155,7 +153,7 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     ocean.pool.buy_data_tokens(
         pool_address,
         amount=to_wei(1), # buy 1.0 datatoken
-        max_OCEAN_amount=to_wei(10), # pay up to 10.0 OCEAN
+        max_OCEAN_amount=to_wei(config.runtime_options.get("max_dt_price")), # pay up to 10.0 OCEAN
         from_wallet=wallet
     )
     print(f"I have {pretty_ether_and_wei(data_token.balanceOf(wallet.address), data_token.symbol())}.")
