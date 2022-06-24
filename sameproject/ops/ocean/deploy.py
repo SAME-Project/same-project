@@ -17,11 +17,10 @@ from ocean_lib.models.btoken import BTokenBase #BToken is ERC20
 from ocean_lib.ocean.ocean import Ocean
 
 
-def deploy(base_path: Path, root_file: str, config: SameConfig):
-    with helpers.add_path(str(base_path)):
-        root_module = importlib.import_module(root_file)  # python module
-        print(f"Root module is {root_module.root}")
-        
+def deploy(base_path: Path,
+           root_file: str, # root function with notebook code (string)
+           config: SameConfig):
+
     d = {
     'network' : 'https://rinkeby.infura.io/v3/d163c48816434b0bbb3ac3925d6c6c80' if config.runtime_options.get("network") is None else config.runtime_options.get("network"),
     'BLOCK_CONFIRMATIONS': 0,
@@ -74,7 +73,8 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
             },
             "files": [
         {
-            "url": config.runtime_options.get("algo_url"), # project-specific
+            # "url": config.runtime_options.get("algo_url"), # project-specific
+            "rawcode": root_file, # not sure whether this works yet
             "index": 0,
             "contentType": "text/text",
         }

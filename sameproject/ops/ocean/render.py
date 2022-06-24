@@ -26,7 +26,7 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     root_path = Path(compile_path) / f"{root_pipeline_name}.py"
     helpers.write_file(root_path, root_file_string)
 
-    return (compile_path, root_pipeline_name)
+    return (compile_path, root_file_string) # note: root_file_string replaced root_pipeline_name
 
 
 def _build_step_file(env: Environment, step: Step, same_config) -> str:
