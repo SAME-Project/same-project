@@ -19,7 +19,6 @@ import os
 def deploy(base_path: Path,
            root_file: str, # root function with notebook code (string)
            config: SameConfig):
-    print(f'Config is {config}')
 
     conf = {
     'network' : 'https://rinkeby.infura.io/v3/d163c48816434b0bbb3ac3925d6c6c80' if config.runtime_options.get("network") is None else config.runtime_options.get("network"),
@@ -113,9 +112,9 @@ def deploy(base_path: Path,
         ALG_DDO = ocean.assets.resolve(ALG_did)
         print("Waiting for algorithm DDO")
         pass
-
     compute_service = DATA_DDO.get_service('compute')
     algo_service = ALG_DDO.get_service('access')
+    print(f'Algorithm DDO is {ALG_DDO}')
 
     trusted_algorithms.add_publisher_trusted_algorithm(DATA_DDO, ALG_DDO.did, 'https://aquarius.oceanprotocol.com')
     ocean.assets.update(DATA_DDO, publisher_wallet=wallet)
