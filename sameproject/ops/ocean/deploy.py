@@ -1,27 +1,27 @@
-from sameproject.data.config import SameConfig
-from sameproject.ops import helpers
-from pathlib import Path
-import importlib
-"""Boilerplate Ocean publishing and running c2d"""
-
-import os
 from ocean_lib.data_provider.data_service_provider import DataServiceProvider
-from ocean_lib.agreements.service_types import ServiceTypes
+from ocean_lib.common.agreements.service_types import ServiceTypes
 from ocean_lib.web3_internal.currency import pretty_ether_and_wei
 from ocean_lib.web3_internal.constants import ZERO_ADDRESS
 from ocean_lib.models.compute_input import ComputeInput
 from ocean_lib.web3_internal.currency import to_wei
 from ocean_lib.web3_internal.wallet import Wallet
+from ocean_lib.assets import trusted_algorithms
 from ocean_lib.services.service import Service
-from ocean_lib.models.btoken import BTokenBase #BToken is ERC20
+from ocean_lib.models.btoken import BToken
 from ocean_lib.ocean.ocean import Ocean
 
+from sameproject.data.config import SameConfig
+from sameproject.ops import helpers
+from pathlib import Path
+import importlib
+import os
 
 def deploy(base_path: Path,
            root_file: str, # root function with notebook code (string)
            config: SameConfig):
+    print(f'Config is {config}')
 
-    d = {
+    conf = {
     'network' : 'https://rinkeby.infura.io/v3/d163c48816434b0bbb3ac3925d6c6c80' if config.runtime_options.get("network") is None else config.runtime_options.get("network"),
     'BLOCK_CONFIRMATIONS': 0,
     'metadataCacheUri' : 'https://aquarius.oceanprotocol.com',
@@ -30,8 +30,8 @@ def deploy(base_path: Path,
     'downloads.path': 'consume-downloads',
     }
 
-    ocean = Ocean(d)
-    OCEAN_token = BTokenBase(ocean.web3, ocean.OCEAN_address)
+    ocean = Ocean(conf)
+    OCEAN_token = BToken(ocean.web3, ocean.OCEAN_address)
     provider_url = DataServiceProvider.get_url(ocean.config)
 
 
@@ -56,9 +56,8 @@ def deploy(base_path: Path,
     ALG_datatoken.mint(wallet.address, to_wei(100), wallet)
     print(f"ALG_datatoken.address = '{ALG_datatoken.address}'")
 
-    # Specify metadata and service attributes, for "GPR" algorithm script.
-    # In same location as Branin test dataset. GPR = Gaussian Process Regression.
-    ALG_metadata =  {
+    # Specify metadata and service attributes for algorithm script.
+    ALG_metadata = {
         "main": {
             "type": "algorithm",
             "algorithm": {
@@ -68,19 +67,18 @@ def deploy(base_path: Path,
                 "container": {
                 "entrypoint": "python $ALGO",
                 "image": "oceanprotocol/algo_dockers",
-                "tag": config.runtime_options.get("algo_tag") # project-specific
-                }
+                "tag": config.runtime_options.get("algo_tag"), # project-specific
+                },
             },
             "files": [
         {
-            # "url": config.runtime_options.get("algo_url"), # project-specific
-            "rawcode": root_file, # not sure whether this works yet
+            "url": config.runtime_options.get("algo_url"), # not sure whether this works yet
             "index": 0,
             "contentType": "text/text",
-        }
+        },
         ],
         "name": config.runtime_options.get("algo_name"), "author": config.runtime_options.get("author"), "license": config.runtime_options.get("licence"), 
-        "dateCreated": "2022" # project-specific
+        "dateCreated": "2022", # project-specific
         }
     }
     ALG_service_attributes = {
@@ -111,13 +109,16 @@ def deploy(base_path: Path,
     ALG_did = ALG_ddo.did
     DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
     ALG_DDO = ocean.assets.resolve(ALG_did)
+    while ALG_DDO == None:
+        ALG_DDO = ocean.assets.resolve(ALG_did)
+        print("Waiting for algorithm DDO")
+        pass
 
     compute_service = DATA_DDO.get_service('compute')
     algo_service = ALG_DDO.get_service('access')
 
-    compute_service.add_publisher_trusted_algorithm(ALG_ddo)
-    ocean.assets.update('DATA_ddo', publisher_wallet=wallet) # project-specific
-
+    trusted_algorithms.add_publisher_trusted_algorithm(DATA_DDO, ALG_DDO.did, 'https://aquarius.oceanprotocol.com')
+    ocean.assets.update(DATA_DDO, publisher_wallet=wallet)
     """
     Datatoken buying
 
@@ -130,24 +131,25 @@ def deploy(base_path: Path,
 
     assert wallet is not None, "Wallet error, initialize app again"
     # Get asset, datatoken_address
-    asset = ocean.assets.resolve(DATA_did)
     data_token_address = f'0x{DATA_did[7:]}'
+    algo_token_address = f'0x{ALG_did[7:]}'
 
     print('Executing Transaction')
-    #my wallet
+
+    # Wallet status
     print(f"Environment Wallet Address = '{wallet.address}'")
     print(f"Wallet OCEAN = {pretty_ether_and_wei(OCEAN_token.balanceOf(wallet.address))}")
     print(f"Wallet ETH = {pretty_ether_and_wei(ocean.web3.eth.get_balance(wallet.address))}")
-    #Verify that Bob has ETH
+
+    # Verify wallet has ETH
     assert ocean.web3.eth.get_balance(wallet.address) > 0, "need test ETH"
-    #Verify that Bob has OCEAN
+    #Verify wallet has OCEAN
     assert OCEAN_token.balanceOf(wallet.address) > 0, "need test OCEAN"
-    # print(f"I have {pretty_ether_and_wei(data_token.balanceOf(wallet.address), data_token.symbol())}.")
-    # assert data_token.balanceOf(wallet.address) >= to_wei(1), "Bob didn't get 1.0 datatokens"
-    #Bob points to the service object
-    fee_receiver = ZERO_ADDRESS # could also be market address
-    #Bob buys 1.0 datatokens - the amount needed to consume the dataset.
+    #Buy 1.0 datatoken - the amount needed to consume the dataset.
     data_token = ocean.get_data_token(data_token_address)
+    algo_token = ocean.get_data_token(algo_token_address)
+    print(f"You have {pretty_ether_and_wei(algo_token.balanceOf(wallet.address), algo_token.symbol())} algorithm tokens.")
+
     print('Buying Data Token')
     ocean.pool.buy_data_tokens(
         pool_address,
@@ -155,7 +157,7 @@ def deploy(base_path: Path,
         max_OCEAN_amount=to_wei(config.runtime_options.get("max_dt_price")), # pay up to 10.0 OCEAN
         from_wallet=wallet
     )
-    print(f"I have {pretty_ether_and_wei(data_token.balanceOf(wallet.address), data_token.symbol())}.")
+    print(f"You have {pretty_ether_and_wei(data_token.balanceOf(wallet.address), data_token.symbol())}.")
 
 
     """
@@ -204,7 +206,9 @@ def deploy(base_path: Path,
     print(f"Started compute job with id: {job_id}")
 
     # for monitoring C2D status
-    print(ocean.compute.status(DATA_did, job_id, wallet))
+    while ocean.compute.status(DATA_did, job_id, wallet)['statusText'] != 'Job finished':
+        print(ocean.compute.status(DATA_did, job_id, wallet)['statusText'])
+        pass
 
     # retrieving result
     result = ocean.compute.result_file(DATA_did, job_id, 0, wallet)  # 0 index, means we retrieve the results from the first dataset index
