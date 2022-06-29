@@ -72,5 +72,11 @@ register_option(
     backend="ocean",
 )
 
+register_option(
+    "algo_url",
+    "URL where the algorithm script is stored",
+    backend="ocean",
+)
+
 
 
