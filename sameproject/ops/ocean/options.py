@@ -1,6 +1,19 @@
 from sameproject.ops.runtime_options import register_option
 
 register_option(
+    "algo_verified",
+    "Boolean specifying if published algorithm was accepted by the data publisher",
+    backend="ocean",
+)
+
+register_option(
+    "algo_pushed",
+    "Boolean specifying if algorithm has already been pushed to GitHub.",
+    backend="ocean",
+)
+
+
+register_option(
     "network",
     "The network to use for publishing algorithm and getting the dataset.",
     backend="ocean",
@@ -69,12 +82,6 @@ register_option(
 register_option(
     "max_dt_price",
     "Maximum price willing to spend on datatokens.",
-    backend="ocean",
-)
-
-register_option(
-    "algo_url",
-    "URL where the algorithm script is stored",
     backend="ocean",
 )
 
