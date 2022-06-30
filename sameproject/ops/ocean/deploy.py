@@ -24,24 +24,29 @@ def deploy(base_path: Path,
     wallet = Wallet(ocean.web3, config.runtime_options.get("wallet_private_key"), transaction_timeout=20, block_confirmations=0)
     print(f"wallet.address = '{wallet.address}'")
     assert wallet.web3.eth.get_balance(wallet.address) > 0, "need ETH"
-
-    ALG_ddo, ALG_datatoken = algo_publish(config, wallet, ocean, provider_url)
+    if config.runtime_options.get("algo_pushed") == True:
+        ALG_ddo, ALG_datatoken = algo_publish(config, wallet, ocean, provider_url)
     
-    DATA_did = config.runtime_options.get("dt_did")
-    ALG_did = ALG_ddo.did
-    DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
-    ALG_DDO = ocean.assets.resolve(ALG_did)
-    while ALG_DDO == None:
+        DATA_did = config.runtime_options.get("dt_did")
+        ALG_did = ALG_ddo.did
+        DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
         ALG_DDO = ocean.assets.resolve(ALG_did)
-        print("Waiting for algorithm DDO")
-        pass
-    compute_service = DATA_DDO.get_service('compute')
-    algo_service = ALG_DDO.get_service('access')
-    print(f'Algorithm DDO is {ALG_DDO}')
+        while ALG_DDO == None:
+            ALG_DDO = ocean.assets.resolve(ALG_did)
+            print("Waiting for algorithm DDO")
+            pass
+        compute_service = DATA_DDO.get_service('compute')
+        algo_service = ALG_DDO.get_service('access')
+        print(f'Algorithm DDO is {ALG_DDO}')
 
-    trusted_algorithms.add_publisher_trusted_algorithm(DATA_DDO, ALG_DDO.did, 'https://aquarius.oceanprotocol.com')
-    ocean.assets.update(DATA_DDO, publisher_wallet=wallet)
-
+    if config.runtime_options.get("algo_verified") == False:
+        try:
+            trusted_algorithms.add_publisher_trusted_algorithm(DATA_DDO, ALG_DDO.did, 'https://aquarius.oceanprotocol.com')
+            ocean.assets.update(DATA_DDO, publisher_wallet=wallet)
+            verified = True
+        except:
+            verified = False
+            pass
 
     # Datatoken buying
     data_token_address = f'0x{DATA_did[7:]}'
@@ -53,9 +58,9 @@ def deploy(base_path: Path,
     algo_token_address = f'0x{ALG_did[7:]}'
     algo_token = ocean.get_data_token(algo_token_address)
     print(f"You have {pretty_ether_and_wei(algo_token.balanceOf(wallet.address), algo_token.symbol())} algorithm tokens.")
-
-    result = run_c2d(ocean, wallet, DATA_did, ALG_did, ALG_datatoken, compute_service, algo_service)
-    return result
+    if config.runtime_options.get("algo_verified") == True or verified == True:
+        result = run_c2d(ocean, wallet, DATA_did, ALG_did, ALG_datatoken, compute_service, algo_service)
+        return result
 
 def configure_ocean(config):
     conf = {
