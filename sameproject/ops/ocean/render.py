@@ -16,7 +16,7 @@ ocean_step_template = "step.jinja"
 
 def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
     """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
-    if same_config.runtime_options.get("algo_pushed") == "False":
+    if same_config.runtime_options.get("algo_pushed") == False:
         templateDir = os.path.dirname(os.path.abspath(__file__))
         templateLoader = FileSystemLoader(templateDir)
         print(f"Template dir {templateDir}")
