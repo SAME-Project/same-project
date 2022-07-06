@@ -14,6 +14,8 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     # repo to a file in the `word_count` repo (which is created automatically)
     # Any time data is committed to the `test` repo, this pipeline will
     # automatically trigger.
+    client = python_pachyderm.Client()
+
     client.create_pipeline(
         "word_count",
         transform=pps_proto.Transform(
