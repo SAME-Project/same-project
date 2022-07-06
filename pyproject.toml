@@ -8,7 +8,7 @@ authors = ["David Aronchick <aronchick@gmail.com>", "Luke Marsden <me@lukemarsde
 same = 'sameproject.main:main'
 
 [tool.poetry.dependencies]
-python = "~3.8"
+python = "^3.8"
 click = ">=8.1"
 jupytext = "^1.11.5"
 jupyter = "^1.0.0"

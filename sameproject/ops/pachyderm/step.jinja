@@ -1,0 +1,134 @@
+{% autoescape off %}from kfp.components import InputPath, OutputPath
+
+
+def {{ unique_name }}_fn(
+    input_context_path: InputPath(str),
+    output_context_path: OutputPath(str),
+    run_info="gAR9lC4=",
+    metadata_url="",
+):
+    from base64 import urlsafe_b64encode, urlsafe_b64decode
+    from pathlib import Path
+    import datetime
+    import requests
+    import tempfile
+    import dill
+    import os
+
+    input_context = None
+    with Path(input_context_path).open("rb") as reader:
+        input_context = reader.read()
+
+    # Helper function for posting metadata to mlflow.
+    def post_metadata(json):
+        if metadata_url == "":
+            return
+
+        try:
+            req = requests.post(metadata_url, json=json)
+            req.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            print(f"Error posting metadata: {err}")
+
+    # Move to writable directory as user might want to do file IO.
+    # TODO: won't persist across steps, might need support in SDK?
+    os.chdir(tempfile.mkdtemp())
+
+    # Load information about the current experiment run:
+    run_info = dill.loads(urlsafe_b64decode(run_info))
+
+    # Post session context to mlflow.
+    if len(input_context) > 0:
+            input_context_str = urlsafe_b64encode(input_context)
+            post_metadata({
+                "experiment_id": run_info["experiment_id"],
+                "run_id": run_info["run_id"],
+                "step_id": "{{ name }}",
+                "metadata_type": "input",
+                "metadata_value": input_context_str,
+                "metadata_time": datetime.datetime.now().isoformat(),
+            })
+
+    # User code for step, which we run in its own execution frame:
+    user_code = f"""
+from base64 import urlsafe_b64decode
+from pympler import asizeof
+from tempfile import mktemp
+import dill
+import os
+
+{% if requirements_file %}
+# Install dependencies from requirements file:
+_req_file = mktemp()
+with open(_req_file, "w") as _file:
+    _file.write(urlsafe_b64decode("{{ requirements_file }}").decode())
+os.system("pip install -r " + _req_file)
+{% endif %}
+
+# Generate a same.yaml and populate SAME_ENV so that the SDK has context:
+os.environ["SAME_ENV"] = "{{ same_env }}"
+with open("same.yaml", "w") as _file:
+    _file.write(urlsafe_b64decode("{{ same_yaml }}").decode())
+
+# Load the exploding variables module:
+{urlsafe_b64decode("{{ explode_code }}").decode()}
+
+# Load session context into global namespace:
+if { len(input_context) } > 0:
+    dill.load_session("{ input_context_path }")
+
+# Run the user's notebook code:
+{urlsafe_b64decode("{{ user_code }}").decode()}
+
+# Various types of serialisation failures we'd like to inform the user of:
+def _cannot_pickle_msg(k):
+    return "Variable '" + k +"' was defined in previous steps, but could not be serialised as it was not supported by 'dill'."
+
+def _too_large_msg(k, mem):
+    return "Variable '" + k + "' was defined in previous steps, but could not be serialised as it used too much memory (" + str(mem) + "B)."
+
+# Replace unserialisable variables with exploding variables so that the user
+# knows why they cannot use them in future steps:
+_all_keys = list(globals().keys())
+for _k in _all_keys:
+    # Skip exploding variables, they're already handled.
+    try:
+        if globals()[_k].__is_exploding_variable__():
+            continue
+    except Exception:
+        pass  # not an exploding variable
+
+    # Check whether the variable is too large to pickle:
+    _mem = asizeof.asizeof(globals()[_k])
+    if _mem >= {{ memory_limit }}:
+        globals()[_k] = ExplodingVariable(Exception(_too_large_msg(_k, _mem)))
+        continue
+
+    # Check whether the variable can be pickled properly:
+    try:
+        dill.dumps(globals()[_k])
+    except TypeError:
+        globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
+        continue
+
+# Save new session context to disk for the next component:
+dill.dump_session("{output_context_path}")
+"""
+
+    # Runs the user code in a new execution frame. Context from the previous
+    # component in the run is loaded into the session dynamically, and we run
+    # with a single globals() namespace to simulate top-level execution.
+    exec(user_code, globals(), globals())
+
+    # Post new session context to mlflow:
+    with Path(output_context_path).open("rb") as reader:
+        context = urlsafe_b64encode(reader.read())
+        post_metadata({
+            "experiment_id": run_info["experiment_id"],
+            "run_id": run_info["run_id"],
+            "step_id": "{{ name }}",
+            "metadata_type": "output",
+            "metadata_value": context,
+            "metadata_time": datetime.datetime.now().isoformat(),
+        })
+{% endautoescape %}
