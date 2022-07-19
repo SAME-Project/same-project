@@ -8,6 +8,7 @@ from pathlib import Path
 from box import Box
 import pkg_resources
 import click
+import os
 
 
 def _click_type(name, schema):
@@ -135,7 +136,7 @@ def init():
         },
         "notebook": {
             "name": nb_name,
-            "path": str(nb_path),
+            "path": str(nb_path.relative_to(os.getcwd())),
         },
         "run": {
             "name": f"{pl_name} run",
@@ -144,7 +145,7 @@ def init():
 
     # Add requirements if the user has configured one:
     if req is not None:
-        same_config.notebook.requirements = str(req)
+        same_config.notebook.requirements = str(req.relative_to(os.getcwd()))
 
     click.echo(f"About to write to {cfg.absolute()}:")
     click.echo()
