@@ -111,7 +111,7 @@ for _k in _all_keys:
         globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
         continue
 
-if output_context_path:
+if "{output_context_path}" != "":
     # Save new session context to disk for the next component:
     dill.dump_session("{output_context_path}")
 """
@@ -122,14 +122,15 @@ if output_context_path:
     exec(user_code, globals(), globals())
 
     # Post new session context to mlflow:
-    with Path(output_context_path).open("rb") as reader:
-        context = urlsafe_b64encode(reader.read())
-        post_metadata({
-            "experiment_id": run_info["experiment_id"],
-            "run_id": run_info["run_id"],
-            "step_id": "{{ name }}",
-            "metadata_type": "output",
-            "metadata_value": context,
-            "metadata_time": datetime.datetime.now().isoformat(),
-        })
+    if output_context_path:
+        with Path(output_context_path).open("rb") as reader:
+            context = urlsafe_b64encode(reader.read())
+            post_metadata({
+                "experiment_id": run_info["experiment_id"],
+                "run_id": run_info["run_id"],
+                "step_id": "{{ name }}",
+                "metadata_type": "output",
+                "metadata_value": context,
+                "metadata_time": datetime.datetime.now().isoformat(),
+            })
 {% endautoescape %}

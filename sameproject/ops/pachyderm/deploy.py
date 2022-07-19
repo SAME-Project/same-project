@@ -39,22 +39,26 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     tar_data = buffer.read()
     encoded_source = b64encode(tar_data)
 
-    DEFAULT_TAG = "v0.1.0"
-    IMAGE = f"pachyderm/script_to_pipeline"
+    DEFAULT_TAG = "0.9"
+    IMAGE = f"combinatorml/jupyterlab-tensorflow-opencv"
     tag = DEFAULT_TAG
     image = f"{IMAGE}:{tag}"
 
-    cmd=["python3", "entrypoint.py", encoded_source.decode(), root_file, *[]] # dependencies go here
+    micro_entrypoint = 'print("Greetings from Pachyderm-SAME"); import io; import site; import sys; from base64 import b64decode; from importlib import import_module, reload; from pathlib import Path; from subprocess import run; import tarfile; from tempfile import TemporaryDirectory; dependencies = sys.argv[2:]; run(["pip", "--disable-pip-version-check", "install", *dependencies]); reload(site); tar_bytes = sys.argv[1]; buffer = io.BytesIO(b64decode(tar_bytes)); root_module = sys.argv[2]; import tempfile; tempdir = tempfile.TemporaryDirectory(); print("==============="); print(tempdir); tar = tarfile.open(fileobj=buffer, mode="r:gz"); tar.extractall(tempdir.name); p = Path(tempdir.name) / "context" / "requirements.txt"; p.exists() and run(["pip", "--disable-pip-version-check", "install", "-r", p.as_posix()]); sys.path.append((Path(tempdir.name) / "context").as_posix()); script = import_module(root_module); script.root()'
+
+    cmd=["python3", "-c", micro_entrypoint, encoded_source.decode(), root_file, *[]] # dependencies go here
     image=image
     print("CMD", cmd)
     print("IMAGE", image)
 
+    stringify_args = "-c " + " ".join(map(lambda x: f"'{x}'", cmd[2:]))
+
+    # import pdb; pdb.set_trace()
     # print pwd
     f = open(Path(os.getcwd()) / "_test_run.sh", "w")
     # hack hack hack (to allow for quick iteration)
     f.write(f'docker run --user=root --rm --name=samepachtest -ti '+
-        f'-v /home/luke/ps/same-project/vendor/script_to_pipeline/entrypoint.py:/home/pipeline/entrypoint.py '+
-        f'--entrypoint="{cmd[0]}" {image} -- {" ".join(cmd[1:])}')
+        f'--entrypoint="{cmd[0]}" {image} {stringify_args}')
     f.close()
 
     #root_module = importlib.import_module(root_file)  # python module
@@ -73,18 +77,20 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     # )
 
     client.create_pipeline(
-        "word_count",
+        config.metadata.name,
         transform=pps_proto.Transform(
             cmd=cmd, #["bash"],
             # stdin=[
             #     "grep -roh hello /pfs/test/ | wc -w > /pfs/out/count.txt"
             # ],
             image=image, # XXX how to get the image defined by same here? how does kubeflow do it?
+            user="jovyan",
         ),
         input=pps_proto.Input(
             pfs=pps_proto.PFSInput(repo="test", branch="master", glob="/")
         ),
         update=True,
+        reprocess=True,
     )
 
     #     kfp_client = kfp.Client()  # only supporting 'kubeflow' namespace

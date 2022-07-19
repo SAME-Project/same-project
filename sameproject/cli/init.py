@@ -145,7 +145,7 @@ def init():
 
     # Add requirements if the user has configured one:
     if req is not None:
-        same_config.notebook.requirements = str(req.relative_to(os.getcwd()))
+        same_config.notebook.requirements = str(req)
 
     click.echo(f"About to write to {cfg.absolute()}:")
     click.echo()
