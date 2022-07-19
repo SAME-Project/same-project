@@ -43,7 +43,7 @@ class Step(Box):
     """
     Contains an individual code unit along with its associated metadata. Each
     step conceptually represents an individual component within a pipeline,
-    # and is executed by dispatching the code unit to an execution backend.
+    and is executed by dispatching the code unit to an execution backend.
     """
 
     def __init__(self, *args, frozen_box=True, **kwargs):

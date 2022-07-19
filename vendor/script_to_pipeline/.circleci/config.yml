@@ -1,0 +1,38 @@
+version: 2.1
+
+jobs:
+  examples:
+    resource_class: large
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: etc/circle/install.sh
+      - run:
+          name: Start minikube
+          command: etc/circle/start-minikube.sh
+      - run:
+          name: Deploy pachyderm
+          command: etc/circle/deploy-pachyderm.sh
+      - run:
+          name: Run example
+          command: |
+            pachctl port-forward &
+            export PATH="$HOME/.local/bin:$PATH"
+            poetry install -v
+            source .venv/bin/activate
+            make run-example
+            stat example/montage.png
+      - run:
+          when: on_fail
+          command: etc/circle/kube_debug.sh
+
+workflows:
+  circleci:
+    jobs:
+      - examples:
+          filters:
+            tags:
+              only: /.*/

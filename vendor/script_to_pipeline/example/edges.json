@@ -1,0 +1,22 @@
+{
+  "pipeline": {
+    "name": "edges"
+  },
+  "description": "run Canny edge detection on images",
+  "input": {
+    "pfs": {
+      "repo": "images",
+      "glob": "/*"
+    }
+  },
+  "transform": {
+    "cmd": [
+      "python3",
+      "entrypoint.py",
+      "ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgppbXBvcnQgY3YyCmZyb20gbWF0cGxvdGxpYiBpbXBvcnQgcHlwbG90IGFzIHBsdAoKZnJvbSBzY3JpcHRfdG9fcGlwZWxpbmUgaW1wb3J0IHBpcGVsaW5lCgoKQHBpcGVsaW5lKGRlcGVuZGVuY2llcz1bIm9wZW5jdi1weXRob249PTQuNS41LjY0IiwgIm1hdHBsb3RsaWI9PTMuNS4xIl0pCmRlZiBtYWluKCk6CiAgICAiIiJXYWxrIC9wZnMvaW1hZ2VzIGFuZCBydW4gZWRnZSBkZXRlY3Rpb24gb24gZXZlcnkgaW1hZ2UgZmlsZS4iIiIKICAgIGltYWdlX2RpciA9IFBhdGgoIi9wZnMvaW1hZ2VzIikKICAgIG91dHB1dF9kaXIgPSBQYXRoKCIvcGZzL291dCIpCiAgICBmb3IgaW1hZ2VfZmlsZSBpbiBmaWx0ZXIoUGF0aC5pc19maWxlLCBpbWFnZV9kaXIuZ2xvYigiKiovKiIpKToKICAgICAgICBvdXRwdXRfZmlsZSA9IG91dHB1dF9kaXIuam9pbnBhdGgoCiAgICAgICAgICAgIGltYWdlX2ZpbGUucmVsYXRpdmVfdG8oaW1hZ2VfZGlyKQogICAgICAgICkud2l0aF9zdWZmaXgoIi5wbmciKQogICAgICAgIHByaW50KGYie2ltYWdlX2ZpbGV9IC0+IHtvdXRwdXRfZmlsZX0iKQoKICAgICAgICBpbWFnZSA9IGN2Mi5pbXJlYWQoc3RyKGltYWdlX2ZpbGUpKQogICAgICAgIGVkZ2VzID0gY3YyLkNhbm55KGltYWdlLCAxMDAsIDIwMCkKICAgICAgICBwbHQuaW1zYXZlKHN0cihvdXRwdXRfZmlsZSksIGVkZ2VzLCBjbWFwPSJncmF5IikK",
+      "opencv-python==4.5.5.64",
+      "matplotlib==3.5.1"
+    ],
+    "image": "pachyderm/script_to_pipeline:v0.1.0-opencv"
+  }
+}

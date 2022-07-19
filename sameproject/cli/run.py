@@ -70,8 +70,8 @@ def run(
         click.echo(f"Temporary files persisted here: {base_path}")
 
     if not no_deploy:
-        try:
-            backends.deploy(target, base_path, root_file, config)
-        except Exception as err:
-            click.echo(err, err=True)
-            exit(1)
+        # try:
+        backends.deploy(target, base_path, root_file, config)
+        # except Exception as err:
+        #     click.echo(err, err=True)
+        #     exit(1)

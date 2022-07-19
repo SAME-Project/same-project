@@ -20,14 +20,31 @@ kubeflow_step_template = "step.jinja"
 
 # TODO: make compile_path a Path, not a str
 def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str]:
-    """Renders the notebook into a root file and a series of step files according to the target requirements. Returns an absolute path to the root file for deployment."""
+    """
+    Renders the notebook into a root file and a series of step files according
+    to the target requirements. Returns an absolute path to the root file for
+    deployment.
+    """
     templateDir = os.path.dirname(os.path.abspath(__file__))
     templateLoader = FileSystemLoader(templateDir)
     print(f"Template dir {templateDir}")
     env = Environment(trim_blocks=True, loader=templateLoader)
 
-    # Write the steps first so that if we need to make any changes while writing (such as adding a unique name), it's reflected in the root filepath
+    # Write the steps first so that if we need to make any changes while writing
+    # (such as adding a unique name), it's reflected in the root filepath
     for step_name in steps:
+        # Write the requirements.txt into the compile path
+        # XXX TODO: need to name the requirements file per step rather than
+        # having one global one which gets clobbered in the case of multiple steps - BUT THEN AGAIN, the notebook.requirements field in same.yaml is 
+        requirements_file_contents = "\n".join([
+            "dill==0.3.5.1",
+            "requests==2.27.1",
+            "pympler==1.0.1",
+        ])
+        if "requirements_file" in steps[step_name]:
+            requirements_file_contents += "\n" + steps[step_name]["requirements_file"]
+        helpers.write_file(Path(compile_path) / "requirements.txt", requirements_file_contents)
+
         step_file_string = _build_step_file(env, steps[step_name], same_config)
         helpers.write_file(Path(compile_path) / f"{steps[step_name].unique_name }.py", step_file_string)
 
@@ -196,7 +213,6 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
         "same_env",
         "default",
     )
-
     step_contract = {
         "name": step.name,
         "same_env": same_env,

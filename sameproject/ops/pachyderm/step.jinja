@@ -1,9 +1,8 @@
-{% autoescape off %}from kfp.components import InputPath, OutputPath
-
+{% autoescape off %}
 
 def {{ unique_name }}_fn(
-    input_context_path: InputPath(str),
-    output_context_path: OutputPath(str),
+    input_context_path,
+    output_context_path,
     run_info="gAR9lC4=",
     metadata_url="",
 ):
@@ -16,8 +15,9 @@ def {{ unique_name }}_fn(
     import os
 
     input_context = None
-    with Path(input_context_path).open("rb") as reader:
-        input_context = reader.read()
+    if input_context_path:
+        with Path(input_context_path).open("rb") as reader:
+            input_context = reader.read()
 
     # Helper function for posting metadata to mlflow.
     def post_metadata(json):
@@ -38,7 +38,7 @@ def {{ unique_name }}_fn(
     run_info = dill.loads(urlsafe_b64decode(run_info))
 
     # Post session context to mlflow.
-    if len(input_context) > 0:
+    if input_context:
             input_context_str = urlsafe_b64encode(input_context)
             post_metadata({
                 "experiment_id": run_info["experiment_id"],
@@ -74,7 +74,7 @@ with open("same.yaml", "w") as _file:
 {urlsafe_b64decode("{{ explode_code }}").decode()}
 
 # Load session context into global namespace:
-if { len(input_context) } > 0:
+if "{ type(input_context).__name__ }" != "NoneType":
     dill.load_session("{ input_context_path }")
 
 # Run the user's notebook code:
@@ -111,8 +111,9 @@ for _k in _all_keys:
         globals()[_k] = ExplodingVariable(Exception(_cannot_pickle_msg(_k)))
         continue
 
-# Save new session context to disk for the next component:
-dill.dump_session("{output_context_path}")
+if output_context_path:
+    # Save new session context to disk for the next component:
+    dill.dump_session("{output_context_path}")
 """
 
     # Runs the user code in a new execution frame. Context from the previous
