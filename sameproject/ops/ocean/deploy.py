@@ -24,20 +24,14 @@ def deploy(base_path: Path,
     wallet = Wallet(ocean.web3, config.runtime_options.get("wallet_private_key"), transaction_timeout=20, block_confirmations=0)
     print(f"wallet.address = '{wallet.address}'")
     assert wallet.web3.eth.get_balance(wallet.address) > 0, "need ETH"
-    if config.runtime_options.get("algo_pushed") == True:
-        ALG_ddo, ALG_datatoken = algo_publish(config, wallet, ocean, provider_url)
     
-        DATA_did = config.runtime_options.get("dt_did")
-        ALG_did = ALG_ddo.did
-        DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
-        ALG_DDO = ocean.assets.resolve(ALG_did)
-        while ALG_DDO == None:
-            ALG_DDO = ocean.assets.resolve(ALG_did)
-            print("Waiting for algorithm DDO")
-            pass
-        compute_service = DATA_DDO.get_service('compute')
-        algo_service = ALG_DDO.get_service('access')
-        print(f'Algorithm DDO is {ALG_DDO}')
+    DATA_did = config.runtime_options.get("dt_did")
+    ALG_did = config.runtime_options.get("algo_did")
+    DATA_DDO = ocean.assets.resolve(DATA_did)  # make sure we operate on the updated and indexed metadata_cache_uri versions
+    ALG_DDO = ocean.assets.resolve(ALG_did)
+    compute_service = DATA_DDO.get_service('compute')
+    algo_service = ALG_DDO.get_service('access')
+    print(f'Algorithm DDO is {ALG_DDO}')        
 
     if config.runtime_options.get("algo_verified") == False:
         try:
