@@ -23,6 +23,11 @@ additional_flags = [
         "default": False,
         "help": "include pytorch, tensorflow and sklearn notebooks in backend tests",
     }],
+    ["ocean", {
+        "action": "store_true",
+        "default": False,
+        "help": "run ocean backend tests, requires ocean installation",
+    }],
 ]
 
 

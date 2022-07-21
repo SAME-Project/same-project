@@ -38,6 +38,8 @@ def notebooks(*args) -> Callable:
             entries.append(entry)
 
     if len(entries) == 0:
+        print(*args)
+        # print(_registry)
         raise Exception("Attempted to fetch non-existent testdata groups '{args}'.")
 
     return _get_decorator(entries)
@@ -330,4 +332,12 @@ _register_notebook(
     "An introduction to variational autoencoders for generative modelling of MNIST.",
     "tensorflow",
     Path(__file__).parent / "tensorflow/variational_auto_encoder/same.yaml",
+)
+
+# A selection of Ocean notebooks
+_register_notebook(
+    "arithmetic",
+    "Returns a string.",
+    "oceandata",
+    Path(__file__).parent / "oceandata/arithmetic/same.yaml",
 )

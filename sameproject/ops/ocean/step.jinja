@@ -1,0 +1,9 @@
+{% autoescape off %}
+
+# User code for step, which we run in its own execution frame.
+# Run the user's notebook code:
+def root():
+{% filter indent(width=4) %}
+    {{ user_code }}
+{% endfilter %}
+{% endautoescape %}
