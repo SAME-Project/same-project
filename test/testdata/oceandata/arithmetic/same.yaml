@@ -20,6 +20,7 @@ runtime_options:
   wallet_private_key: '0xef4b441145c1d0f3b4bc6d61d29f5c6e502359481152f869247c7a4244d45209'
   dt_did: 'did:op:d29293A09B8e5871b9028fc3CE232963050E9f69'
   dt_pool: '0x35e256beA68eca220e0A71f14f2e1D5924bcf4a0'
+  algo_did: 'did:op:46Dcfe856CcBe6C9ebF40753360F18A914F04Ca7'
   algo_tag: ari
   algo_version: "1.0.0"
   algo_name: arithmetic
