@@ -57,14 +57,6 @@ from tempfile import mktemp
 import dill
 import os
 
-{% if requirements_file %}
-# Install dependencies from requirements file:
-_req_file = mktemp()
-with open(_req_file, "w") as _file:
-    _file.write(urlsafe_b64decode("{{ requirements_file }}").decode())
-os.system("pip install -r " + _req_file)
-{% endif %}
-
 # Generate a same.yaml and populate SAME_ENV so that the SDK has context:
 os.environ["SAME_ENV"] = "{{ same_env }}"
 with open("same.yaml", "w") as _file:

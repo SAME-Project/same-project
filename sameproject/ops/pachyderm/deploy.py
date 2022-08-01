@@ -62,16 +62,17 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
         + 'script.root()'
     )
 
-    cmd=["python3", "-c", micro_entrypoint, encoded_source.decode(), root_file, *[]] # dependencies go here
-    print("CMD", cmd)
-    print("IMAGE", image)
+    cmd=["python3", "-c", micro_entrypoint, encoded_source.decode(), root_file]
 
-    # hack hack hack (to allow for quick iteration)
-    stringify_args = "-c " + " ".join(map(lambda x: f"'{x}'", cmd[2:]))
-    f = open(Path(os.getcwd()) / "_test_run.sh", "w")
-    f.write(f'docker run --user=root --rm --name=samepachtest -ti '+
-        f'--entrypoint="{cmd[0]}" {image} {stringify_args}')
-    f.close()
+    # print("CMD", cmd)
+    # print("IMAGE", image)
+
+    # # hack hack hack (to allow for quick iteration)
+    # stringify_args = "-c " + " ".join(map(lambda x: f"'{x}'", cmd[2:]))
+    # f = open(Path(os.getcwd()) / "_test_run.sh", "w")
+    # f.write(f'docker run --user=root --rm --name=samepachtest -ti '+
+    #     f'--entrypoint="{cmd[0]}" {image} {stringify_args}')
+    # f.close()
 
     client = python_pachyderm.Client()
 
