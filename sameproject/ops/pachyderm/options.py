@@ -1,31 +1,20 @@
 from sameproject.ops.runtime_options import register_option
 
 register_option(
-    "image_pull_secret_name",
-    "The name of the kubernetes secret to create for docker secrets.",
-    backend="kubeflow",
+    "input_repo",
+    "Shortcut for specifying pfs input repo, same as --input='{\"pfs\": {\"repo\": \"images\"}'",
+    backend="pachyderm",
 )
 
 register_option(
-    "image_pull_secret_registry_uri",
-    "URI of private docker registry for private image pulls.",
-    backend="kubeflow",
+    "input_glob",
+    "Shortcut for specifying pfs input glob, same as --input='{\"pfs\": {\"glob\": \"/*\"}'",
+    backend="pachyderm",
 )
 
 register_option(
-    "image_pull_secret_username",
-    "Username for private docker registry for private image pulls.",
-    backend="kubeflow",
-)
-
-register_option(
-    "image_pull_secret_password",
-    "Password for private docker registry for private image pulls.",
-    backend="kubeflow",
-)
-
-register_option(
-    "image_pull_secret_email",
-    "Email address for private docker registry for private image pulls.",
-    backend="kubeflow",
+    "input",
+    "JSON formatted input spec, see 'input' section of "+
+        "https://docs.pachyderm.com/latest/reference/pipeline-spec/",
+    backend="pachyderm"
 )
