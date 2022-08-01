@@ -4,7 +4,7 @@ title: "Pachyderm"
 description: "How to use SAME to deploy a notebook as a pipeline to Pachyderm."
 ---
 
-Assuming you have a [Pachyderm cluster](https://docs.pachyderm.com/2.0.x/deploy-manage/deploy/) and `pachctl list repo` is working for you, deploying a notebook as a pipeline against Pachyderm is as simple as:
+Assuming you have a [Pachyderm installation](https://docs.pachyderm.com/2.0.x/deploy-manage/deploy/) and `pachctl list repo` is working for you, deploying a notebook as a pipeline against Pachyderm is as simple as:
 
 Install SAME:
 ```
@@ -26,7 +26,7 @@ Deploy the notebook as a pipeline to Pachyderm:
 same run --target pachyderm --input-repo test
 ```
 
-Update the input repo to refer to a repo that exists on your cluster.
+Update the input repo to refer to a repo that exists on your Pachyderm installation.
 
 You can also specify `--input-glob` to specify a glob pattern, or `--input` to specify a raw [input specification](https://docs.pachyderm.com/latest/reference/pipeline-spec/) in JSON format, to specify more advanced input formats.
 
