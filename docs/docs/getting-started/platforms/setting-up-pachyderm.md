@@ -16,9 +16,9 @@ Set up a same.yaml and requirements.txt in a folder alongside your .ipynb file:
 same init
 ```
 
-Test the suggested container image against the requirements.txt and your notebook's imports:
+Test the suggested container image against the requirements.txt and your notebook's imports (optional, requires Docker):
 ```
-same verify # (optional)
+same verify
 ```
 
 Deploy the notebook as a pipeline to Pachyderm:
