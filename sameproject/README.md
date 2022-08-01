@@ -29,3 +29,4 @@ Other backends support the following subset of these features:
 |**durable functions**|     |     |     |     |
 |**aml**              |     |     |     |     |
 |**vertex**           |     |     |     |     |
+|**pachyderm**        |     |  x  |  x  |     |
