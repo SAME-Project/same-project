@@ -1,11 +1,27 @@
 ---
 type: docs
 title: "Pachyderm"
-description: "How to use SAME to deploy a notebook to Pachyderm."
+description: "How to use SAME to deploy a notebook as a pipeline to Pachyderm."
 ---
 
-Assuming you have a [Pachyderm cluster](https://docs.pachyderm.com/2.0.x/deploy-manage/deploy/) and `pachctl list repo` is working for you, deploying a notebook against SAME is as simple as:
+Assuming you have a [Pachyderm cluster](https://docs.pachyderm.com/2.0.x/deploy-manage/deploy/) and `pachctl list repo` is working for you, deploying a notebook against SAME as a pipeline is as simple as:
 
+Install SAME:
+```
+pip3 install --upgrade sameproject
+```
+
+Set up a same.yaml and requirements.txt in a folder alongside your .ipynb file:
+```
+same init
+```
+
+Test the suggested container image against the requirements.txt and your notebook's imports:
+```
+same verify # (optional)
+```
+
+Deploy the notebook as a pipeline to Pachyderm:
 ```
 same run --target pachyderm --input-repo test
 ```
