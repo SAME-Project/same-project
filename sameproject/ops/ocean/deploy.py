@@ -25,7 +25,6 @@ def deploy(base_path: Path,
     print(f"wallet.address = '{wallet.address}'")
     assert wallet.web3.eth.get_balance(wallet.address) > 0, "need ETH"
     if config.runtime_options.get("algo_pushed") == True:
-        ALG_ddo, ALG_datatoken = algo_publish(config, wallet, ocean, provider_url)
     
         DATA_did = config.runtime_options.get("dt_did")
         ALG_did = ALG_ddo.did
@@ -77,74 +76,6 @@ def configure_ocean(config):
     provider_url = DataServiceProvider.get_url(ocean.config)
 
     return ocean, OCEAN_token, provider_url
-
-def algo_publish(config, wallet, ocean, provider_url):
-    """
-    Algorithm publishing
-
-    Requirements:
-
-    - Model script on GitHub
-    - wallet private key as environment variable
-    - dataset we want to train on specified
-    - model metadata (name, date, compute, etc.)
-    """
-
-    # Publish ALG datatoken
-    ALG_datatoken = ocean.create_data_token('ALG1', 'ALG1', wallet, blob=ocean.config.metadata_cache_uri)
-    ALG_datatoken.mint(wallet.address, to_wei(100), wallet)
-    print(f"ALG_datatoken.address = '{ALG_datatoken.address}'")
-
-    # Specify metadata and service attributes for algorithm script.
-    ALG_metadata = {
-        "main": {
-            "type": "algorithm",
-            "algorithm": {
-                "language": "python",
-                "format": "docker-image",
-                "version": config.runtime_options.get("algo_version"), # project-specific
-                "container": {
-                "entrypoint": "python $ALGO",
-                "image": "oceanprotocol/algo_dockers",
-                "tag": config.runtime_options.get("algo_tag"), # project-specific
-                },
-            },
-            "files": [
-        {
-            "url": config.runtime_options.get("algo_url"), # not sure whether this works yet
-            "index": 0,
-            "contentType": "text/text",
-        },
-        ],
-        "name": config.runtime_options.get("algo_name"), "author": config.runtime_options.get("author"), "license": config.runtime_options.get("licence"), 
-        "dateCreated": "2022", # project-specific
-        }
-    }
-    ALG_service_attributes = {
-            "main": {
-                "name": "ALG_dataAssetAccessServiceAgreement",
-                "creator": wallet.address,
-                "timeout": 3600 * 24,
-                "datePublished": "2020-01-28T10:55:11Z",
-                "cost": 1.0, # <don't change, this is obsolete>
-            }
-        }
-
-    # Calc ALG service access descriptor. We use the same service provider as DATA
-    ALG_access_service = Service(
-        service_endpoint=provider_url,
-        service_type=ServiceTypes.CLOUD_COMPUTE,
-        attributes=ALG_service_attributes
-    )
-
-    # Publish metadata and service info on-chain
-    ALG_ddo = ocean.assets.create(
-    metadata=ALG_metadata, # {"main" : {"type" : "algorithm", ..}, ..}
-    publisher_wallet=wallet,
-    services=[ALG_access_service],
-    data_token_address=ALG_datatoken.address)
-
-    return ALG_ddo, ALG_datatoken
 
 def buy_dt(config, wallet, ocean, OCEAN_token, did):
     """
