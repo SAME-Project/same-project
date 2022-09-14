@@ -1,31 +1,51 @@
-import io
 import json
 import time
 from sameproject.data.config import SameConfig
 from sameproject.ops import helpers
 from pathlib import Path
-import importlib
 import kfp
 import python_pachyderm
 from python_pachyderm.service import pps_proto
-from base64 import b64encode
 
-import tarfile
-import os.path
-
-def make_tarfile(f, source_dir):
-    with tarfile.open(fileobj=f, mode="w:gz") as tar:
-        tar.add(source_dir, arcname="context")
 
 def deploy(base_path: Path, root_file: str, config: SameConfig):
+    """
+    Called when the `same run` command is executed with the "pachyderm" target.
 
-    buffer = io.BytesIO()
-    make_tarfile(buffer, base_path)
+    Args:
+        base_path: The path to a persisted temporary directory containing the
+            context files.
+        root_file: The filename of the python script to be executed.
+        config: A SameConfig object.
+    """
 
-    # read from buffer
-    buffer.seek(0)
-    tar_data = buffer.read()
-    encoded_source = b64encode(tar_data)
+    client = python_pachyderm.Client()
+    companion_repo = f"{config.metadata.name}__context"
+    if companion_repo not in (item.repo.name for item in client.list_repo()):
+        client.create_repo(companion_repo, f"files for running the {config.metadata.name} pipeline")
+
+    with client.commit(companion_repo, "master") as commit:
+        # Clean the files from the last commit and write the new files.
+        for item in client.list_file((companion_repo, "master"), "/"):
+            client.delete_file(commit, item.file.path)
+        python_pachyderm.put_files(client, str(base_path), commit, "/")
+
+    micro_entrypoint = (
+        'print("Greetings from Pachyderm-SAME"); '
+        + 'import sys; '
+        + 'from importlib import import_module; '
+        + 'from pathlib import Path; '
+        + 'from subprocess import run; '
+
+        + 'root_module = sys.argv[1]; '
+        + f'context_dir = Path("/pfs", "{companion_repo}"); '
+        + 'reqs = context_dir / "requirements.txt"; '
+        + 'reqs.exists() and run(["pip", "--disable-pip-version-check", "install", "-r", reqs.as_posix()]); '
+        + 'sys.path.append(context_dir.as_posix()); '
+        + 'script = import_module(root_module); '
+        + 'script.root()'
+    )
+    cmd = ["python3", "-c", micro_entrypoint, root_file]
 
     # for now, read the image straight out of the same config, since we run all
     # the steps in a single pachyderm pipeline, and assume we are using the
@@ -34,39 +54,9 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     # as documented).
     image = config.environments["default"].image_tag
 
-    micro_entrypoint = (
-        'print("Greetings from Pachyderm-SAME"); '
-        + 'import io; '
-        + 'import site; '
-        + 'import sys; '
-        + 'from base64 import b64decode; '
-        + 'from importlib import import_module, reload; '
-        + 'from pathlib import Path; '
-        + 'from subprocess import run; '
-        + 'import tarfile; '
-        + 'from tempfile import TemporaryDirectory; '
-        + 'dependencies = sys.argv[2:]; '
-        + 'run(["pip", "--disable-pip-version-check", "install", *dependencies]); '
-        + 'reload(site); '
-        + 'tar_bytes = sys.argv[1]; '
-        + 'buffer = io.BytesIO(b64decode(tar_bytes)); '
-        + 'root_module = sys.argv[2]; '
-        + 'import tempfile; '
-        + 'tempdir = tempfile.TemporaryDirectory(); '
-        + 'tar = tarfile.open(fileobj=buffer, mode="r:gz"); '
-        + 'tar.extractall(tempdir.name); '
-        + 'p = Path(tempdir.name) / "context" / "requirements.txt"; '
-        + 'p.exists() and run(["pip", "--disable-pip-version-check", "install", "-r", p.as_posix()]); '
-        + 'sys.path.append((Path(tempdir.name) / "context").as_posix()); '
-        + 'script = import_module(root_module); '
-        + 'script.root()'
-    )
-
-    cmd=["python3", "-c", micro_entrypoint, encoded_source.decode(), root_file]
-
     # print("CMD", cmd)
     # print("IMAGE", image)
-
+    #
     # # hack hack hack (to allow for quick iteration)
     # stringify_args = "-c " + " ".join(map(lambda x: f"'{x}'", cmd[2:]))
     # f = open(Path(os.getcwd()) / "_test_run.sh", "w")
@@ -97,6 +87,17 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
     # input_ overwrites other settings
     if input_ is not None:
         input_dict = json.loads(input_)
+
+    input_dict = {
+        "cross": [
+            input_dict,
+            {"pfs": {
+                "repo": companion_repo,
+                "commit": commit.id,
+                "glob": "/"}
+             }
+        ]
+    }
 
     # User might have specified more complex non-pfs input spec, in which case
     # we let python_pachyderm do the validation, however, we give user friendly

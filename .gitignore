@@ -152,8 +152,10 @@ test.py
 .azureml_env_variables.sh
 config.json
 
+.idea
 .vscode
 .azuremlsettings.local
 .azureml
 .terraform*
 *.tfplan
+poetry.toml
