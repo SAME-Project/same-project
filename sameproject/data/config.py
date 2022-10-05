@@ -6,6 +6,7 @@ from ruamel.yaml import YAML
 from pathlib import Path
 from box import Box
 import logging
+import json
 
 # Subschemas used for validating input to `same init`.
 name_schema = {"type": "string", "required": True, "regex": r"^[\d\w ]+"}
@@ -150,3 +151,20 @@ class SameConfig(Box):
                 data.runtime_options[opt] = get_option_value(opt)
 
         return SameConfig(data, frozen_box=self._box_config["frozen_box"])
+
+    @classmethod
+    def from_ipynb(cls, ipynb_string: str, filepath: Path, frozen_box: bool) -> "SameConfig":
+        """
+        Construct a SameConfig object from the information contained within the metadata
+        of a .ipynb notebook file.
+        """
+        filepath = Path(filepath)
+        json_config = json.loads(ipynb_string)
+        same_config_contents = json_config["metadata"].get("same_config")
+        if not same_config_contents:
+            raise SyntaxError(
+                f'No SAME configuration found within the metadata of "{filepath}"'
+            )
+        same_config_contents["notebook"]["name"] = filepath.stem
+        same_config_contents["notebook"]["path"] = filepath.name
+        return cls(same_config_contents, frozen_box=frozen_box)
