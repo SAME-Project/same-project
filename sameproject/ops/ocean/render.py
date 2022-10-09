@@ -19,14 +19,19 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     
     templateDir = os.path.dirname(os.path.abspath(__file__))
     templateLoader = FileSystemLoader(templateDir)
-    print(f"Template dir {templateDir}")
+    print(f"Same config {same_config}")
+    print(same_config['notebook']['path'])
     env = Environment(trim_blocks=True, loader=templateLoader)
 
     root_file_string = _build_step_file(env, next(iter(steps.values())), same_config)
     root_pipeline_name = f"root_pipeline_{uuid4().hex.lower()}"
     root_path = Path(compile_path) / f"{root_pipeline_name}.py"
     helpers.write_file(root_path, root_file_string)
-
+    
+    # for storing in the docker image
+    docker_path = same_config['notebook']['path'][:-5] + 'py'
+    print(f"docker path {docker_path}")
+    helpers.write_file(docker_path, root_file_string)
     return (compile_path, root_file_string) # note: root_file_string replaced root_pipeline_name
 
 def _build_step_file(env: Environment, step: Step, same_config) -> str:
