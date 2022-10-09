@@ -29,6 +29,7 @@ def render(compile_path: str, steps: list, same_config: dict) -> Tuple[Path, str
     # for storing in the docker image
     docker_path = same_config['notebook']['path'][:-5] + 'py'
     helpers.write_file(docker_path, root_file_string)
+    os.remove(same_config['notebook']['path'])
     return (compile_path, root_file_string) # note: root_file_string replaced root_pipeline_name
 
 def _build_step_file(env: Environment, step: Step, same_config) -> str:
