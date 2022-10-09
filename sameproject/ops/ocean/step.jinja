@@ -6,4 +6,7 @@ def root():
 {% filter indent(width=4) %}
     {{ user_code }}
 {% endfilter %}
+
+if __name__ == "__main__":
+    root()
 {% endautoescape %}
