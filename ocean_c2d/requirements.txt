@@ -1,0 +1,2 @@
+# Dependencies for /Users/jakub/Development/Algovera/Core/same-project/demo/test.ipynb:
+

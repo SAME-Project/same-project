@@ -1,0 +1,14 @@
+apiVersion: sameproject.ml/v1alpha1
+environments:
+  default:
+    image_tag: combinatorml/jupyterlab-tensorflow-opencv:0.9
+metadata:
+  labels: []
+  name: default_config
+  version: 0.0.0
+notebook:
+  name: test
+  path: /data/transformation/notebook.ipynb
+  requirements: /same-project/ocean_c2d/requirements.txt
+run:
+  name: default_config run
