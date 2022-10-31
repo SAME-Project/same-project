@@ -3,7 +3,6 @@ from sameproject.ops import helpers
 from pathlib import Path
 import importlib
 import kubernetes
-import boto3
 
 def create_job(logger, body, job):
     try:
@@ -15,11 +14,12 @@ def create_job(logger, body, job):
         logger.debug(f"Exception when calling BatchV1Api->create_namespaced_job: {e}\n")
 
 def deploy(base_path: Path, root_file: str, config: SameConfig):
-    with helpers.add_path(str(base_path)):
-        root_module = importlib.import_module(root_file)  # python module
+    return
+    # with helpers.add_path(str(base_path)):
+    #     root_module = importlib.import_module(root_file)  # python module
 
-        client = boto3.client('ec2')
-        return client.create_run_from_pipeline_func(
-            root_module.root,
-            arguments={},
-        )
+    #     client = boto3.client('ec2')
+    #     return client.create_run_from_pipeline_func(
+    #         root_module.root,
+    #         arguments={},
+    #     )
