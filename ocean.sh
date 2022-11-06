@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /data/transformations/
+cd ../data/transformations/
 
 cli_execute_transform_command  algorithm converted_script.py
 
