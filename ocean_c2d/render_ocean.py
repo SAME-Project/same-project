@@ -207,4 +207,4 @@ def _build_step_file(env: Environment, step: Step, same_config) -> str:
     return env.get_template(ocean_step_template).render(step_contract)
 
 if __name__ == "__main__":
-    compile("same.yaml", "notebook.ipynb")
+    compile("same.yaml", os.environ("AlGO"))
