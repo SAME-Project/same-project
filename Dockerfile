@@ -1,13 +1,32 @@
-FROM python
+FROM python:3.8
 
-COPY . .
+# Basic toolchain                                                                                                                                                                                                     
+RUN apt-get update && apt-get install -y \                                                                                                                                                                            
+        apt-utils \                                                                                                                                                                                                   
+        build-essential \                                                                                                                                                                                             
+        git \                                                                                                                                                                                                         
+        wget \                                                                                                                                                                                                        
+        unzip \                                                                                                                                                                                                       
+        yasm \                                                                                                                                                                                                        
+        pkg-config \                                                                                                                                                                                                  
+        libcurl4-openssl-dev \                                                                                                                                                                                        
+        zlib1g-dev \                                                                                                                                                                                                  
+        htop \                                                                                                                                                                                                        
+        cmake \                                                                                                                                                                                                       
+        vim \                                                                                                                                                                                                         
+        nano \                                                                                                                                                                                                        
+        python3-pip \
+        python3-dev \
+        python3-tk \
+        libx264-dev \
+        gcc \
+        # python-pytest \
+    && cd /usr/local/bin \
+    && pip3 install --upgrade pip \
+    && apt-get autoremove -y
 
-RUN pip install .
+RUN git clone -b develop https://github.com/AlgoveraAI/same-project.git
 
-RUN cd /data/transformation
+WORKDIR /same-project
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-RUN same init
-
-CMD ["same", "run", "--persist-temp-files", "--no-deploy", "-t", "ocean"]
+RUN pip3 install .
