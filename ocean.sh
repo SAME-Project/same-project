@@ -1,11 +1,9 @@
 #!/bin/bash
 
-cd ../data/transformations/
+cd /data/transformations/
 
-cli_execute_transform_command  algorithm converted_script.py
+mv 0 hello.ipynb
 
-python3.8 converted_script.py
+jupyter nbconvert hello.ipynb --to python
 
-same init
-
-same run -t ocean --no-deploy --persist-temp-files
+python3.8 hello.py

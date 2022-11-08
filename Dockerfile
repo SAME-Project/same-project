@@ -29,4 +29,10 @@ RUN git clone -b develop https://github.com/AlgoveraAI/same-project.git
 
 WORKDIR /same-project
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN pip3 install .
+
+RUN python3.8 -m pip install jupyter
+RUN python3.8 -m pip install nbconvert
+RUN chmod +x ./ocean.sh
