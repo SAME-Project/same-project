@@ -4,6 +4,8 @@ cd /data/transformations/
 
 mv 0 hello.ipynb
 
-jupyter nbconvert hello.ipynb --to python
+same init
+
+same run --no-deploy --persist-temp-files -t ocean
 
 python3.8 hello.py
