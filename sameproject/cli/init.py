@@ -40,7 +40,6 @@ file_type = click.Path(
 )
 
 
-@click.command()
 def init():
     """Creates a new SAME config file."""
 
