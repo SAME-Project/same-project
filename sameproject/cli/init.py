@@ -47,75 +47,54 @@ def init():
     # Start by looking for an existing same config in the current directory.
     cfg = find_same_config(recurse=False)
     if cfg is not None:
-        click.echo("An existing SAME config file was found at the following path:")
-        click.echo(f"\t{cfg}")
-        if not click.confirm("Do you want to replace it?", default=False):
-            exit(0)
+        print("An existing SAME config file was found at the following path:")
+        print(f"\t{cfg}")
+        exit(0)
     else:
         cfg = Path("./same.yaml")
 
     # Name of the pipeline:
-    pl_name = click.prompt(
-        "Name of this config:",
-        default="default_config",
-        type=name_type
-    )
+    pl_name = "default_config"
 
     # Notebook data:
-    nb_path = click.prompt(
-        "Notebook path",
-        default=find_notebook(recurse=True),
-        type=file_type,
-    )
+    nb_path = find_notebook(recurse=True)
     if not nb_path.exists():
-        click.echo(f"No such file found: {nb_path}", err=True)
+        print(f"No such file found: {nb_path}")
         exit(1)
     nb_dict = read_notebook(nb_path)
     nb_name = str(nb_path.name).replace(".ipynb", "")
-    nb_name = click.prompt("Notebook name", default=nb_name, type=str)
 
     # Docker image data:
-    image = click.prompt(
-        "Default docker image",
-        default="combinatorml/jupyterlab-tensorflow-opencv:0.9",
-        type=image_type
-    )
+    image = "combinatorml/jupyterlab-tensorflow-opencv:0.9"
 
     # Requirements.txt data:
     req = find_requirements(recurse=False)
     if req is None:
-        if click.confirm("No requirements.txt found in current directory - would you like to create one?", default=True):
-            req_contents = f"# Dependencies for {nb_path.resolve()}:\n"
+        req_contents = f"# Dependencies for {nb_path.resolve()}:\n"
 
-            writing_reqs = False
-            if click.confirm("Would you like SAME to fill in the requirements.txt for you?", default=True):
-                code = remove_magic_lines(get_code(nb_dict))
-                modules = get_imported_modules(code)
-                pkg_info = get_package_info(modules)
+        writing_reqs = False
+        code = remove_magic_lines(get_code(nb_dict))
+        modules = get_imported_modules(code)
+        pkg_info = get_package_info(modules)
 
-                if len(pkg_info) > 0:
-                    writing_reqs = True
-                    click.echo("Found the following requirements for the notebook:")
-                    for pkg in pkg_info:
-                        click.echo(f"\t{pkg_info[pkg].name}=={pkg_info[pkg].version}")
-                else:
-                    click.echo("No requirements found for the notebook.")
-                req_contents += render_package_info(pkg_info) + "\n"
+        if len(pkg_info) > 0:
+            writing_reqs = True
+            print("Found the following requirements for the notebook:")
+            for pkg in pkg_info:
+                print(f"{pkg_info[pkg].name}=={pkg_info[pkg].version}")
+        else:
+            print("No requirements found for the notebook.")
+        req_contents += render_package_info(pkg_info) + "\n"
 
-            req = Path("requirements.txt")
-            with req.open("w") as file:
-                file.write(req_contents)
+        req = Path("requirements.txt")
+        with req.open("w") as file:
+            file.write(req_contents)
 
-            if writing_reqs:
-                click.echo(f"Wrote requirements to {req.resolve()}.")
-            else:
-                click.echo(f"Wrote empty requirements file to {req.resolve()}.")
+        if writing_reqs:
+            print(f"Wrote requirements to {req.resolve()}.")
+        else:
+            print(f"Wrote empty requirements file to {req.resolve()}.")
     else:
-        req = click.prompt(
-            "Requirements.txt",
-            default=req,
-            type=file_type,
-        )
         if req == "":
             req = None
 
@@ -145,14 +124,11 @@ def init():
     if req is not None:
         same_config.notebook.requirements = str(req)
 
-    click.echo(f"About to write to {cfg.absolute()}:")
-    click.echo()
-    click.echo(same_config.to_yaml())
-    if click.confirm("Is this okay?", default=True):
-        cfg.write_text(same_config.to_yaml())
-        click.echo(f"Wrote config file to {cfg.absolute()}.")
-        click.echo()
-        click.echo("""You can now run 'same verify' to check that everything is configured correctly
+    print(f"About to write to {cfg.absolute()}:")
+    print(same_config.to_yaml())
+    cfg.write_text(same_config.to_yaml())
+    print(f"Wrote config file to {cfg.absolute()}.")
+    print("""You can now run 'same verify' to check that everything is configured correctly
 (requires docker locally), or you can run 'same run' to deploy the pipeline to a
 configured backend (e.g. Kubeflow Pipelines in a Kubernetes cluster file pointed
 to by ~/.kube/config or set in the KUBECONFIG environment variable).
