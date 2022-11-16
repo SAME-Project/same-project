@@ -2,7 +2,7 @@
 
 cd /data/transformations/
 
-mv 0 hello.ipynb
+mv algorithm hello.ipynb
 
 same init
 
