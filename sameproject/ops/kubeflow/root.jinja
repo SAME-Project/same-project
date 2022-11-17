@@ -48,7 +48,7 @@ def root(
     secrets_by_env = {}
 {% for env_name in secrets_to_create_as_dict %}
 {% set secret = secrets_to_create_as_dict[env_name] %}
-    config.load_kube_config()
+
     v1 = client.CoreV1Api()
     namespace = "kubeflow"
     name = "{{ experiment_name_safe }}"

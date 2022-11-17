@@ -35,4 +35,6 @@ RUN pip3 install .
 
 RUN python3.8 -m pip install jupyter
 RUN python3.8 -m pip install nbconvert
+ENV KF_PIPELINES_ENDPOINT_ENV='ml_pipeline.kubeflow.svc.cluster.local:8888'
+
 RUN chmod +x ./ocean.sh

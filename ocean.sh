@@ -6,7 +6,7 @@ mv algorithm hello.ipynb
 
 same init
 
-export KF_PIPELINES_ENDPOINT_ENV='ml_pipeline.kubeflow.svc.cluster.local'
+export KF_PIPELINES_ENDPOINT_ENV='ml_pipeline.kubeflow.svc.cluster.local:8888'
 
 echo KF_PIPELINES_ENDPOINT_ENV
 
