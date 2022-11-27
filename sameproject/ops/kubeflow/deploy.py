@@ -16,7 +16,7 @@ def deploy(base_path: Path, root_file: str, config: SameConfig):
         kfp_client = kfp.Client(host="http://aff7367d8c2254073b6f563f2eb8efdc-b6898d80ac5be12c.elb.us-east-1.amazonaws.com")  # only supporting 'kubeflow' namespace
         print("got kfp_client")
 
-        dsl.BaseOp(name="data_collector").add_volume("/data")
+        # dsl.BaseOp(name="data_collector").add_volume("/data/input")
 
         return kfp_client.create_run_from_pipeline_func(
             root_module.root,

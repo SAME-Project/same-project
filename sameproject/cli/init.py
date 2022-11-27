@@ -111,6 +111,13 @@ def init():
                 "image_tag": image,
             },
         },
+        "datasets": {
+            "data": {
+                "environments": {
+                    "default": "/data/input",
+                },
+            },
+        },
         "notebook": {
             "name": nb_name,
             "path": str(nb_path),
