@@ -65,7 +65,8 @@ def init():
     nb_name = str(nb_path.name).replace(".ipynb", "")
 
     # Docker image data:
-    image = "combinatorml/jupyterlab-tensorflow-opencv:0.9"
+    image = "smejak/samedockers:0.1"
+    # image = "combinatorml/jupyterlab-tensorflow-opencv:0.9"
 
     # Requirements.txt data:
     req = find_requirements(recurse=False)
