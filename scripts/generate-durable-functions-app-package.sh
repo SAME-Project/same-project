@@ -2,10 +2,10 @@
 # usage: ./generate-durable-functions-app-package.sh <output_path>
 
 if [ $# -eq 0 ]
-  then
-    echo "Error: Output path not specified."
-    echo "usage: ./generate-durable-functions-app-package.sh <output_path>"
-    exit 1
+,then
+,,echo "Error: Output path not specified."
+,,echo "usage: ./generate-durable-functions-app-package.sh <output_path>"
+,,exit 1
 fi
 
 dir=$1

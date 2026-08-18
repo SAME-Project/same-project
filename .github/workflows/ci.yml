@@ -1,20 +1,20 @@
 name: ci 
 on:
-  push:
-    branches: 
-      - master
-      - main
-      - mkdocswebsite
+,push:
+,,branches: 
+,,,- master
+,,,- main
+,,,- mkdocswebsite
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+,deploy:
+,,runs-on: ubuntu-latest
+,,steps:
+,,,- uses: actions/checkout@v3
 
-      - name: Deploy docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG_FILE: docs/mkdocs.yml
-          REQUIREMENTS: docs/requirements.txt
-          CUSTOM_DOMAIN: sameproject.ml
+,,,- name: Deploy docs
+,,,,uses: mhausenblas/mkdocs-deploy-gh-pages@master
+,,,,env:
+,,,,,GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+,,,,,CONFIG_FILE: docs/mkdocs.yml
+,,,,,REQUIREMENTS: docs/requirements.txt
+,,,,,CUSTOM_DOMAIN: sameproject.ml

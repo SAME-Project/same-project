@@ -158,3 +158,4 @@ config.json
 .terraform*
 .terraform/*
 *.tfplan
+.DS_Store
